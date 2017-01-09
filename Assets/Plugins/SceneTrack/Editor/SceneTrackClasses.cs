@@ -5,6 +5,20 @@ namespace SceneTrack.Unity
 {
     public static class Classes
     {
+        /// <summary>
+        /// Register all of our class definitions with the SceneTrack system
+        /// </summary>
+        public static void CreateSchema()
+        {
+            GameObject.Register();
+            Transform.Register();
+            StandardMeshRenderer.Register();
+            Mesh.Register();
+            SubMesh.Register();
+            Material.Register();
+        }
+
+
         public static class GameObject
         {
             public static uint Type = 0;
