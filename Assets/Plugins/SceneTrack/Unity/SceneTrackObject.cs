@@ -16,22 +16,46 @@ namespace SceneTrack.Unity
         private uint _frameCount;
 
         private bool _rootObject = true;
+
         
+        
+
+        private Transform _transform;
+        private uint _transformHandle;
+
+        private MeshRenderer _meshRenderer;
+        private uint _meshRendererHandle;
+        private MeshFilter _meshFilter;
+
 
         private void Awake()
         {
             // Initialize SceneTrack
             System.EnterPlayMode();
 
+
             // Register GameObject
             _handle = SceneTrack.Object.CreateObject(SceneTrack.Unity.Classes.GameObject.Type);
 
             // Register Components
+            if ( TrackTransform ) 
+            {
+                InitTransform();
+            }
+
+            if ( TrackMeshRenderer ) 
+            {
+                InitMeshRenderer();
+            }
         }
         private void Update()
         {
             // Get last used frame number, we use this to determine if this is the first late update being called!
             _frameCount = SceneTrack.Unity.System.FrameCount;
+
+
+            if (TrackTransform) { RecordTransform(); }
+            if (TrackMeshRenderer) { RecordMeshRenderer(); }
         }
 
         /// <summary>
@@ -59,6 +83,36 @@ namespace SceneTrack.Unity
             if ( GetComponent<MeshRenderer>() != null ) {
                 TrackMeshRenderer = true;
             }
+        }
+
+        private void InitTransform()
+        {
+            // Cache transform reference
+            _transform = transform;
+
+            RecordTransform();
+        }
+        private void RecordTransform()
+        {
+            Vector3 localCache = _transform.localPosition;
+            SceneTrack.Object.SetValue_3_float32(_handle, Classes.Transform.LocalPosition, localCache.x, localCache.y, localCache.z);
+            
+            localCache = _transform.eulerAngles;
+            SceneTrack.Object.SetValue_3_float32(_handle, Classes.Transform.LocalRotation, localCache.x, localCache.y, localCache.z);
+
+            localCache = _transform.localScale;
+            SceneTrack.Object.SetValue_3_float32(_handle, Classes.Transform.LocalScale, localCache.x, localCache.y, localCache.z);
+        }
+
+        private void InitMeshRenderer()
+        {
+            // Cache references
+            _meshFilter = GetComponent<MeshFilter>();
+            _meshRenderer = GetComponent<MeshRenderer>();
+        }
+        private void RecordMeshRenderer()
+        {
+            // TODO RECORD
         }
     }
 
