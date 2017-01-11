@@ -5,7 +5,7 @@ AnimatorController:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Small_Arm_ROT_1Axis_Trans_1Axis_Anim
+  m_Name: AC_Small_Arm_ROT_1Axis_Trans_1Axis_Anim
   serializedVersion: 5
   m_AnimatorParameters: []
   m_AnimatorLayers:
