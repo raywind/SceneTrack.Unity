@@ -9,18 +9,33 @@ namespace SceneTrack.Unity
         public bool TrackMeshRenderer;
 
         private uint _handle;
+        private uint _frameCount;
+
         private bool _rootObject = true;
+        
 
         private void Awake()
         {
             // Initialize SceneTrack
-            // Don't worry it only does it once, but we dont control the order of operations on which MB calls first so each one has the call
             System.EnterPlayMode();
 
             // Register GameObject
-
+            _handle = SceneTrack.Object.CreateObject(SceneTrack.Unity.Classes.GameObject.Type);
 
             // Register Components
+        }
+        private void Update()
+        {
+            // Get last used frame number, we use this to determine if this is the first late update being called!
+            _frameCount = SceneTrack.Unity.System.FrameCount;
+        }
+
+        /// <summary>
+        /// The last call during a frame, this allows us to have a consistent call point for all data
+        /// </summary>
+        private void LateUpdate()
+        {
+            System.SubmitRecording(_frameCount, Time.deltaTime);
         }
 
         private void OnDestroy()

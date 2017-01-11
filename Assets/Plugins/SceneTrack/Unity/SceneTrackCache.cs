@@ -35,7 +35,7 @@ namespace SceneTrack.Unity
             {
                 Directory.CreateDirectory(Folder);
             }
-            return Directory.GetFiles(Folder);
+            return Directory.GetFiles(Folder, "*" + FileExtension);
         }
 
         public static int GetNextTakeNumber()

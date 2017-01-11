@@ -18,6 +18,10 @@ namespace SceneTrack.Unity
         /// </summary>
         public static uint InstanceHandle { get; private set; }
 
+        public static uint LastUpdate { get; set; }
+
+        public static uint FrameCount { get; private set; }
+
         public static void EnterPlayMode(string fileName = "")
         {
             // Bail Out Check
@@ -53,6 +57,16 @@ namespace SceneTrack.Unity
 
             // Set Flag
             InPlayMode = false;
+        }
+
+        public static void SubmitRecording(uint frameCount, float deltaTime)
+        {
+            if ( frameCount != FrameCount ) return;
+
+            Recording.Submit(deltaTime);
+
+            // Increment
+            FrameCount++;
         }
     }
 }
