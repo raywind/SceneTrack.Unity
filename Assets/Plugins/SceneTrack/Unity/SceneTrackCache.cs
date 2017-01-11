@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using SceneTrack;
+﻿using System.IO;
 using UnityEngine;
 
 namespace SceneTrack.Unity
@@ -31,5 +28,24 @@ namespace SceneTrack.Unity
             }
         }
 
+        public static string[] GetCacheFiles()
+        {
+            // Make Sure The Directory Exists
+            if (!Directory.Exists(Folder))
+            {
+                Directory.CreateDirectory(Folder);
+            }
+            return Directory.GetFiles(Folder);
+        }
+
+        public static int GetNextTakeNumber()
+        {
+            return GetCacheFiles().Length + 1;
+        }
+
+        public static string GetNextTakeFilename()
+        {
+            return "Take_" + GetNextTakeNumber().ToString();
+        }
     }
 }

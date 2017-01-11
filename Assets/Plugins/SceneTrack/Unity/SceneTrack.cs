@@ -25,11 +25,8 @@ namespace SceneTrack.Unity
 
             if ( string.IsNullOrEmpty(fileName))
             {
-                // Find next
-            }
-            else
-            {
-                // Check the provided filename that it is valid, if not
+                // Find next number
+                fileName = Cache.GetNextTakeFilename();
             }
 
             // Start Recording
@@ -41,8 +38,7 @@ namespace SceneTrack.Unity
             // Create Schema
             Classes.CreateSchema();
 
-
-            // Start Recording & Set Flag
+            // Set Flag
             InPlayMode = true;
         }
 
@@ -52,6 +48,10 @@ namespace SceneTrack.Unity
             // Bail Out Check
             if (!InPlayMode) return;
 
+            // Clean up anything left in writing the files
+            Recording.CloseRecording(InstanceHandle);
+
+            // Set Flag
             InPlayMode = false;
         }
     }
