@@ -11,7 +11,7 @@ namespace SceneTrack.Unity
         {
             get
             {
-                return EditorPrefs.GetString("SceneTrack_CacheFolder", Application.dataPath + Path.DirectorySeparatorChar + "SceneTrackData");
+                return EditorPrefs.GetString("SceneTrack_CacheFolder", Application.dataPath + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + "Temp" + Path.DirectorySeparatorChar + "SceneTrackData");
             }
             set
             {
