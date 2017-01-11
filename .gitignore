@@ -4,3 +4,6 @@ Assembly-CSharp.csproj
 SceneTrack.Unity.sln
 Library
 Temp
+.idea/.idea.SceneTrack.Unity/.idea
+.idea/.idea.SceneTrack.Unity
+.vscode
