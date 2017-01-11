@@ -21,11 +21,15 @@ namespace SceneTrack.Unity.Editor
 
             GUILayout.Space(5);
 
+            EditorGUI.BeginDisabledGroup(!_targetObject.TrackObject);
+
             EditorGUILayout.LabelField("Track Components", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
             _targetObject.TrackTransform = EditorGUILayout.Toggle("Transform", _targetObject.TrackTransform);
             _targetObject.TrackMeshRenderer = EditorGUILayout.Toggle("Mesh", _targetObject.TrackMeshRenderer);
             EditorGUI.indentLevel--;
+
+            EditorGUI.EndDisabledGroup();
 
             if (GUI.changed)
             {
