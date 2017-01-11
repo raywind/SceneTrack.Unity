@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SceneTrack.Unity
+﻿namespace SceneTrack.Unity.Editor
 {
     public enum OutputType
     {
@@ -14,6 +12,4 @@ namespace SceneTrack.Unity
 
         }
     }
-
-
 }

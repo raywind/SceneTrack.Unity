@@ -1,23 +1,14 @@
 ﻿using System.IO;
+using UnityEngine;
+using UnityEditor;
 
-namespace SceneTrack.Unity
+namespace SceneTrack.Unity.Editor
 {
-    using UnityEngine;
-    using UnityEditor;
+
 
     public static class SceneTrackPreferences
     {
-        public static string CacheFolder
-        {
-            get
-            {
-                return EditorPrefs.GetString("SceneTrack_CacheFolder", Application.dataPath + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + "Temp" + Path.DirectorySeparatorChar + "SceneTrackData");
-            }
-            set
-            {
-                EditorPrefs.SetString("SceneTrack_CacheFolder", value);
-            }
-        }
+
         public static OutputType OutputFormat
         {
             get
