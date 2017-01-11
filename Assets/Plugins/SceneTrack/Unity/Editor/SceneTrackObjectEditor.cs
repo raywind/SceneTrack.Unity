@@ -15,13 +15,15 @@ namespace SceneTrack.Unity.Editor
             // Get Current Reference
             _targetObject = (SceneTrackObject)target;
 
+            GUILayout.Space(10);
 
+            _targetObject.TrackObject = EditorGUILayout.Toggle("Track Object", _targetObject.TrackObject);
 
             GUILayout.Space(5);
 
             EditorGUILayout.LabelField("Track Components", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
-            _targetObject.TrackMeshRenderer = EditorGUILayout.Toggle("Transform", _targetObject.TrackTransform);
+            _targetObject.TrackTransform = EditorGUILayout.Toggle("Transform", _targetObject.TrackTransform);
             _targetObject.TrackMeshRenderer = EditorGUILayout.Toggle("Mesh", _targetObject.TrackMeshRenderer);
             EditorGUI.indentLevel--;
 
