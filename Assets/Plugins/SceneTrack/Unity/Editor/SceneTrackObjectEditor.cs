@@ -12,8 +12,15 @@ namespace SceneTrack.Unity.Editor
 
         public override void OnInspectorGUI()
         {
+            if ( Application.isPlaying ) {
+                EditorGUILayout.HelpBox("Changes Are Not Permitted During PlayMode", MessageType.Info);
+                return;
+            }
+            
             // Get Current Reference
             _targetObject = (SceneTrackObject)target;
+
+
 
             GUILayout.Space(10);
 
