@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SceneTrack.Unity
 {
@@ -31,18 +29,18 @@ namespace SceneTrack.Unity
 
         public bool TrackObject = true;
         public bool TrackTransform = true;
-        public bool TrackMeshRenderer = false;
+        public bool TrackMeshRenderer;
 
         private uint _frameCount;
         private uint _handle;
-        private bool _initialized = false;
+        private bool _initialized;
         private MeshFilter _meshFilter;
         private MeshRenderer _meshRenderer;
         private uint _meshRendererHandle;
         private SceneTrackObject _parentSceneTrackObject;
         private Transform _transform;
         private Transform _transformParent;
-        private uint _transformParentHandle = 0;
+        private uint _transformParentHandle;
 
         #region Unity Specific Events
 
@@ -104,7 +102,7 @@ namespace SceneTrack.Unity
         private void Update()
         {
             // Get last used frame number, we use this to determine if this is the first late update being called!
-            _frameCount = SceneTrack.Unity.System.FrameCount;
+            _frameCount = System.FrameCount;
 
             // Record whats being tracked
             if (TrackTransform) { RecordTransform(); }
@@ -125,7 +123,7 @@ namespace SceneTrack.Unity
             if (_initialized) return;
 
             // Register GameObject
-            _handle = SceneTrack.Object.CreateObject(SceneTrack.Unity.Classes.GameObject.Type);
+            _handle = Object.CreateObject(Classes.GameObject.Type);
 
             // Register Components
             if ( TrackTransform )
@@ -160,7 +158,7 @@ namespace SceneTrack.Unity
             _transform = transform;
 
             // Create transform object in SceneTrack
-            TransformHandle = SceneTrack.Object.CreateObject(SceneTrack.Unity.Classes.Transform.Type);
+            TransformHandle = Object.CreateObject(Classes.Transform.Type);
 
             // Assign Transform to the GameObject in SceneTrack
             Object.SetValue_uint32(_handle, Classes.GameObject.Transform, TransformHandle);
@@ -212,15 +210,15 @@ namespace SceneTrack.Unity
 
             // Update SceneTrack
             var localCache = _transform.localPosition;
-            SceneTrack.Object.SetValue_3_float32(TransformHandle, Classes.Transform.LocalPosition, localCache.x,
+            Object.SetValue_3_float32(TransformHandle, Classes.Transform.LocalPosition, localCache.x,
                 localCache.y, localCache.z);
 
             localCache = _transform.eulerAngles;
-            SceneTrack.Object.SetValue_3_float32(TransformHandle, Classes.Transform.LocalRotation, localCache.x,
+            Object.SetValue_3_float32(TransformHandle, Classes.Transform.LocalRotation, localCache.x,
                 localCache.y, localCache.z);
 
             localCache = _transform.localScale;
-            SceneTrack.Object.SetValue_3_float32(TransformHandle, Classes.Transform.LocalScale, localCache.x,
+            Object.SetValue_3_float32(TransformHandle, Classes.Transform.LocalScale, localCache.x,
                 localCache.y, localCache.z);
 
 
