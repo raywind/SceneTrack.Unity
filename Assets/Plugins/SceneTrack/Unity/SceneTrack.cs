@@ -25,7 +25,7 @@ namespace SceneTrack.Unity
         public static void EnterPlayMode(string fileName = "")
         {
             // Bail Out Check
-            if (InPlayMode) return;
+            if (InPlayMode || InstanceHandle != 0) return;
 
             if ( string.IsNullOrEmpty(fileName))
             {
@@ -50,10 +50,12 @@ namespace SceneTrack.Unity
         public static void ExitPlayMode()
         {
             // Bail Out Check
-            if (!InPlayMode) return;
+            if (!InPlayMode || InstanceHandle == 0) return;
 
             // Clean up anything left in writing the files
             Recording.CloseRecording(InstanceHandle);
+
+            InstanceHandle = 0;
 
             // Set Flag
             InPlayMode = false;
