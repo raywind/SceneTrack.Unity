@@ -28,6 +28,14 @@ namespace SceneTrack.Unity
             }
         }
 
+        public static string[] CachedFiles
+        {
+            get { return _cachedFiles; }
+            set { _cachedFiles = value; }
+        }
+
+        private static string[] _cachedFiles = new string[0];
+
         public static string[] GetCacheFiles()
         {
             // Make Sure The Directory Exists
@@ -35,8 +43,21 @@ namespace SceneTrack.Unity
             {
                 Directory.CreateDirectory(Folder);
             }
-            return Directory.GetFiles(Folder, "*" + FileExtension);
+
+            CachedFiles = Directory.GetFiles(Folder, "*" + FileExtension);
+            return CachedFiles;
         }
+
+        public static void ClearFiles()
+        {
+            foreach (var s in GetCacheFiles())
+            {
+                File.Delete(s);
+            }
+            _cachedFiles = new string[0];
+        }
+
+        public static int CurrentTakeNumber = 0;
 
         public static int GetNextTakeNumber()
         {

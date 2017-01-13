@@ -183,9 +183,19 @@ namespace SceneTrack.Unity
                 {
                     materialHandle = Object.CreateObject(Classes.Material.Type);
 
-                    Object.SetValue_string(materialHandle, Classes.Material.Image, new StringBuilder(m.mainTexture.name), (uint) m.mainTexture.name.Length);
-                    Object.SetValue_string(materialHandle, Classes.Material.Name, new StringBuilder(m.name), (uint) m.name.Length);
-                    Object.SetValue_string(materialHandle, Classes.Material.Shader, new StringBuilder(m.shader.name), (uint) m.shader.name.Length);
+                    if (m.mainTexture != null)
+                    {
+                        Object.SetValue_string(materialHandle, Classes.Material.Image, new StringBuilder(m.mainTexture.name), (uint) m.mainTexture.name.Length);
+                        Object.SetValue_string(materialHandle, Classes.Material.Name, new StringBuilder(m.name), (uint) m.name.Length);
+                        Object.SetValue_string(materialHandle, Classes.Material.Shader, new StringBuilder(m.shader.name), (uint) m.shader.name.Length);
+                    }
+                    else
+                    {
+                        Object.SetValue_string(materialHandle, Classes.Material.Image, new StringBuilder("Default"), 7);
+                        Object.SetValue_string(materialHandle, Classes.Material.Name, new StringBuilder("Default"), 7);
+                        Object.SetValue_string(materialHandle, Classes.Material.Shader, new StringBuilder("Default"), 7);
+                    }
+
 
                     System.SharedMaterials.Add(m, materialHandle);
                 }
@@ -256,6 +266,9 @@ namespace SceneTrack.Unity
 //            public static uint UV2 = 0;
 //            public static uint UV3 = 0;
 //            public static uint UV4 = 0;
+
+
+
 //            public static uint BoneWeightWeight = 0;
 //            public static uint BoneWeightIndex = 0;
 //            public static uint Bounds = 0;

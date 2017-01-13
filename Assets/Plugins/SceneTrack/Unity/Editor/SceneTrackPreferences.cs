@@ -83,5 +83,14 @@ namespace SceneTrack.Unity.Editor
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.EndVertical();
         }
+
+        public static void SetupUnity()
+        {
+
+
+
+
+
+        }
     }
 }

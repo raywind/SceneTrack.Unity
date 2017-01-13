@@ -4,12 +4,18 @@ using System.IO;
 using System.Text;
 
 using SceneTrack;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.VR.WSA.Persistence;
 
 namespace SceneTrack.Unity
 {
     public static class System
     {
+        public static string FilenameOverride = string.Empty;
+        public static List<SceneTrackObject> CachedKnownObjects = new List<SceneTrackObject>();
+
+
         public static Dictionary<Mesh, uint>  SharedMeshes = new Dictionary<Mesh, uint>();
         public static Dictionary<Material, uint>  SharedMaterials = new Dictionary<Material, uint>();
 
@@ -27,15 +33,16 @@ namespace SceneTrack.Unity
 
         public static uint FrameCount { get; private set; }
 
-        public static void EnterPlayMode(string fileName = "")
+        public static void EnterPlayMode()
         {
             // Bail Out Check
             if (InPlayMode || InstanceHandle != 0) return;
 
-            if ( string.IsNullOrEmpty(fileName))
+            var fileName = Cache.GetNextTakeFilename();
+            if ( !string.IsNullOrEmpty(FilenameOverride))
             {
                 // Find next number
-                fileName = Cache.GetNextTakeFilename();
+                fileName = FilenameOverride;
             }
 
             // Start Recording
@@ -74,6 +81,12 @@ namespace SceneTrack.Unity
 
             // Increment
             FrameCount++;
+        }
+
+        public static void CacheKnownObjects()
+        {
+            CachedKnownObjects.Clear();
+            CachedKnownObjects.AddRange((SceneTrackObject[])Resources.FindObjectsOfTypeAll(typeof(SceneTrackObject)));
         }
     }
 }
