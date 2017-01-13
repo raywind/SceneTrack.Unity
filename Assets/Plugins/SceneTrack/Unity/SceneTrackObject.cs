@@ -312,10 +312,22 @@ namespace SceneTrack.Unity
 //            public static uint SubMesh = 0;
 
 
+
+
             // Create Sub Mesh
 
 
-            // Creat Renderer
+
+
+
+            // Create Renderer
+            _meshRendererHandle = SceneTrack.Object.CreateObject(Classes.StandardMeshRenderer.Type);
+            Object.SetValue_uint32(_meshRendererHandle, Classes.StandardMeshRenderer.Mesh, _meshHandle);
+//            public static uint Materials = 0; - this is an array
+//            public static uint Parent = 0;
+
+            // TODO : How do i assign the array ? for components?
+            //Object.SetValue_uint32(_handle, Classes.GameObject.);
         }
 
         /// <summary>
