@@ -16,6 +16,10 @@ namespace SceneTrack.Unity.Editor
                 EditorGUILayout.HelpBox("Changes Are Not Permitted During PlayMode", MessageType.Info);
                 return;
             }
+
+
+
+
             
             // Get Current Reference
             _targetObject = (SceneTrackObject)target;

@@ -26,6 +26,8 @@ namespace SceneTrack.Unity
             public static uint Layer = 0;
             public static uint Transform = 0;
             public static uint Components = 0;
+            public static uint Visibility = 0;
+
 
             public static void Register()
             {
@@ -34,8 +36,10 @@ namespace SceneTrack.Unity
                 Layer = Object.AddObjectTypeComponentEx2(Type, Kind.Layer, SceneTrack.Type.Int32, 1, 1, Units.Unspecified, Reference.Unspecified);
                 Transform = Object.AddObjectTypeComponentEx2(Type, Kind.Spatial, SceneTrack.Type.Uint32, 1, 1, Units.Unspecified, Reference.Unspecified);
                 Components = Object.AddObjectTypeComponentEx2(Type, Kind.Child, SceneTrack.Type.Uint32, 1, int.MaxValue, Units.Unspecified, Reference.Unspecified);
+                Visibility = Object.AddObjectTypeComponentEx2(Type, Kind.Intensity, SceneTrack.Type.Uint8, 1, 1, Units.Unspecified, Reference.Unspecified);
             }
         }
+
 
         public static class Transform
         {
@@ -134,6 +138,7 @@ namespace SceneTrack.Unity
                 Type = Object.CreateObjectTypeEx(Frequency.Static, 203);
                 Name = Object.AddObjectTypeComponentEx2(Type, Kind.Named, SceneTrack.Type.CString, 1, 1, Units.Unspecified, Reference.Unspecified);
                 Shader = Object.AddObjectTypeComponentEx2(Type, Kind.Surface, SceneTrack.Type.CString, 1, 1, Units.Unspecified, Reference.Unspecified);
+                // Reference will be ExternalAsset
                 Image = Object.AddObjectTypeComponentEx2(Type, Kind.Image, SceneTrack.Type.CString, 1, 1, Units.Unspecified, Reference.Unspecified);
             }
         }

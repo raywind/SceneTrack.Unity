@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
+
 using SceneTrack;
 using UnityEngine;
 
@@ -8,6 +10,9 @@ namespace SceneTrack.Unity
 {
     public static class System
     {
+        public static Dictionary<Mesh, uint>  SharedMeshes = new Dictionary<Mesh, uint>();
+        public static Dictionary<Material, uint>  SharedMaterials = new Dictionary<Material, uint>();
+
         /// <summary>
         /// Has SceneTrack been initialized for this recording.
         /// </summary>

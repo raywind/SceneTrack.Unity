@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using UnityEngine;
 
 namespace SceneTrack.Unity
 {
@@ -32,7 +37,11 @@ namespace SceneTrack.Unity
         public bool TrackMeshRenderer;
 
         private uint _frameCount;
+        /// <summary>
+        /// Game Object Handle
+        /// </summary>
         private uint _handle;
+
         private bool _initialized;
         private MeshFilter _meshFilter;
         private MeshRenderer _meshRenderer;
@@ -41,6 +50,9 @@ namespace SceneTrack.Unity
         private Transform _transform;
         private Transform _transformParent;
         private uint _transformParentHandle;
+
+        private uint[] _materialHandles;
+        private uint _meshHandle;
 
         #region Unity Specific Events
 
@@ -67,6 +79,17 @@ namespace SceneTrack.Unity
         {
             System.SubmitRecording(_frameCount, Time.deltaTime);
         }
+
+        public void OnEnable()
+        {
+            Object.SetValue_uint8(_handle, Classes.GameObject.Visibility, 1);
+        }
+
+        public void OnDisable()
+        {
+            Object.SetValue_uint8(_handle, Classes.GameObject.Visibility, 0);
+        }
+
 
         /// <summary>
         /// Unity's OnDestroy Event
@@ -125,6 +148,7 @@ namespace SceneTrack.Unity
             // Register GameObject
             _handle = Object.CreateObject(Classes.GameObject.Type);
 
+
             // Register Components
             if ( TrackTransform )
             {
@@ -147,6 +171,101 @@ namespace SceneTrack.Unity
             // Cache references
             _meshFilter = GetComponent<MeshFilter>();
             _meshRenderer = GetComponent<MeshRenderer>();
+
+            // Create Materials
+            var materialHandles = new List<uint>();
+            foreach (var m in _meshRenderer.sharedMaterials)
+            {
+                uint materialHandle = 0;
+
+
+                if (!Unity.System.SharedMaterials.TryGetValue(m, out materialHandle))
+                {
+                    materialHandle = Object.CreateObject(Classes.Material.Type);
+
+                    Object.SetValue_string(materialHandle, Classes.Material.Image, new StringBuilder(m.mainTexture.name), (uint) m.mainTexture.name.Length);
+                    Object.SetValue_string(materialHandle, Classes.Material.Name, new StringBuilder(m.name), (uint) m.name.Length);
+                    Object.SetValue_string(materialHandle, Classes.Material.Shader, new StringBuilder(m.shader.name), (uint) m.shader.name.Length);
+
+                    System.SharedMaterials.Add(m, materialHandle);
+                }
+
+
+                // Store material in temp array
+                materialHandles.Add(materialHandle);
+            }
+            _materialHandles = materialHandles.ToArray();
+
+            // Create Mesh
+            uint meshHandle = 0;
+            var cachedMesh = _meshFilter.sharedMesh;
+
+            if (!System.SharedMeshes.TryGetValue(cachedMesh, out meshHandle))
+            {
+                meshHandle = Object.CreateObject(Classes.Mesh.Type);
+
+                Object.SetValue_string(meshHandle, Classes.Mesh.Name, new StringBuilder(cachedMesh.name), (uint) cachedMesh.name.Length);
+
+//                unsafe
+//                {
+//                    float* vetrices = (float*)cachedMesh.vertices;
+//                }
+//
+//
+//                int verticesLength = cachedMesh.vertices.Length;
+//                Vector3[] cachedVertices = cachedMesh.vertices;
+//
+//                //IntPtr memoryPointer = Marshal.AllocHGlobal(verticesLength * 4 * 4);
+//                float[] newArray = new float[verticesLength* 4];
+//
+//                for(int i = 0, j = 0; i < verticesLength; i++, j+=3)
+//                {
+//                    newArray[j + 0] = cachedVertices[i].x;
+//                    newArray[j + 1] = cachedVertices[i].y;
+//                    newArray[j + 2] = cachedVertices[i].z;
+//                }
+//
+//                IntPtr vertexPointer = new IntPtr();
+
+
+//                // Some memory terribleness
+
+//                Marshal.Copy(cachedMesh.vertices, );
+//
+//                Marshal.Copy(bytes, 0, unmanagedPointer, bytes.Length);
+//// Call unmanaged code
+//                Marshal.FreeHGlobal(unmanagedPointer);
+//
+//                Object.SetValue_p_float32(meshHandle, Classes.Mesh.Vertices, '
+//
+//
+//                cachedMesh.GetNativeVertexBufferPtr) IntPtr(cachedMesh.vertices),(uint)cachedMesh.vertices.Length
+//                cachedMesh.vertices.
+
+            }
+
+
+
+
+
+//            public static uint Vertices = 0;
+//            public static uint Normals = 0;
+//            public static uint Tangents = 0;
+//            public static uint Colors = 0;
+//            public static uint UV = 0;
+//            public static uint UV2 = 0;
+//            public static uint UV3 = 0;
+//            public static uint UV4 = 0;
+//            public static uint BoneWeightWeight = 0;
+//            public static uint BoneWeightIndex = 0;
+//            public static uint Bounds = 0;
+//            public static uint SubMesh = 0;
+
+
+            // Create Sub Mesh
+
+
+            // Creat Renderer
         }
 
         /// <summary>
