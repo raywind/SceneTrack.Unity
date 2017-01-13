@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using UnityEngine;
@@ -214,58 +212,97 @@ namespace SceneTrack.Unity
             {
                 meshHandle = Object.CreateObject(Classes.Mesh.Type);
 
-                Object.SetValue_string(meshHandle, Classes.Mesh.Name, new StringBuilder(cachedMesh.name), (uint) cachedMesh.name.Length);
+                Object.SetValue_string(meshHandle, Classes.Mesh.Name, new StringBuilder(cachedMesh.name),
+                    (uint) cachedMesh.name.Length);
 
-//                unsafe
-//                {
-//                    float* vetrices = (float*)cachedMesh.vertices;
-//                }
-//
-//
-//                int verticesLength = cachedMesh.vertices.Length;
-//                Vector3[] cachedVertices = cachedMesh.vertices;
-//
-//                //IntPtr memoryPointer = Marshal.AllocHGlobal(verticesLength * 4 * 4);
-//                float[] newArray = new float[verticesLength* 4];
-//
-//                for(int i = 0, j = 0; i < verticesLength; i++, j+=3)
-//                {
-//                    newArray[j + 0] = cachedVertices[i].x;
-//                    newArray[j + 1] = cachedVertices[i].y;
-//                    newArray[j + 2] = cachedVertices[i].z;
-//                }
-//
-//                IntPtr vertexPointer = new IntPtr();
+                // Cache lengths
+                var cachedLength = (uint) cachedMesh.vertices.Length;
+                var cachedVector2Length = cachedLength * 2;
+                var cachedVector3Length = cachedLength * 3;
+                var cachedVector4Length = cachedLength * 4;
 
+                // Handle Vertices
+                var verticesHandle = GCHandle.Alloc(cachedMesh.vertices, GCHandleType.Pinned);
+                var verticesPointer = verticesHandle.AddrOfPinnedObject();
+                // TODO: Stride?
+                Object.SetValue_p_float32(meshHandle, Classes.Mesh.Vertices, verticesPointer, cachedVector3Length, 0);
+                verticesHandle.Free();
 
-//                // Some memory terribleness
+                // Handle Normals
+                var normalsHandle = GCHandle.Alloc(cachedMesh.normals, GCHandleType.Pinned);
+                var normalsPointer = normalsHandle.AddrOfPinnedObject();
+                // TODO: Stride?
+                Object.SetValue_p_float32(meshHandle, Classes.Mesh.Normals, normalsPointer, cachedVector3Length, 0);
+                normalsHandle.Free();
 
-//                Marshal.Copy(cachedMesh.vertices, );
-//
-//                Marshal.Copy(bytes, 0, unmanagedPointer, bytes.Length);
-//// Call unmanaged code
-//                Marshal.FreeHGlobal(unmanagedPointer);
-//
-//                Object.SetValue_p_float32(meshHandle, Classes.Mesh.Vertices, '
-//
-//
-//                cachedMesh.GetNativeVertexBufferPtr) IntPtr(cachedMesh.vertices),(uint)cachedMesh.vertices.Length
-//                cachedMesh.vertices.
+                // Handle Tangents (Vector4)
+                var tangentsHandle = GCHandle.Alloc(cachedMesh.tangents, GCHandleType.Pinned);
+                var tangentsPointer = tangentsHandle.AddrOfPinnedObject();
+                // TODO: Stride?
+                Object.SetValue_p_float32(meshHandle, Classes.Mesh.Normals, tangentsPointer, cachedVector4Length, 0);
+                tangentsHandle.Free();
 
+                // Handle Colors (Vector4)
+                // We have to make an array of values as colors are stored differently
+                if (cachedMesh.colors != null && cachedMesh.colors.Length != 0)
+                {
+                    var colorsArray = new Vector4[cachedMesh.colors.Length];
+                    for (var i = 0; i < cachedLength; i++)
+                    {
+                        colorsArray[i] = Classes.Mesh.ToVector4(cachedMesh.colors[i]);
+                    }
+                    var colorsHandle = GCHandle.Alloc(colorsArray, GCHandleType.Pinned);
+                    var colorsPointer = colorsHandle.AddrOfPinnedObject();
+                    // TODO: Stride?
+                    Object.SetValue_p_float32(meshHandle, Classes.Mesh.Colors, colorsPointer, cachedVector4Length, 0);
+                    colorsHandle.Free();
+                }
+
+                // Handle UV
+                if (cachedMesh.uv != null && cachedMesh.uv.Length != 0)
+                {
+                    var uvHandle = GCHandle.Alloc(cachedMesh.uv, GCHandleType.Pinned);
+                    var uvPointer = uvHandle.AddrOfPinnedObject();
+                    // TODO: Stride?
+                    Object.SetValue_p_float32(meshHandle, Classes.Mesh.UV, uvPointer, cachedVector2Length, 0);
+                    uvHandle.Free();
+                }
+
+                // Handle UV2
+                if (cachedMesh.uv2 != null && cachedMesh.uv2.Length != 0)
+                {
+                    var uv2Handle = GCHandle.Alloc(cachedMesh.uv2, GCHandleType.Pinned);
+                    var uv2Pointer = uv2Handle.AddrOfPinnedObject();
+                    // TODO: Stride?
+                    Object.SetValue_p_float32(meshHandle, Classes.Mesh.UV2, uv2Pointer, cachedVector2Length, 0);
+                    uv2Handle.Free();
+                }
+
+                // Handle UV3
+                if (cachedMesh.uv3 != null && cachedMesh.uv3.Length != 0)
+                {
+                    var uv3Handle = GCHandle.Alloc(cachedMesh.uv3, GCHandleType.Pinned);
+                    var uv3Pointer = uv3Handle.AddrOfPinnedObject();
+                    // TODO: Stride?
+                    Object.SetValue_p_float32(meshHandle, Classes.Mesh.UV3, uv3Pointer, cachedVector2Length, 0);
+                    uv3Handle.Free();
+                }
+
+                // Handle UV4
+                if (cachedMesh.uv4 != null && cachedMesh.uv4.Length != 0)
+                {
+                    var uv4Handle = GCHandle.Alloc(cachedMesh.uv4, GCHandleType.Pinned);
+                    var uv4Pointer = uv4Handle.AddrOfPinnedObject();
+                    // TODO: Stride?
+                    Object.SetValue_p_float32(meshHandle, Classes.Mesh.UV4, uv4Pointer, cachedVector2Length, 0);
+                    uv4Handle.Free();
+                }
+
+                // Bones
+
+                System.SharedMeshes.Add(cachedMesh, meshHandle);
             }
 
-
-
-
-
-//            public static uint Vertices = 0;
-//            public static uint Normals = 0;
-//            public static uint Tangents = 0;
-//            public static uint Colors = 0;
-//            public static uint UV = 0;
-//            public static uint UV2 = 0;
-//            public static uint UV3 = 0;
-//            public static uint UV4 = 0;
 
 
 

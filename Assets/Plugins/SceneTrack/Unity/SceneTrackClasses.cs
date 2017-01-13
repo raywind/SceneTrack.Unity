@@ -1,5 +1,6 @@
 ﻿using System;
 using SceneTrack;
+using UnityEngine;
 
 namespace SceneTrack.Unity
 {
@@ -100,7 +101,7 @@ namespace SceneTrack.Unity
                 Type = Object.CreateObjectTypeEx(Frequency.Dynamic, 201);
                 Name = Object.AddObjectTypeComponentEx2(Type, Kind.Named, SceneTrack.Type.CString, 1, 1, Units.Unspecified, Reference.Unspecified);
                 Vertices = Object.AddObjectTypeComponentEx2(Type, Kind.Vertex, SceneTrack.Type.Float32, 3, 1 << 16, Units.Unspecified, Reference.Local);
-                Normals = Object.AddObjectTypeComponentEx2(Type, Kind.Normal, SceneTrack.Type.Float32, 4, 1 << 16, Units.Unspecified, Reference.Unspecified);
+                Normals = Object.AddObjectTypeComponentEx2(Type, Kind.Normal, SceneTrack.Type.Float32, 3, 1 << 16, Units.Unspecified, Reference.Unspecified);
                 Tangents = Object.AddObjectTypeComponentEx2(Type, Kind.Tangent, SceneTrack.Type.Float32, 4, 1 << 16, Units.Unspecified, Reference.Unspecified);
                 Colors = Object.AddObjectTypeComponentEx2(Type, Kind.Color, SceneTrack.Type.Float32, 4, 1 << 16, Units.Unspecified, Reference.Unspecified);
                 UV = Object.AddObjectTypeComponentEx2(Type, Kind.UV0, SceneTrack.Type.Float32, 2, 1 << 16, Units.Unspecified, Reference.Unspecified);
@@ -111,6 +112,11 @@ namespace SceneTrack.Unity
                 BoneWeightWeight = Object.AddObjectTypeComponentEx2(Type, Kind.BoneWeight, SceneTrack.Type.Float32, 4, 1 << 16, Units.Unspecified, Reference.Unspecified);
                 Bounds = Object.AddObjectTypeComponentEx2(Type, Kind.Size, SceneTrack.Type.Float32, 3, 2, Units.Unspecified, Reference.Unspecified);
                 SubMesh = Object.AddObjectTypeComponentEx2(Type, Kind.Geometry, SceneTrack.Type.Uint32, 1, 8, Units.Unspecified, Reference.Unspecified);
+            }
+
+            public static Vector4 ToVector4(Color color)
+            {
+                return new Vector4(color.r,color.g, color.b, color.a);
             }
         }
 
