@@ -137,14 +137,14 @@ namespace SceneTrack.Unity
             public static uint Type = 0;
             public static uint Name = 0;
             public static uint Shader = 0;
-            public static uint Image = 0;
+            public static uint MainTexture = 0;
 
             public static void Register()
             {
                 Type = Object.CreateObjectTypeEx(Frequency.Static, 203);
                 Name = Object.AddObjectTypeComponentEx2(Type, Kind.Named, SceneTrack.Type.CString, 1, 1, Units.Unspecified, Reference.Unspecified);
                 Shader = Object.AddObjectTypeComponentEx2(Type, Kind.Surface, SceneTrack.Type.CString, 1, 1, Units.Unspecified, Reference.Unspecified);
-                Image = Object.AddObjectTypeComponentEx2(Type, Kind.Image, SceneTrack.Type.CString, 1, 1, Units.Unspecified, Reference.ExternalAsset);
+                MainTexture = Object.AddObjectTypeComponentEx2(Type, Kind.Image, SceneTrack.Type.CString, 1, 1, Units.Unspecified, Reference.ExternalAsset);
             }
         }
     }
