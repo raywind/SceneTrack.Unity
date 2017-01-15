@@ -144,8 +144,7 @@ namespace SceneTrack.Unity
                 Type = Object.CreateObjectTypeEx(Frequency.Static, 203);
                 Name = Object.AddObjectTypeComponentEx2(Type, Kind.Named, SceneTrack.Type.CString, 1, 1, Units.Unspecified, Reference.Unspecified);
                 Shader = Object.AddObjectTypeComponentEx2(Type, Kind.Surface, SceneTrack.Type.CString, 1, 1, Units.Unspecified, Reference.Unspecified);
-                // Reference will be ExternalAsset
-                Image = Object.AddObjectTypeComponentEx2(Type, Kind.Image, SceneTrack.Type.CString, 1, 1, Units.Unspecified, Reference.Unspecified);
+                Image = Object.AddObjectTypeComponentEx2(Type, Kind.Image, SceneTrack.Type.CString, 1, 1, Units.Unspecified, Reference.ExternalAsset);
             }
         }
     }

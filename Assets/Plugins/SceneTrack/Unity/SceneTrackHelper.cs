@@ -22,6 +22,10 @@ namespace SceneTrack.Unity
             {
                 return (uint) sizeof(uint) * elements * arraySize;
             }
+            else if (objectType == typeof(byte))
+            {
+                return sizeof(byte) * elements * arraySize;
+            }
             return 0;
         }
     }

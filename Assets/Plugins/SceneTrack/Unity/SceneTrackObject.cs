@@ -301,26 +301,37 @@ namespace SceneTrack.Unity
                 }
 
                 // Assign Bones
-                // - using index0 none of the others?
-                // - not sure on that one
-                int cachedBoneLength = cachedMesh.boneWeights.Length;
-                int[] boneIndexes = new int[cachedBoneLength];
-                float[] boneWeights = new float[cachedBoneLength];
+                var cachedBoneLength = cachedMesh.boneWeights.Length;
+                var boneIndexes = new byte[cachedBoneLength * 4];
+                var boneWeights = new Vector4[cachedBoneLength];
 
-                for (int i = 0; i < cachedBoneLength; i++)
+                for (var i = 0; i < cachedBoneLength; i++)
                 {
-                    boneIndexes[i] = cachedMesh.boneWeights[i].boneIndex0;
-                    boneWeights[i] = cachedMesh.boneWeights[i].weight0;
+                    var indexLocation = i * 4;
+                    boneIndexes[indexLocation + 0] = (byte)cachedMesh.boneWeights[i].boneIndex0;
+                    boneIndexes[indexLocation + 1] = (byte)cachedMesh.boneWeights[i].boneIndex1;
+                    boneIndexes[indexLocation + 2] = (byte)cachedMesh.boneWeights[i].boneIndex2;
+                    boneIndexes[indexLocation + 3] = (byte)cachedMesh.boneWeights[i].boneIndex3;
+
+                    boneWeights[i] = new Vector4(cachedMesh.boneWeights[i].weight0, cachedMesh.boneWeights[i].weight1,
+                        cachedMesh.boneWeights[i].weight2, cachedMesh.boneWeights[i].weight3);
                 }
                 var boneIndexHandle = GCHandle.Alloc(boneIndexes, GCHandleType.Pinned);
                 var boneIndexPointer = boneIndexHandle.AddrOfPinnedObject();
-                Object.SetValue_p_float32(_meshHandle, Classes.Mesh.BoneWeightIndex, boneIndexPointer, (uint)cachedBoneLength, Helper.GetTypeMemorySize(typeof(int), (uint)cachedBoneLength, 1));
+                Object.SetValue_p_float32(_meshHandle, Classes.Mesh.BoneWeightIndex, boneIndexPointer, (uint)cachedBoneLength * 4, Helper.GetTypeMemorySize(typeof(byte), (uint)cachedBoneLength * 4, 1));
                 boneIndexHandle.Free();
 
                 var boneWeightsHandle = GCHandle.Alloc(boneWeights, GCHandleType.Pinned);
                 var boneWeightsPointer = boneWeightsHandle.AddrOfPinnedObject();
-                Object.SetValue_p_float32(_meshHandle, Classes.Mesh.BoneWeightWeight, boneWeightsPointer, (uint)cachedBoneLength, Helper.GetTypeMemorySize(typeof(float), (uint)cachedBoneLength, 1));
+                Object.SetValue_p_float32(_meshHandle, Classes.Mesh.BoneWeightWeight, boneWeightsPointer, (uint)cachedBoneLength, Helper.GetTypeMemorySize(typeof(float), (uint)cachedBoneLength, 4));
                 boneIndexHandle.Free();
+
+                // Assign Pose
+                // TODO: Implement
+
+
+                // Assign Bone Trasnform Stuff
+                // TODO: Robin?
 
                 // Assign Bounds
                 var bounds = new Vector3[2];
