@@ -333,15 +333,13 @@ namespace SceneTrack.Unity
                         (uint) cachedBoneLength, Helper.GetTypeMemorySize(typeof(float), (uint) cachedBoneLength, 4));
                     boneIndexHandle.Free();
 
-                    // Assign Pose
-                    // TODO: Implement
+                    // Assign Bind Pose
+                    // TODO: They seem to use this as a prerotation in the FBX
 
 
                     // Assign Bone Trasnform Stuff
                     // TODO: Robin?
                 }
-
-
 
                 // Assign Bounds
                 var bounds = new Vector3[2];
