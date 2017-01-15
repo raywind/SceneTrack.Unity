@@ -307,6 +307,14 @@ namespace SceneTrack.Unity
                 //            public static uint BoneWeightIndex = 0;
 
                 // Assign Bounds
+                Vector3[] bounds = new Vector3[2];
+                bounds[0] = _meshRenderer.bounds.min;
+                bounds[1] = _meshRenderer.bounds.max;
+                var boundsHandle = GCHandle.Alloc(bounds, GCHandleType.Pinned);
+                var boundsPointer = boundsHandle.AddrOfPinnedObject();
+                Object.SetValue_p_float32(_meshHandle, Classes.Mesh.Bounds, boundsPointer, 2, Helper.GetTypeMemorySize(typeof(float), 2, 3));
+                boundsHandle.Free();
+
 
                 // Create Sub Meshes (If we have any!)
                 if (cachedMesh.subMeshCount > 0)
