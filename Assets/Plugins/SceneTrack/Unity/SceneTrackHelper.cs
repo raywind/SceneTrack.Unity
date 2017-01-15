@@ -8,23 +8,23 @@ namespace SceneTrack.Unity
 {
     public static class Helper
     {
-        public static uint GetTypeMemorySize(global::System.Type objectType, uint elements, uint arraySize)
+        public static uint GetTypeMemorySize(global::System.Type objectType, uint elements)
         {
             if (objectType == typeof(float))
             {
-                return (uint) sizeof(float) * elements * arraySize;
+                return (uint) sizeof(float) * elements;
             }
             else if (objectType == typeof(int))
             {
-                return (uint) sizeof(int) * elements * arraySize;
+                return (uint) sizeof(int) * elements;
             }
             else if (objectType == typeof(uint))
             {
-                return (uint) sizeof(uint) * elements * arraySize;
+                return (uint) sizeof(uint) * elements;
             }
             else if (objectType == typeof(byte))
             {
-                return sizeof(byte) * elements * arraySize;
+                return sizeof(byte) * elements;
             }
             return 0;
         }

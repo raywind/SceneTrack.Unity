@@ -165,7 +165,7 @@ namespace SceneTrack.Unity
             var componentArray = _componentHandles.ToArray();
             var componentsHandle = GCHandle.Alloc(componentArray, GCHandleType.Pinned);
             var componentsPointer = componentsHandle.AddrOfPinnedObject();
-            SceneTrack.Object.SetValue_p_uint32(_handle, Classes.GameObject.Components, componentsPointer, (uint)_componentHandles.Count, Helper.GetTypeMemorySize(typeof(uint), (uint)_componentHandles.Count, 1));
+            SceneTrack.Object.SetValue_p_uint32(_handle, Classes.GameObject.Components, componentsPointer, (uint)_componentHandles.Count, Helper.GetTypeMemorySize(typeof(uint), 1));
             componentsHandle.Free();
 
 
@@ -234,19 +234,19 @@ namespace SceneTrack.Unity
                 // Handle Vertices
                 var verticesHandle = GCHandle.Alloc(cachedMesh.vertices, GCHandleType.Pinned);
                 var verticesPointer = verticesHandle.AddrOfPinnedObject();
-                Object.SetValue_p_float32(_meshHandle, Classes.Mesh.Vertices, verticesPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 3));
+                Object.SetValue_p_float32(_meshHandle, Classes.Mesh.Vertices, verticesPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), 3));
                 verticesHandle.Free();
 
                 // Handle Normals
                 var normalsHandle = GCHandle.Alloc(cachedMesh.normals, GCHandleType.Pinned);
                 var normalsPointer = normalsHandle.AddrOfPinnedObject();
-                Object.SetValue_p_float32(_meshHandle, Classes.Mesh.Normals, normalsPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 3));
+                Object.SetValue_p_float32(_meshHandle, Classes.Mesh.Normals, normalsPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), 3));
                 normalsHandle.Free();
 
                 // Handle Tangents (Vector4)
                 var tangentsHandle = GCHandle.Alloc(cachedMesh.tangents, GCHandleType.Pinned);
                 var tangentsPointer = tangentsHandle.AddrOfPinnedObject();
-                Object.SetValue_p_float32(_meshHandle, Classes.Mesh.Tangents, tangentsPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 4));
+                Object.SetValue_p_float32(_meshHandle, Classes.Mesh.Tangents, tangentsPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), 4));
                 tangentsHandle.Free();
 
                 // Handle Colors (Vector4)
@@ -260,7 +260,7 @@ namespace SceneTrack.Unity
                     }
                     var colorsHandle = GCHandle.Alloc(colorsArray, GCHandleType.Pinned);
                     var colorsPointer = colorsHandle.AddrOfPinnedObject();
-                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.Colors, colorsPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 4));
+                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.Colors, colorsPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), 4));
                     colorsHandle.Free();
                 }
 
@@ -269,7 +269,7 @@ namespace SceneTrack.Unity
                 {
                     var uvHandle = GCHandle.Alloc(cachedMesh.uv, GCHandleType.Pinned);
                     var uvPointer = uvHandle.AddrOfPinnedObject();
-                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.UV, uvPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 2));
+                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.UV, uvPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), 2));
                     uvHandle.Free();
                 }
 
@@ -278,7 +278,7 @@ namespace SceneTrack.Unity
                 {
                     var uv2Handle = GCHandle.Alloc(cachedMesh.uv2, GCHandleType.Pinned);
                     var uv2Pointer = uv2Handle.AddrOfPinnedObject();
-                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.UV2, uv2Pointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 2));
+                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.UV2, uv2Pointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), 2));
                     uv2Handle.Free();
                 }
 
@@ -287,7 +287,7 @@ namespace SceneTrack.Unity
                 {
                     var uv3Handle = GCHandle.Alloc(cachedMesh.uv3, GCHandleType.Pinned);
                     var uv3Pointer = uv3Handle.AddrOfPinnedObject();
-                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.UV3, uv3Pointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 2));
+                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.UV3, uv3Pointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), 2));
                     uv3Handle.Free();
                 }
 
@@ -296,7 +296,7 @@ namespace SceneTrack.Unity
                 {
                     var uv4Handle = GCHandle.Alloc(cachedMesh.uv4, GCHandleType.Pinned);
                     var uv4Pointer = uv4Handle.AddrOfPinnedObject();
-                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.UV4, uv4Pointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 2));
+                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.UV4, uv4Pointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), 2));
                     uv4Handle.Free();
                 }
 
@@ -318,22 +318,30 @@ namespace SceneTrack.Unity
 
                         boneWeights[i] = new Vector4(cachedMesh.boneWeights[i].weight0,
                             cachedMesh.boneWeights[i].weight1,
-                            cachedMesh.boneWeights[i].weight2, cachedMesh.boneWeights[i].weight3);
+                            cachedMesh.boneWeights[i].weight2,
+                            cachedMesh.boneWeights[i].weight3);
                     }
                     var boneIndexHandle = GCHandle.Alloc(boneIndexes, GCHandleType.Pinned);
                     var boneIndexPointer = boneIndexHandle.AddrOfPinnedObject();
-                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.BoneWeightIndex, boneIndexPointer,
-                        (uint) cachedBoneLength * 4,
-                        Helper.GetTypeMemorySize(typeof(byte), (uint) cachedBoneLength * 4, 1));
+                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.BoneWeightIndex, boneIndexPointer, (uint) cachedBoneLength * 4, Helper.GetTypeMemorySize(typeof(byte), 1));
                     boneIndexHandle.Free();
 
                     var boneWeightsHandle = GCHandle.Alloc(boneWeights, GCHandleType.Pinned);
                     var boneWeightsPointer = boneWeightsHandle.AddrOfPinnedObject();
                     Object.SetValue_p_float32(_meshHandle, Classes.Mesh.BoneWeightWeight, boneWeightsPointer,
-                        (uint) cachedBoneLength, Helper.GetTypeMemorySize(typeof(float), (uint) cachedBoneLength, 4));
+                        (uint) cachedBoneLength, Helper.GetTypeMemorySize(typeof(float), 4));
                     boneIndexHandle.Free();
 
-                    // Assign Bind Pose
+                    // Assign Bind Pose (Using float array, simpler)
+                    var cachedPoseLength = cachedMesh.bindposes.Length;
+                    var bindPose = new float[cachedPoseLength * 16];
+                    for (int i = 0; i < cachedPoseLength; i++)
+                    {
+                        var indexLocation = i * 4;
+
+
+                    }
+
                     // TODO: They seem to use this as a prerotation in the FBX
 
 
@@ -347,7 +355,7 @@ namespace SceneTrack.Unity
                 bounds[1] = _meshRenderer.bounds.max;
                 var boundsHandle = GCHandle.Alloc(bounds, GCHandleType.Pinned);
                 var boundsPointer = boundsHandle.AddrOfPinnedObject();
-                Object.SetValue_p_float32(_meshHandle, Classes.Mesh.Bounds, boundsPointer, 2, Helper.GetTypeMemorySize(typeof(float), 2, 3));
+                Object.SetValue_p_float32(_meshHandle, Classes.Mesh.Bounds, boundsPointer, 2, Helper.GetTypeMemorySize(typeof(float), 3));
                 boundsHandle.Free();
 
                 // Create Sub Meshes (If we have any!)
@@ -366,7 +374,7 @@ namespace SceneTrack.Unity
 
                         var newSubMeshHandle = GCHandle.Alloc(subMeshIndices, GCHandleType.Pinned);
                         var newSubMeshPointer = newSubMeshHandle.AddrOfPinnedObject();
-                        Object.SetValue_p_int32(newSubMesh, Classes.SubMesh.Indexes, newSubMeshPointer, cachedIndicesLength, Helper.GetTypeMemorySize(typeof(int), cachedIndicesLength, 1));
+                        Object.SetValue_p_int32(newSubMesh, Classes.SubMesh.Indexes, newSubMeshPointer, cachedIndicesLength, Helper.GetTypeMemorySize(typeof(int), 1));
                         newSubMeshHandle.Free();
 
                         // Assign Submesh Index
@@ -376,7 +384,7 @@ namespace SceneTrack.Unity
                     // Assign index to submesh on mesh
                     var subMeshListHandle = GCHandle.Alloc(subMeshPointers, GCHandleType.Pinned);
                     var subMeshListPointer = subMeshListHandle.AddrOfPinnedObject();
-                    Object.SetValue_p_uint32(_meshHandle, Classes.Mesh.SubMesh, subMeshListPointer, (uint)cachedMesh.subMeshCount, Helper.GetTypeMemorySize(typeof(uint), (uint)cachedMesh.subMeshCount, 1));
+                    Object.SetValue_p_uint32(_meshHandle, Classes.Mesh.SubMesh, subMeshListPointer, (uint)cachedMesh.subMeshCount, Helper.GetTypeMemorySize(typeof(uint), 1));
                     subMeshListHandle.Free();
                 }
 
@@ -392,7 +400,7 @@ namespace SceneTrack.Unity
             // Assign Materials (shared references as found)
             var meshMaterialsHandle = GCHandle.Alloc(_materialHandles, GCHandleType.Pinned);
             var meshMaterialsPointer = meshMaterialsHandle.AddrOfPinnedObject();
-            SceneTrack.Object.SetValue_p_uint32(_meshRendererHandle, Classes.StandardMeshRenderer.Materials, meshMaterialsPointer, (uint)_materialHandles.Length, Helper.GetTypeMemorySize(typeof(uint), (uint) _materialHandles.Length, 1));
+            SceneTrack.Object.SetValue_p_uint32(_meshRendererHandle, Classes.StandardMeshRenderer.Materials, meshMaterialsPointer, (uint)_materialHandles.Length, Helper.GetTypeMemorySize(typeof(uint), 1));
             meshMaterialsHandle.Free();
 
 
