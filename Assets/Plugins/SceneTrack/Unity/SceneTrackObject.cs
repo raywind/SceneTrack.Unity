@@ -162,7 +162,7 @@ namespace SceneTrack.Unity
             }
 
             // Add components to game object, transform not needed
-            uint[] componentArray = _componentHandles.ToArray();
+            var componentArray = _componentHandles.ToArray();
             var componentsHandle = GCHandle.Alloc(componentArray, GCHandleType.Pinned);
             var componentsPointer = componentsHandle.AddrOfPinnedObject();
             SceneTrack.Object.SetValue_p_uint32(_handle, Classes.GameObject.Components, componentsPointer, (uint)_componentHandles.Count, Helper.GetTypeMemorySize(typeof(uint), (uint)_componentHandles.Count, 1));
@@ -301,13 +301,29 @@ namespace SceneTrack.Unity
                 }
 
                 // Assign Bones
-                // TODO: BONES :/ WTF
+                // - using index0 none of the others?
+                // - not sure on that one
+                int cachedBoneLength = cachedMesh.boneWeights.Length;
+                int[] boneIndexes = new int[cachedBoneLength];
+                float[] boneWeights = new float[cachedBoneLength];
 
-                //            public static uint BoneWeightWeight = 0;
-                //            public static uint BoneWeightIndex = 0;
+                for (int i = 0; i < cachedBoneLength; i++)
+                {
+                    boneIndexes[i] = cachedMesh.boneWeights[i].boneIndex0;
+                    boneWeights[i] = cachedMesh.boneWeights[i].weight0;
+                }
+                var boneIndexHandle = GCHandle.Alloc(boneIndexes, GCHandleType.Pinned);
+                var boneIndexPointer = boneIndexHandle.AddrOfPinnedObject();
+                Object.SetValue_p_float32(_meshHandle, Classes.Mesh.BoneWeightIndex, boneIndexPointer, (uint)cachedBoneLength, Helper.GetTypeMemorySize(typeof(int), (uint)cachedBoneLength, 1));
+                boneIndexHandle.Free();
+
+                var boneWeightsHandle = GCHandle.Alloc(boneWeights, GCHandleType.Pinned);
+                var boneWeightsPointer = boneWeightsHandle.AddrOfPinnedObject();
+                Object.SetValue_p_float32(_meshHandle, Classes.Mesh.BoneWeightWeight, boneWeightsPointer, (uint)cachedBoneLength, Helper.GetTypeMemorySize(typeof(float), (uint)cachedBoneLength, 1));
+                boneIndexHandle.Free();
 
                 // Assign Bounds
-                Vector3[] bounds = new Vector3[2];
+                var bounds = new Vector3[2];
                 bounds[0] = _meshRenderer.bounds.min;
                 bounds[1] = _meshRenderer.bounds.max;
                 var boundsHandle = GCHandle.Alloc(bounds, GCHandleType.Pinned);
@@ -315,20 +331,19 @@ namespace SceneTrack.Unity
                 Object.SetValue_p_float32(_meshHandle, Classes.Mesh.Bounds, boundsPointer, 2, Helper.GetTypeMemorySize(typeof(float), 2, 3));
                 boundsHandle.Free();
 
-
                 // Create Sub Meshes (If we have any!)
                 if (cachedMesh.subMeshCount > 0)
                 {
-                    uint[] subMeshPointers = new uint[cachedMesh.subMeshCount];
+                    var subMeshPointers = new uint[cachedMesh.subMeshCount];
 
 
-                    for (int i = 0; i < cachedMesh.subMeshCount; i++)
+                    for (var i = 0; i < cachedMesh.subMeshCount; i++)
                     {
-                        int[] subMeshIndices = cachedMesh.GetIndices(i);
-                        uint cachedIndicesLength = (uint)subMeshIndices.Length;
+                        var subMeshIndices = cachedMesh.GetIndices(i);
+                        var cachedIndicesLength = (uint)subMeshIndices.Length;
 
                         // Create component
-                        uint newSubMesh = SceneTrack.Object.CreateObject(Classes.SubMesh.Type);
+                        var newSubMesh = SceneTrack.Object.CreateObject(Classes.SubMesh.Type);
 
                         var newSubMeshHandle = GCHandle.Alloc(subMeshIndices, GCHandleType.Pinned);
                         var newSubMeshPointer = newSubMeshHandle.AddrOfPinnedObject();
