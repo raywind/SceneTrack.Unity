@@ -404,7 +404,7 @@ namespace SceneTrack.Unity
                     // Assign Bind Pose (Using float array, simpler)
                     var cachedPoseLength = cachedMesh.bindposes.Length;
                     var bindPose = new float[cachedPoseLength * 16];
-                    for (int i = 0; i < cachedPoseLength; i++)
+                    for (var i = 0; i < cachedPoseLength; i++)
                     {
                         var indexLocation = i * 16;
                         bindPose[indexLocation] = cachedMesh.bindposes[i].m00;
