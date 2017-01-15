@@ -208,6 +208,10 @@ namespace SceneTrack.Unity
             uint meshHandle = 0;
             var cachedMesh = _meshFilter.sharedMesh;
 
+
+
+
+
             if (!System.SharedMeshes.TryGetValue(cachedMesh, out meshHandle))
             {
                 meshHandle = Object.CreateObject(Classes.Mesh.Type);
@@ -215,31 +219,25 @@ namespace SceneTrack.Unity
                 Object.SetValue_string(meshHandle, Classes.Mesh.Name, new StringBuilder(cachedMesh.name),
                     (uint) cachedMesh.name.Length);
 
-                // Cache lengths
+                // Cache length
                 var cachedLength = (uint) cachedMesh.vertices.Length;
-                var cachedVector2Length = cachedLength * 2;
-                var cachedVector3Length = cachedLength * 3;
-                var cachedVector4Length = cachedLength * 4;
 
                 // Handle Vertices
                 var verticesHandle = GCHandle.Alloc(cachedMesh.vertices, GCHandleType.Pinned);
                 var verticesPointer = verticesHandle.AddrOfPinnedObject();
-                // TODO: Stride?
-                Object.SetValue_p_float32(meshHandle, Classes.Mesh.Vertices, verticesPointer, cachedVector3Length, 0);
+                Object.SetValue_p_float32(meshHandle, Classes.Mesh.Vertices, verticesPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 3));
                 verticesHandle.Free();
 
                 // Handle Normals
                 var normalsHandle = GCHandle.Alloc(cachedMesh.normals, GCHandleType.Pinned);
                 var normalsPointer = normalsHandle.AddrOfPinnedObject();
-                // TODO: Stride?
-                Object.SetValue_p_float32(meshHandle, Classes.Mesh.Normals, normalsPointer, cachedVector3Length, 0);
+                Object.SetValue_p_float32(meshHandle, Classes.Mesh.Normals, normalsPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 3));
                 normalsHandle.Free();
 
                 // Handle Tangents (Vector4)
                 var tangentsHandle = GCHandle.Alloc(cachedMesh.tangents, GCHandleType.Pinned);
                 var tangentsPointer = tangentsHandle.AddrOfPinnedObject();
-                // TODO: Stride?
-                Object.SetValue_p_float32(meshHandle, Classes.Mesh.Normals, tangentsPointer, cachedVector4Length, 0);
+                Object.SetValue_p_float32(meshHandle, Classes.Mesh.Normals, tangentsPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 4));
                 tangentsHandle.Free();
 
                 // Handle Colors (Vector4)
@@ -253,8 +251,7 @@ namespace SceneTrack.Unity
                     }
                     var colorsHandle = GCHandle.Alloc(colorsArray, GCHandleType.Pinned);
                     var colorsPointer = colorsHandle.AddrOfPinnedObject();
-                    // TODO: Stride?
-                    Object.SetValue_p_float32(meshHandle, Classes.Mesh.Colors, colorsPointer, cachedVector4Length, 0);
+                    Object.SetValue_p_float32(meshHandle, Classes.Mesh.Colors, colorsPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 4));
                     colorsHandle.Free();
                 }
 
@@ -263,8 +260,7 @@ namespace SceneTrack.Unity
                 {
                     var uvHandle = GCHandle.Alloc(cachedMesh.uv, GCHandleType.Pinned);
                     var uvPointer = uvHandle.AddrOfPinnedObject();
-                    // TODO: Stride?
-                    Object.SetValue_p_float32(meshHandle, Classes.Mesh.UV, uvPointer, cachedVector2Length, 0);
+                    Object.SetValue_p_float32(meshHandle, Classes.Mesh.UV, uvPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 2));
                     uvHandle.Free();
                 }
 
@@ -273,8 +269,7 @@ namespace SceneTrack.Unity
                 {
                     var uv2Handle = GCHandle.Alloc(cachedMesh.uv2, GCHandleType.Pinned);
                     var uv2Pointer = uv2Handle.AddrOfPinnedObject();
-                    // TODO: Stride?
-                    Object.SetValue_p_float32(meshHandle, Classes.Mesh.UV2, uv2Pointer, cachedVector2Length, 0);
+                    Object.SetValue_p_float32(meshHandle, Classes.Mesh.UV2, uv2Pointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 2));
                     uv2Handle.Free();
                 }
 
@@ -283,8 +278,7 @@ namespace SceneTrack.Unity
                 {
                     var uv3Handle = GCHandle.Alloc(cachedMesh.uv3, GCHandleType.Pinned);
                     var uv3Pointer = uv3Handle.AddrOfPinnedObject();
-                    // TODO: Stride?
-                    Object.SetValue_p_float32(meshHandle, Classes.Mesh.UV3, uv3Pointer, cachedVector2Length, 0);
+                    Object.SetValue_p_float32(meshHandle, Classes.Mesh.UV3, uv3Pointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 2));
                     uv3Handle.Free();
                 }
 
@@ -293,8 +287,7 @@ namespace SceneTrack.Unity
                 {
                     var uv4Handle = GCHandle.Alloc(cachedMesh.uv4, GCHandleType.Pinned);
                     var uv4Pointer = uv4Handle.AddrOfPinnedObject();
-                    // TODO: Stride?
-                    Object.SetValue_p_float32(meshHandle, Classes.Mesh.UV4, uv4Pointer, cachedVector2Length, 0);
+                    Object.SetValue_p_float32(meshHandle, Classes.Mesh.UV4, uv4Pointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 2));
                     uv4Handle.Free();
                 }
 
@@ -302,10 +295,6 @@ namespace SceneTrack.Unity
 
                 System.SharedMeshes.Add(cachedMesh, meshHandle);
             }
-
-
-
-
 //            public static uint BoneWeightWeight = 0;
 //            public static uint BoneWeightIndex = 0;
 //            public static uint Bounds = 0;
@@ -327,6 +316,8 @@ namespace SceneTrack.Unity
 //            public static uint Parent = 0;
 
             // TODO : How do i assign the array ? for components?
+
+
             //Object.SetValue_uint32(_handle, Classes.GameObject.);
         }
 
