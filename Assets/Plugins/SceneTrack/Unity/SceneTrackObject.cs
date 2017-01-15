@@ -50,6 +50,7 @@ namespace SceneTrack.Unity
         private uint _transformParentHandle;
 
         private uint[] _materialHandles;
+        private List<uint> _componentHandles;
         private uint _meshHandle;
 
         #region Unity Specific Events
@@ -147,6 +148,9 @@ namespace SceneTrack.Unity
             _handle = Object.CreateObject(Classes.GameObject.Type);
 
 
+            // Clear Component Cache
+            _componentHandles = new List<uint>();
+
             // Register Components
             if ( TrackTransform )
             {
@@ -156,6 +160,14 @@ namespace SceneTrack.Unity
             {
                 InitMeshRenderer();
             }
+
+            // Add components to game object, transform not needed
+            uint[] componentArray = _componentHandles.ToArray();
+            var componentsHandle = GCHandle.Alloc(componentArray, GCHandleType.Pinned);
+            var componentsPointer = componentsHandle.AddrOfPinnedObject();
+            SceneTrack.Object.SetValue_p_uint32(_handle, Classes.GameObject.Components, componentsPointer, (uint)_componentHandles.Count, Helper.GetTypeMemorySize(typeof(uint), (uint)_componentHandles.Count, 1));
+            componentsHandle.Free();
+
 
             // Set flag as initialized
             _initialized = true;
@@ -205,18 +217,15 @@ namespace SceneTrack.Unity
             _materialHandles = materialHandles.ToArray();
 
             // Create Mesh
-            uint meshHandle = 0;
+            _meshHandle = 0;
             var cachedMesh = _meshFilter.sharedMesh;
 
 
-
-
-
-            if (!System.SharedMeshes.TryGetValue(cachedMesh, out meshHandle))
+            if (!System.SharedMeshes.TryGetValue(cachedMesh, out _meshHandle))
             {
-                meshHandle = Object.CreateObject(Classes.Mesh.Type);
+                _meshHandle = Object.CreateObject(Classes.Mesh.Type);
 
-                Object.SetValue_string(meshHandle, Classes.Mesh.Name, new StringBuilder(cachedMesh.name),
+                Object.SetValue_string(_meshHandle, Classes.Mesh.Name, new StringBuilder(cachedMesh.name),
                     (uint) cachedMesh.name.Length);
 
                 // Cache length
@@ -225,19 +234,19 @@ namespace SceneTrack.Unity
                 // Handle Vertices
                 var verticesHandle = GCHandle.Alloc(cachedMesh.vertices, GCHandleType.Pinned);
                 var verticesPointer = verticesHandle.AddrOfPinnedObject();
-                Object.SetValue_p_float32(meshHandle, Classes.Mesh.Vertices, verticesPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 3));
+                Object.SetValue_p_float32(_meshHandle, Classes.Mesh.Vertices, verticesPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 3));
                 verticesHandle.Free();
 
                 // Handle Normals
                 var normalsHandle = GCHandle.Alloc(cachedMesh.normals, GCHandleType.Pinned);
                 var normalsPointer = normalsHandle.AddrOfPinnedObject();
-                Object.SetValue_p_float32(meshHandle, Classes.Mesh.Normals, normalsPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 3));
+                Object.SetValue_p_float32(_meshHandle, Classes.Mesh.Normals, normalsPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 3));
                 normalsHandle.Free();
 
                 // Handle Tangents (Vector4)
                 var tangentsHandle = GCHandle.Alloc(cachedMesh.tangents, GCHandleType.Pinned);
                 var tangentsPointer = tangentsHandle.AddrOfPinnedObject();
-                Object.SetValue_p_float32(meshHandle, Classes.Mesh.Normals, tangentsPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 4));
+                Object.SetValue_p_float32(_meshHandle, Classes.Mesh.Tangents, tangentsPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 4));
                 tangentsHandle.Free();
 
                 // Handle Colors (Vector4)
@@ -251,7 +260,7 @@ namespace SceneTrack.Unity
                     }
                     var colorsHandle = GCHandle.Alloc(colorsArray, GCHandleType.Pinned);
                     var colorsPointer = colorsHandle.AddrOfPinnedObject();
-                    Object.SetValue_p_float32(meshHandle, Classes.Mesh.Colors, colorsPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 4));
+                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.Colors, colorsPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 4));
                     colorsHandle.Free();
                 }
 
@@ -260,7 +269,7 @@ namespace SceneTrack.Unity
                 {
                     var uvHandle = GCHandle.Alloc(cachedMesh.uv, GCHandleType.Pinned);
                     var uvPointer = uvHandle.AddrOfPinnedObject();
-                    Object.SetValue_p_float32(meshHandle, Classes.Mesh.UV, uvPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 2));
+                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.UV, uvPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 2));
                     uvHandle.Free();
                 }
 
@@ -269,7 +278,7 @@ namespace SceneTrack.Unity
                 {
                     var uv2Handle = GCHandle.Alloc(cachedMesh.uv2, GCHandleType.Pinned);
                     var uv2Pointer = uv2Handle.AddrOfPinnedObject();
-                    Object.SetValue_p_float32(meshHandle, Classes.Mesh.UV2, uv2Pointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 2));
+                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.UV2, uv2Pointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 2));
                     uv2Handle.Free();
                 }
 
@@ -278,7 +287,7 @@ namespace SceneTrack.Unity
                 {
                     var uv3Handle = GCHandle.Alloc(cachedMesh.uv3, GCHandleType.Pinned);
                     var uv3Pointer = uv3Handle.AddrOfPinnedObject();
-                    Object.SetValue_p_float32(meshHandle, Classes.Mesh.UV3, uv3Pointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 2));
+                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.UV3, uv3Pointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 2));
                     uv3Handle.Free();
                 }
 
@@ -287,72 +296,66 @@ namespace SceneTrack.Unity
                 {
                     var uv4Handle = GCHandle.Alloc(cachedMesh.uv4, GCHandleType.Pinned);
                     var uv4Pointer = uv4Handle.AddrOfPinnedObject();
-                    Object.SetValue_p_float32(meshHandle, Classes.Mesh.UV4, uv4Pointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 2));
+                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.UV4, uv4Pointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), cachedLength, 2));
                     uv4Handle.Free();
                 }
 
-                // Bones
+                // Assign Bones
                 // TODO: BONES :/ WTF
 
-                System.SharedMeshes.Add(cachedMesh, meshHandle);
-            }
-//            public static uint BoneWeightWeight = 0;
-//            public static uint BoneWeightIndex = 0;
-//            public static uint Bounds = 0;
-//            public static uint SubMesh = 0;
+                //            public static uint BoneWeightWeight = 0;
+                //            public static uint BoneWeightIndex = 0;
 
+                // Assign Bounds
 
-
-
-            // Create Sub Meshes (If we have any!)
-            if (cachedMesh.subMeshCount > 0)
-            {
-                uint[] subMeshPointers = new uint[cachedMesh.subMeshCount];
-
-
-                for (int i = 0; i < cachedMesh.subMeshCount; i++)
+                // Create Sub Meshes (If we have any!)
+                if (cachedMesh.subMeshCount > 0)
                 {
-                    int[] subMeshIndices = cachedMesh.GetIndices(i);
-                    uint cachedIndicesLength = (uint)subMeshIndices.Length;
+                    uint[] subMeshPointers = new uint[cachedMesh.subMeshCount];
 
-                    // Create component
-                    uint newSubMesh = SceneTrack.Object.CreateObject(Classes.SubMesh.Type);
 
-                    var newSubMeshHandle = GCHandle.Alloc(subMeshIndices, GCHandleType.Pinned);
-                    var newSubMeshPointer = newSubMeshHandle.AddrOfPinnedObject();
-                    Object.SetValue_p_int32(newSubMesh, Classes.SubMesh.Indexes, newSubMeshPointer, cachedIndicesLength, Helper.GetTypeMemorySize(typeof(int), cachedIndicesLength, 1));
-                    newSubMeshHandle.Free();
+                    for (int i = 0; i < cachedMesh.subMeshCount; i++)
+                    {
+                        int[] subMeshIndices = cachedMesh.GetIndices(i);
+                        uint cachedIndicesLength = (uint)subMeshIndices.Length;
 
-                    // Assign Submesh Index
-                    subMeshPointers[i] = newSubMesh;
+                        // Create component
+                        uint newSubMesh = SceneTrack.Object.CreateObject(Classes.SubMesh.Type);
+
+                        var newSubMeshHandle = GCHandle.Alloc(subMeshIndices, GCHandleType.Pinned);
+                        var newSubMeshPointer = newSubMeshHandle.AddrOfPinnedObject();
+                        Object.SetValue_p_int32(newSubMesh, Classes.SubMesh.Indexes, newSubMeshPointer, cachedIndicesLength, Helper.GetTypeMemorySize(typeof(int), cachedIndicesLength, 1));
+                        newSubMeshHandle.Free();
+
+                        // Assign Submesh Index
+                        subMeshPointers[i] = newSubMesh;
+                    }
+
+                    // Assign index to submesh on mesh
+                    var subMeshListHandle = GCHandle.Alloc(subMeshPointers, GCHandleType.Pinned);
+                    var subMeshListPointer = subMeshListHandle.AddrOfPinnedObject();
+                    Object.SetValue_p_uint32(_meshHandle, Classes.Mesh.SubMesh, subMeshListPointer, (uint)cachedMesh.subMeshCount, Helper.GetTypeMemorySize(typeof(uint), (uint)cachedMesh.subMeshCount, 1));
+                    subMeshListHandle.Free();
                 }
 
-                // Assign index to submesh on mesh
-                var subMeshListHandle = GCHandle.Alloc(subMeshPointers, GCHandleType.Pinned);
-                var subMeshListPointer = subMeshListHandle.AddrOfPinnedObject();
-                Object.SetValue_p_uint32(meshHandle, Classes.Mesh.SubMesh, subMeshListPointer, (uint)cachedMesh.subMeshCount, Helper.GetTypeMemorySize(typeof(uint), (uint)cachedMesh.subMeshCount, 1));
-                subMeshListHandle.Free();
+                System.SharedMeshes.Add(cachedMesh, _meshHandle);
             }
-
-
-
 
             // Create Renderer
             _meshRendererHandle = SceneTrack.Object.CreateObject(Classes.StandardMeshRenderer.Type);
+
+            // Assign Mesh (shared reference if found) to MeshRenderer
             Object.SetValue_uint32(_meshRendererHandle, Classes.StandardMeshRenderer.Mesh, _meshHandle);
 
-
-            // use stride to assign materials index array
-            // assign the mesh .
-
-
-//            public static uint Materials = 0; - this is an array
-//            public static uint Parent = 0;
-
-            // TODO : How do i assign the array ? for components?
+            // Assign Materials (shared references as found)
+            var meshMaterialsHandle = GCHandle.Alloc(_materialHandles, GCHandleType.Pinned);
+            var meshMaterialsPointer = meshMaterialsHandle.AddrOfPinnedObject();
+            SceneTrack.Object.SetValue_p_uint32(_meshRendererHandle, Classes.StandardMeshRenderer.Materials, meshMaterialsPointer, (uint)_materialHandles.Length, Helper.GetTypeMemorySize(typeof(uint), (uint) _materialHandles.Length, 1));
+            meshMaterialsHandle.Free();
 
 
-            //Object.SetValue_uint32(_handle, Classes.GameObject.);
+            // Add to be included in component link
+            _componentHandles.Add(_meshRendererHandle);
         }
 
         /// <summary>
