@@ -50,6 +50,7 @@ namespace SceneTrack.Unity
         private MeshRenderer _meshRenderer;
         private SkinnedMeshRenderer _skinedMeshRenderer;
         private uint _meshRendererHandle;
+        private uint _skinnedMeshRendererHandle;
         private SceneTrackObject _parentSceneTrackObject;
         private Transform _transform;
         private Transform _transformParent;
@@ -171,9 +172,8 @@ namespace SceneTrack.Unity
             var componentArray = _componentHandles.ToArray();
             var componentsHandle = GCHandle.Alloc(componentArray, GCHandleType.Pinned);
             var componentsPointer = componentsHandle.AddrOfPinnedObject();
-            SceneTrack.Object.SetValue_p_uint32(_handle, Classes.GameObject.Components, componentsPointer, (uint)_componentHandles.Count, Helper.GetTypeMemorySize(typeof(uint), 1));
+            Object.SetValue_p_uint32(_handle, Classes.GameObject.Components, componentsPointer, (uint)_componentHandles.Count, Helper.GetTypeMemorySize(typeof(uint), 1));
             componentsHandle.Free();
-
 
             // Set flag as initialized
             _initialized = true;
@@ -198,10 +198,26 @@ namespace SceneTrack.Unity
             // Create Mesh
             InitMesh(IsSkinned ? _skinedMeshRenderer.sharedMesh : _meshFilter.sharedMesh );
 
-
             // Create Renderer
             if (IsSkinned)
             {
+                _skinnedMeshRendererHandle = SceneTrack.Object.CreateObject(Classes.SkinnedMeshRenderer.Type);
+
+                // Assign Mesh (shared reference if found) to MeshRenderer
+                Object.SetValue_uint32(_skinnedMeshRendererHandle, Classes.SkinnedMeshRenderer.Mesh, _meshHandle);
+
+                // Assign Materials (shared references as found)
+                var meshMaterialsHandle = GCHandle.Alloc(_materialHandles, GCHandleType.Pinned);
+                var meshMaterialsPointer = meshMaterialsHandle.AddrOfPinnedObject();
+                SceneTrack.Object.SetValue_p_uint32(_skinnedMeshRendererHandle, Classes.SkinnedMeshRenderer.Materials,
+                    meshMaterialsPointer, (uint) _materialHandles.Length, Helper.GetTypeMemorySize(typeof(uint), 1));
+                meshMaterialsHandle.Free();
+
+                // Assign Bone Trasform (Root Object)
+
+
+                // Assign Bones
+
 
             }
             else

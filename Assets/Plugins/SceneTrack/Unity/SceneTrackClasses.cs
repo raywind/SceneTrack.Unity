@@ -14,6 +14,7 @@ namespace SceneTrack.Unity
             GameObject.Register();
             Transform.Register();
             StandardMeshRenderer.Register();
+            SkinnedMeshRenderer.Register();
             Mesh.Register();
             SubMesh.Register();
             Material.Register();
@@ -72,9 +73,31 @@ namespace SceneTrack.Unity
             public static void Register()
             {
                 Type = Object.CreateObjectTypeEx(Frequency.Dynamic, 102);
+                Materials = Object.AddObjectTypeComponentEx2(Type, Kind.Surface, SceneTrack.Type.Uint32, 1,
+                    int.MaxValue, Units.Unspecified, Reference.Unspecified);
+                Mesh = Object.AddObjectTypeComponentEx2(Type, Kind.Geometry, SceneTrack.Type.Uint32, 1, 1,
+                    Units.Unspecified, Reference.Unspecified);
+                Parent = Object.AddObjectTypeComponentEx2(Type, Kind.Parent, SceneTrack.Type.Uint32, 1, 1,
+                    Units.Unspecified, Reference.Unspecified);
+            }
+        }
+        public static class SkinnedMeshRenderer
+        {
+            public static uint Type = 0;
+            public static uint Materials = 0;
+            public static uint Mesh = 0;
+            public static uint Bones = 0;
+            public static uint Parent = 0;
+            public static uint BoneTransform = 0;
+
+            public static void Register()
+            {
+                Type = Object.CreateObjectTypeEx(Frequency.Dynamic, 103);
                 Materials = Object.AddObjectTypeComponentEx2(Type, Kind.Surface, SceneTrack.Type.Uint32, 1, int.MaxValue, Units.Unspecified, Reference.Unspecified);
                 Mesh = Object.AddObjectTypeComponentEx2(Type, Kind.Geometry, SceneTrack.Type.Uint32, 1, 1, Units.Unspecified, Reference.Unspecified);
+                Bones = Object.AddObjectTypeComponentEx2(Type, Kind.Geometry, SceneTrack.Type.Uint32, 1, int.MaxValue, Units.Unspecified, Reference.Unspecified);
                 Parent = Object.AddObjectTypeComponentEx2(Type, Kind.Parent, SceneTrack.Type.Uint32, 1, 1, Units.Unspecified, Reference.Unspecified);
+                BoneTransform = Object.AddObjectTypeComponentEx2(Type, Kind.Parent, SceneTrack.Type.Uint32, 1, 1, Units.Unspecified, Reference.Unspecified);
             }
         }
 
