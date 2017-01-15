@@ -12,6 +12,11 @@ namespace SceneTrack.Unity
 #if UNITY_EDITOR
 
         /// <summary>
+        /// Should SceneTrack use the SkinnedMeshRenderer
+        /// </summary>
+        public bool IsSkinned { get; private set; }
+
+        /// <summary>
         /// Is this object at the root of the heiarchy?
         /// </summary>
         public bool RootObject
@@ -43,6 +48,7 @@ namespace SceneTrack.Unity
         private bool _initialized;
         private MeshFilter _meshFilter;
         private MeshRenderer _meshRenderer;
+        private SkinnedMeshRenderer _skinedMeshRenderer;
         private uint _meshRendererHandle;
         private SceneTrackObject _parentSceneTrackObject;
         private Transform _transform;
@@ -181,10 +187,51 @@ namespace SceneTrack.Unity
             // Cache references
             _meshFilter = GetComponent<MeshFilter>();
             _meshRenderer = GetComponent<MeshRenderer>();
+            _skinedMeshRenderer = GetComponent<SkinnedMeshRenderer>();
+
+            // Determine if we need to use the SkinnedMeshRenderer Logic
+            IsSkinned = _skinedMeshRenderer != null;
 
             // Create Materials
+            InitMaterials(IsSkinned ? _skinedMeshRenderer.sharedMaterials : _meshRenderer.sharedMaterials);
+
+            // Create Mesh
+            InitMesh(IsSkinned ? _skinedMeshRenderer.sharedMesh : _meshFilter.sharedMesh );
+
+
+            // Create Renderer
+            if (IsSkinned)
+            {
+
+            }
+            else
+            {
+                _meshRendererHandle = SceneTrack.Object.CreateObject(Classes.StandardMeshRenderer.Type);
+
+                // Assign Mesh (shared reference if found) to MeshRenderer
+                Object.SetValue_uint32(_meshRendererHandle, Classes.StandardMeshRenderer.Mesh, _meshHandle);
+
+                // Assign Materials (shared references as found)
+                var meshMaterialsHandle = GCHandle.Alloc(_materialHandles, GCHandleType.Pinned);
+                var meshMaterialsPointer = meshMaterialsHandle.AddrOfPinnedObject();
+                SceneTrack.Object.SetValue_p_uint32(_meshRendererHandle, Classes.StandardMeshRenderer.Materials,
+                    meshMaterialsPointer, (uint) _materialHandles.Length, Helper.GetTypeMemorySize(typeof(uint), 1));
+                meshMaterialsHandle.Free();
+            }
+
+
+            // Add to be included in component link
+            _componentHandles.Add(_meshRendererHandle);
+        }
+
+        /// <summary>
+        /// Initialize references to materials used on the renderers.
+        /// </summary>
+        /// <param name="materials">Array of materials used in the mesh.</param>
+        private void InitMaterials(Material[] materials)
+        {
             var materialHandles = new List<uint>();
-            foreach (var m in _meshRenderer.sharedMaterials)
+            foreach (var m in materials)
             {
                 uint materialHandle = 0;
 
@@ -215,18 +262,23 @@ namespace SceneTrack.Unity
                 materialHandles.Add(materialHandle);
             }
             _materialHandles = materialHandles.ToArray();
+        }
 
+        /// <summary>
+        /// Initialize reference to the mesh used on the renderer
+        /// </summary>
+        /// <param name="mesh">The mesh</param>
+        private void InitMesh(Mesh mesh)
+        {
             // Create Mesh
             _meshHandle = 0;
-            var cachedMesh = _meshFilter.sharedMesh;
-
+            var cachedMesh = mesh;
 
             if (!System.SharedMeshes.TryGetValue(cachedMesh, out _meshHandle))
             {
                 _meshHandle = Object.CreateObject(Classes.Mesh.Type);
 
-                Object.SetValue_string(_meshHandle, Classes.Mesh.Name, new StringBuilder(cachedMesh.name),
-                    (uint) cachedMesh.name.Length);
+                Object.SetValue_string(_meshHandle, Classes.Mesh.Name, new StringBuilder(cachedMesh.name), (uint)cachedMesh.name.Length);
 
                 // Cache length
                 var cachedLength = (uint) cachedMesh.vertices.Length;
@@ -301,9 +353,8 @@ namespace SceneTrack.Unity
                 }
 
                 // Assign Bones
-                if (cachedMesh.boneWeights != null && cachedMesh.boneWeights.Length > 0)
+                if (IsSkinned)
                 {
-                    // TODO : this should tell us to use a skinnedmeshrenderer
                     var cachedBoneLength = cachedMesh.boneWeights.Length;
                     var boneIndexes = new byte[cachedBoneLength * 4];
                     var boneWeights = new Vector4[cachedBoneLength];
@@ -323,7 +374,9 @@ namespace SceneTrack.Unity
                     }
                     var boneIndexHandle = GCHandle.Alloc(boneIndexes, GCHandleType.Pinned);
                     var boneIndexPointer = boneIndexHandle.AddrOfPinnedObject();
-                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.BoneWeightIndex, boneIndexPointer, (uint) cachedBoneLength * 4, Helper.GetTypeMemorySize(typeof(byte), 1));
+
+                    // The indices are stored as a ByteVector4 array inside of ST, we have to alter the data description here accordingly.
+                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.BoneWeightIndex, boneIndexPointer, (uint) cachedBoneLength, Helper.GetTypeMemorySize(typeof(byte), 4));
                     boneIndexHandle.Free();
 
                     var boneWeightsHandle = GCHandle.Alloc(boneWeights, GCHandleType.Pinned);
@@ -337,16 +390,32 @@ namespace SceneTrack.Unity
                     var bindPose = new float[cachedPoseLength * 16];
                     for (int i = 0; i < cachedPoseLength; i++)
                     {
-                        var indexLocation = i * 4;
+                        var indexLocation = i * 16;
+                        bindPose[indexLocation] = cachedMesh.bindposes[i].m00;
+                        bindPose[indexLocation + 1] = cachedMesh.bindposes[i].m01;
+                        bindPose[indexLocation + 2] = cachedMesh.bindposes[i].m02;
+                        bindPose[indexLocation + 3] = cachedMesh.bindposes[i].m03;
 
+                        bindPose[indexLocation + 4] = cachedMesh.bindposes[i].m10;
+                        bindPose[indexLocation + 5] = cachedMesh.bindposes[i].m11;
+                        bindPose[indexLocation + 6] = cachedMesh.bindposes[i].m12;
+                        bindPose[indexLocation + 7] = cachedMesh.bindposes[i].m13;
 
+                        bindPose[indexLocation + 8] = cachedMesh.bindposes[i].m20;
+                        bindPose[indexLocation + 9] = cachedMesh.bindposes[i].m21;
+                        bindPose[indexLocation + 10] = cachedMesh.bindposes[i].m22;
+                        bindPose[indexLocation + 11] = cachedMesh.bindposes[i].m23;
+
+                        bindPose[indexLocation + 12] = cachedMesh.bindposes[i].m30;
+                        bindPose[indexLocation + 13] = cachedMesh.bindposes[i].m31;
+                        bindPose[indexLocation + 14] = cachedMesh.bindposes[i].m32;
+                        bindPose[indexLocation + 15] = cachedMesh.bindposes[i].m33;
                     }
 
-                    // TODO: They seem to use this as a prerotation in the FBX
-
-
-                    // Assign Bone Trasnform Stuff
-                    // TODO: Robin?
+                    var poseIndexHandle = GCHandle.Alloc(bindPose, GCHandleType.Pinned);
+                    var poseIndexPointer = poseIndexHandle.AddrOfPinnedObject();
+                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.BindPoses, poseIndexPointer, (uint) cachedPoseLength, Helper.GetTypeMemorySize(typeof(float), 16));
+                    poseIndexHandle.Free();
                 }
 
                 // Assign Bounds
@@ -390,22 +459,6 @@ namespace SceneTrack.Unity
 
                 System.SharedMeshes.Add(cachedMesh, _meshHandle);
             }
-
-            // Create Renderer
-            _meshRendererHandle = SceneTrack.Object.CreateObject(Classes.StandardMeshRenderer.Type);
-
-            // Assign Mesh (shared reference if found) to MeshRenderer
-            Object.SetValue_uint32(_meshRendererHandle, Classes.StandardMeshRenderer.Mesh, _meshHandle);
-
-            // Assign Materials (shared references as found)
-            var meshMaterialsHandle = GCHandle.Alloc(_materialHandles, GCHandleType.Pinned);
-            var meshMaterialsPointer = meshMaterialsHandle.AddrOfPinnedObject();
-            SceneTrack.Object.SetValue_p_uint32(_meshRendererHandle, Classes.StandardMeshRenderer.Materials, meshMaterialsPointer, (uint)_materialHandles.Length, Helper.GetTypeMemorySize(typeof(uint), 1));
-            meshMaterialsHandle.Free();
-
-
-            // Add to be included in component link
-            _componentHandles.Add(_meshRendererHandle);
         }
 
         /// <summary>
@@ -428,8 +481,6 @@ namespace SceneTrack.Unity
 
         private void RecordMeshRenderer()
         {
-            // TODO RECORD
-
 
         }
 

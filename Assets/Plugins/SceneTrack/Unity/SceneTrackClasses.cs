@@ -92,6 +92,7 @@ namespace SceneTrack.Unity
             public static uint UV4 = 0;
             public static uint BoneWeightWeight = 0;
             public static uint BoneWeightIndex = 0;
+            public static uint BindPoses = 0;
             public static uint Bounds = 0;
             public static uint SubMesh = 0;
 
@@ -112,6 +113,7 @@ namespace SceneTrack.Unity
                 BoneWeightWeight = Object.AddObjectTypeComponentEx2(Type, Kind.BoneWeight, SceneTrack.Type.Float32, 4, 1 << 16, Units.Unspecified, Reference.Unspecified);
                 Bounds = Object.AddObjectTypeComponentEx2(Type, Kind.Size, SceneTrack.Type.Float32, 3, 2, Units.Unspecified, Reference.Unspecified);
                 SubMesh = Object.AddObjectTypeComponentEx2(Type, Kind.Geometry, SceneTrack.Type.Uint32, 1, 8, Units.Unspecified, Reference.Unspecified);
+                BindPoses = Object.AddObjectTypeComponentEx2(Type, Kind.Pose, SceneTrack.Type.Float32, 16, 1 << 16, Units.Unspecified, Reference.Unspecified);
             }
 
             public static Vector4 ToVector4(Color color)
