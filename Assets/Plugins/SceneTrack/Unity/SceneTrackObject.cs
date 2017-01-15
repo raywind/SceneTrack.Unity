@@ -292,6 +292,7 @@ namespace SceneTrack.Unity
                 }
 
                 // Bones
+                // TODO: BONES :/ WTF
 
                 System.SharedMeshes.Add(cachedMesh, meshHandle);
             }
@@ -303,8 +304,35 @@ namespace SceneTrack.Unity
 
 
 
-            // Create Sub Mesh
+            // Create Sub Meshes (If we have any!)
+            if (cachedMesh.subMeshCount > 0)
+            {
+                uint[] subMeshPointers = new uint[cachedMesh.subMeshCount];
 
+
+                for (int i = 0; i < cachedMesh.subMeshCount; i++)
+                {
+                    int[] subMeshIndices = cachedMesh.GetIndices(i);
+                    uint cachedIndicesLength = (uint)subMeshIndices.Length;
+
+                    // Create component
+                    uint newSubMesh = SceneTrack.Object.CreateObject(Classes.SubMesh.Type);
+
+                    var newSubMeshHandle = GCHandle.Alloc(subMeshIndices, GCHandleType.Pinned);
+                    var newSubMeshPointer = newSubMeshHandle.AddrOfPinnedObject();
+                    Object.SetValue_p_int32(newSubMesh, Classes.SubMesh.Indexes, newSubMeshPointer, cachedIndicesLength, Helper.GetTypeMemorySize(typeof(int), cachedIndicesLength, 1));
+                    newSubMeshHandle.Free();
+
+                    // Assign Submesh Index
+                    subMeshPointers[i] = newSubMesh;
+                }
+
+                // Assign index to submesh on mesh
+                var subMeshListHandle = GCHandle.Alloc(subMeshPointers, GCHandleType.Pinned);
+                var subMeshListPointer = subMeshListHandle.AddrOfPinnedObject();
+                Object.SetValue_p_uint32(meshHandle, Classes.Mesh.SubMesh, subMeshListPointer, (uint)cachedMesh.subMeshCount, Helper.GetTypeMemorySize(typeof(uint), (uint)cachedMesh.subMeshCount, 1));
+                subMeshListHandle.Free();
+            }
 
 
 
@@ -312,6 +340,12 @@ namespace SceneTrack.Unity
             // Create Renderer
             _meshRendererHandle = SceneTrack.Object.CreateObject(Classes.StandardMeshRenderer.Type);
             Object.SetValue_uint32(_meshRendererHandle, Classes.StandardMeshRenderer.Mesh, _meshHandle);
+
+
+            // use stride to assign materials index array
+            // assign the mesh .
+
+
 //            public static uint Materials = 0; - this is an array
 //            public static uint Parent = 0;
 
