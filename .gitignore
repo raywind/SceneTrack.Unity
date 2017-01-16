@@ -7,3 +7,6 @@ Temp
 .idea/.idea.SceneTrack.Unity/.idea
 .idea/.idea.SceneTrack.Unity
 .vscode
+Assets/Plugins/JetBrains.meta
+Assets/Plugins/JetBrains/Editor.meta
+Assets/Plugins/JetBrains

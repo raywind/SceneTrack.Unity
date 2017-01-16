@@ -381,6 +381,122 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.01, y: 0.01, z: 0.01}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &101359118 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100014, guid: 65cd0a94f1cf346698aabeb3e7774143, type: 3}
+  m_PrefabInternal: {fileID: 101359097}
+--- !u!114 &101359119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 101359118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f29d737fbfdae447a9668e347ee3f851, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TrackObject: 1
+  TrackTransform: 1
+  TrackMeshRenderer: 0
+--- !u!114 &101359120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 101359098}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f29d737fbfdae447a9668e347ee3f851, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TrackObject: 1
+  TrackTransform: 1
+  TrackMeshRenderer: 1
+--- !u!114 &101359121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 101359099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f29d737fbfdae447a9668e347ee3f851, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TrackObject: 1
+  TrackTransform: 1
+  TrackMeshRenderer: 1
+--- !u!114 &101359122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 101359100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f29d737fbfdae447a9668e347ee3f851, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TrackObject: 1
+  TrackTransform: 1
+  TrackMeshRenderer: 1
+--- !u!114 &101359123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 101359101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f29d737fbfdae447a9668e347ee3f851, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TrackObject: 1
+  TrackTransform: 1
+  TrackMeshRenderer: 1
+--- !u!114 &101359124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 101359102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f29d737fbfdae447a9668e347ee3f851, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TrackObject: 1
+  TrackTransform: 1
+  TrackMeshRenderer: 1
+--- !u!114 &101359125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 101359103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f29d737fbfdae447a9668e347ee3f851, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TrackObject: 1
+  TrackTransform: 1
+  TrackMeshRenderer: 1
+--- !u!114 &101359126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 101359104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f29d737fbfdae447a9668e347ee3f851, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TrackObject: 1
+  TrackTransform: 1
+  TrackMeshRenderer: 1
 --- !u!1 &495550884
 GameObject:
   m_ObjectHideFlags: 0
