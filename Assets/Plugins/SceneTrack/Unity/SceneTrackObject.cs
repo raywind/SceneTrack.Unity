@@ -171,9 +171,12 @@ namespace SceneTrack.Unity
             }
 
             // Add components to game object, transform not needed
-            var componentArray = _componentHandles.ToArray();
-            Helper.SubmitArray(_handle, Classes.GameObject.Components, componentArray, Helper.GetTypeMemorySize(typeof(uint), 1));
-            componentArray = null;
+            if (_componentHandles.Count != 0)
+            { 
+              var componentArray = _componentHandles.ToArray();
+              Helper.SubmitArray(_handle, Classes.GameObject.Components, componentArray, Helper.GetTypeMemorySize(typeof(uint), 1));
+              componentArray = null;
+            }
 
             // Set flag as initialized
             _initialized = true;
