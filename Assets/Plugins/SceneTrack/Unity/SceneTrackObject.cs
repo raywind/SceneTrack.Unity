@@ -306,83 +306,62 @@ namespace SceneTrack.Unity
             {
                 _meshHandle = Object.CreateObject(Classes.Mesh.Type);
 
-                Object.SetValue_string(_meshHandle, Classes.Mesh.Name, new StringBuilder(cachedMesh.name), (uint)cachedMesh.name.Length);
+                // Handle Name (C# String)
+                Helper.SubmitString(_meshHandle, Classes.Mesh.Name, cachedMesh.name);
 
-                // Cache length
-                var cachedLength = (uint) cachedMesh.vertices.Length;
+                // Handle Vertices (Vector3)
+                Helper.SubmitArray(_meshHandle, Classes.Mesh.Vertices, cachedMesh.vertices);
 
-                // Handle Vertices
-                var verticesHandle = GCHandle.Alloc(cachedMesh.vertices, GCHandleType.Pinned);
-                var verticesPointer = verticesHandle.AddrOfPinnedObject();
-                Object.SetValue_p_float32(_meshHandle, Classes.Mesh.Vertices, verticesPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), 3));
-                verticesHandle.Free();
-
-                // Handle Normals
-                var normalsHandle = GCHandle.Alloc(cachedMesh.normals, GCHandleType.Pinned);
-                var normalsPointer = normalsHandle.AddrOfPinnedObject();
-                Object.SetValue_p_float32(_meshHandle, Classes.Mesh.Normals, normalsPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), 3));
-                normalsHandle.Free();
+                // Handle Normals (Vector3)
+                if (cachedMesh.normals != null && cachedMesh.normals.Length != 0)
+                { 
+                  Helper.SubmitArray(_meshHandle, Classes.Mesh.Normals, cachedMesh.normals);
+                }
 
                 // Handle Tangents (Vector4)
-                var tangentsHandle = GCHandle.Alloc(cachedMesh.tangents, GCHandleType.Pinned);
-                var tangentsPointer = tangentsHandle.AddrOfPinnedObject();
-                Object.SetValue_p_float32(_meshHandle, Classes.Mesh.Tangents, tangentsPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), 4));
-                tangentsHandle.Free();
+                if (cachedMesh.tangents != null && cachedMesh.tangents.Length != 0)
+                {
+                  Helper.SubmitArray(_meshHandle, Classes.Mesh.Tangents, cachedMesh.tangents);
+                }
 
-                // Handle Colors (Vector4)
+                // Handle Colors (Color)
                 // We have to make an array of values as colors are stored differently
                 if (cachedMesh.colors != null && cachedMesh.colors.Length != 0)
                 {
-                    var colorsArray = new Vector4[cachedMesh.colors.Length];
-                    for (var i = 0; i < cachedLength; i++)
-                    {
-                        colorsArray[i] = cachedMesh.colors[i].ToVector4();
-                    }
-                    var colorsHandle = GCHandle.Alloc(colorsArray, GCHandleType.Pinned);
-                    var colorsPointer = colorsHandle.AddrOfPinnedObject();
-                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.Colors, colorsPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), 4));
-                    colorsHandle.Free();
+                    Helper.SubmitArray(_meshHandle, Classes.Mesh.Colors, cachedMesh.colors);
                 }
 
-                // Handle UV
+                // Handle UV (Vector2)
                 if (cachedMesh.uv != null && cachedMesh.uv.Length != 0)
                 {
-                    var uvHandle = GCHandle.Alloc(cachedMesh.uv, GCHandleType.Pinned);
-                    var uvPointer = uvHandle.AddrOfPinnedObject();
-                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.UV, uvPointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), 2));
-                    uvHandle.Free();
+                    Helper.SubmitArray(_meshHandle, Classes.Mesh.UV, cachedMesh.uv);
                 }
 
-                // Handle UV2
+                // Handle UV2 (Vector2)
                 if (cachedMesh.uv2 != null && cachedMesh.uv2.Length != 0)
                 {
-                    var uv2Handle = GCHandle.Alloc(cachedMesh.uv2, GCHandleType.Pinned);
-                    var uv2Pointer = uv2Handle.AddrOfPinnedObject();
-                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.UV2, uv2Pointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), 2));
-                    uv2Handle.Free();
+                    Helper.SubmitArray(_meshHandle, Classes.Mesh.UV2, cachedMesh.uv2);
                 }
 
-                // Handle UV3
+                // Handle UV3 (Vector2)
                 if (cachedMesh.uv3 != null && cachedMesh.uv3.Length != 0)
                 {
-                    var uv3Handle = GCHandle.Alloc(cachedMesh.uv3, GCHandleType.Pinned);
-                    var uv3Pointer = uv3Handle.AddrOfPinnedObject();
-                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.UV3, uv3Pointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), 2));
-                    uv3Handle.Free();
+                    Helper.SubmitArray(_meshHandle, Classes.Mesh.UV3, cachedMesh.uv3);
                 }
 
-                // Handle UV4
+                // Handle UV4 (Vector2)
                 if (cachedMesh.uv4 != null && cachedMesh.uv4.Length != 0)
                 {
-                    var uv4Handle = GCHandle.Alloc(cachedMesh.uv4, GCHandleType.Pinned);
-                    var uv4Pointer = uv4Handle.AddrOfPinnedObject();
-                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.UV4, uv4Pointer, cachedLength, Helper.GetTypeMemorySize(typeof(float), 2));
-                    uv4Handle.Free();
+                    Helper.SubmitArray(_meshHandle, Classes.Mesh.UV4, cachedMesh.uv4);
                 }
 
                 // Assign Bones
-                if (IsSkinned)
+                if (IsSkinned && cachedMesh.boneWeights != null && cachedMesh.boneWeights.Length != 0 && cachedMesh.bindposes != null && cachedMesh.bindposes.Length != 0)
                 {
+                    // TODO: Robin
+                    //  Add a second SubmitArray into SceneTrack, where I can read this directly in.
+                    //  Which uses Strides and Pointer offsets, so there isn't a second copy.
+
                     var cachedBoneLength = cachedMesh.boneWeights.Length;
                     var boneIndexes = new byte[cachedBoneLength * 4];
                     var boneWeights = new Vector4[cachedBoneLength];
@@ -400,89 +379,49 @@ namespace SceneTrack.Unity
                             cachedMesh.boneWeights[i].weight2,
                             cachedMesh.boneWeights[i].weight3);
                     }
-                    var boneIndexHandle = GCHandle.Alloc(boneIndexes, GCHandleType.Pinned);
-                    var boneIndexPointer = boneIndexHandle.AddrOfPinnedObject();
-
+                    
                     // The indices are stored as a ByteVector4 array inside of ST, we have to alter the data description here accordingly.
-                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.BoneWeightIndex, boneIndexPointer, (uint) cachedBoneLength, Helper.GetTypeMemorySize(typeof(byte), 4));
-                    boneIndexHandle.Free();
+                    // Handle BoneWeight Indexes (ByteVector4 like)
+                    Helper.SubmitArray(_meshHandle, Classes.Mesh.BoneWeightIndex, boneIndexes, 4);
+                    // Handle BoneWeight Vector  (Vector4 like)
+                    Helper.SubmitArray(_meshHandle, Classes.Mesh.BoneWeightWeight, boneWeights);
 
-                    var boneWeightsHandle = GCHandle.Alloc(boneWeights, GCHandleType.Pinned);
-                    var boneWeightsPointer = boneWeightsHandle.AddrOfPinnedObject();
-                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.BoneWeightWeight, boneWeightsPointer,
-                        (uint) cachedBoneLength, Helper.GetTypeMemorySize(typeof(float), 4));
-                    boneIndexHandle.Free();
+                    boneIndexes = null;
+                    boneWeights = null;
 
-                    // Assign Bind Pose (Using float array, simpler)
-                    var cachedPoseLength = cachedMesh.bindposes.Length;
-                    var bindPose = new float[cachedPoseLength * 16];
-                    for (var i = 0; i < cachedPoseLength; i++)
-                    {
-                        var indexLocation = i * 16;
-                        bindPose[indexLocation] = cachedMesh.bindposes[i].m00;
-                        bindPose[indexLocation + 1] = cachedMesh.bindposes[i].m01;
-                        bindPose[indexLocation + 2] = cachedMesh.bindposes[i].m02;
-                        bindPose[indexLocation + 3] = cachedMesh.bindposes[i].m03;
-
-                        bindPose[indexLocation + 4] = cachedMesh.bindposes[i].m10;
-                        bindPose[indexLocation + 5] = cachedMesh.bindposes[i].m11;
-                        bindPose[indexLocation + 6] = cachedMesh.bindposes[i].m12;
-                        bindPose[indexLocation + 7] = cachedMesh.bindposes[i].m13;
-
-                        bindPose[indexLocation + 8] = cachedMesh.bindposes[i].m20;
-                        bindPose[indexLocation + 9] = cachedMesh.bindposes[i].m21;
-                        bindPose[indexLocation + 10] = cachedMesh.bindposes[i].m22;
-                        bindPose[indexLocation + 11] = cachedMesh.bindposes[i].m23;
-
-                        bindPose[indexLocation + 12] = cachedMesh.bindposes[i].m30;
-                        bindPose[indexLocation + 13] = cachedMesh.bindposes[i].m31;
-                        bindPose[indexLocation + 14] = cachedMesh.bindposes[i].m32;
-                        bindPose[indexLocation + 15] = cachedMesh.bindposes[i].m33;
-                    }
-
-                    var poseIndexHandle = GCHandle.Alloc(bindPose, GCHandleType.Pinned);
-                    var poseIndexPointer = poseIndexHandle.AddrOfPinnedObject();
-                    Object.SetValue_p_float32(_meshHandle, Classes.Mesh.BindPoses, poseIndexPointer, (uint) cachedPoseLength, Helper.GetTypeMemorySize(typeof(float), 16));
-                    poseIndexHandle.Free();
+                    // Handle Bind Pose (Matrix44)
+                    Helper.SubmitArray(_meshHandle, Classes.Mesh.BindPoses, cachedMesh.bindposes);
                 }
 
-                // Assign Bounds
+                // Handle Bounds (Vector3[2])
                 var bounds = new Vector3[2];
                 bounds[0] = _meshRenderer.bounds.min;
                 bounds[1] = _meshRenderer.bounds.max;
-                var boundsHandle = GCHandle.Alloc(bounds, GCHandleType.Pinned);
-                var boundsPointer = boundsHandle.AddrOfPinnedObject();
-                Object.SetValue_p_float32(_meshHandle, Classes.Mesh.Bounds, boundsPointer, 2, Helper.GetTypeMemorySize(typeof(float), 3));
-                boundsHandle.Free();
+                Helper.SubmitArray(_meshHandle, Classes.Mesh.Bounds, bounds);
+                bounds = null;
 
                 // Create Sub Meshes (If we have any!)
                 if (cachedMesh.subMeshCount > 0)
                 {
-                    var subMeshPointers = new uint[cachedMesh.subMeshCount];
+                    var subMeshHandles = new uint[cachedMesh.subMeshCount];
 
 
                     for (var i = 0; i < cachedMesh.subMeshCount; i++)
                     {
                         var subMeshIndices = cachedMesh.GetIndices(i);
-                        var cachedIndicesLength = (uint)subMeshIndices.Length;
 
                         // Create component
-                        var newSubMesh = SceneTrack.Object.CreateObject(Classes.SubMesh.Type);
-
-                        var newSubMeshHandle = GCHandle.Alloc(subMeshIndices, GCHandleType.Pinned);
-                        var newSubMeshPointer = newSubMeshHandle.AddrOfPinnedObject();
-                        Object.SetValue_p_int32(newSubMesh, Classes.SubMesh.Indexes, newSubMeshPointer, cachedIndicesLength, Helper.GetTypeMemorySize(typeof(int), 1));
-                        newSubMeshHandle.Free();
-
+                        var subMeshHandle = SceneTrack.Object.CreateObject(Classes.SubMesh.Type);
+            
+                        // Handle Indexes (int (written as UInt))
+                        Helper.SubmitArrayForceUInt32(subMeshHandle, Classes.SubMesh.Indexes, subMeshIndices, Helper.GetTypeMemorySize(typeof(uint), 1));
+            
                         // Assign Submesh Index
-                        subMeshPointers[i] = newSubMesh;
+                        subMeshHandles[i] = subMeshHandle;
                     }
 
                     // Assign index to submesh on mesh
-                    var subMeshListHandle = GCHandle.Alloc(subMeshPointers, GCHandleType.Pinned);
-                    var subMeshListPointer = subMeshListHandle.AddrOfPinnedObject();
-                    Object.SetValue_p_uint32(_meshHandle, Classes.Mesh.SubMesh, subMeshListPointer, (uint)cachedMesh.subMeshCount, Helper.GetTypeMemorySize(typeof(uint), 1));
-                    subMeshListHandle.Free();
+                    Helper.SubmitArray(_meshHandle, Classes.Mesh.SubMesh, subMeshHandles, Helper.GetTypeMemorySize(typeof(uint), 1));
                 }
 
                 System.SharedMeshes.Add(cachedMesh, _meshHandle);
