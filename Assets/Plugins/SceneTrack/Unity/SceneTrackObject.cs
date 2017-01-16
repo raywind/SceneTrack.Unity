@@ -15,9 +15,7 @@ namespace SceneTrack.Unity
         /// Should SceneTrack use the SkinnedMeshRenderer
         /// </summary>
         public bool IsSkinned { get; private set; }
-
-        public bool IsBone { get; private set; }
-
+    
         /// <summary>
         /// Is this object at the root of the heiarchy?
         /// </summary>
@@ -154,13 +152,7 @@ namespace SceneTrack.Unity
         {
             // Return if we've already initialized
             if (_initialized) return;
-
-            // Determine if this object is a bone or not, we do this to create a very specific object in SceneTrack
-            // TODO : Simplified way of determining bone?
-
-
-
-
+            
             // Register GameObject
             _handle = Object.CreateObject(Classes.GameObject.Type);
 
@@ -180,10 +172,8 @@ namespace SceneTrack.Unity
 
             // Add components to game object, transform not needed
             var componentArray = _componentHandles.ToArray();
-            var componentsHandle = GCHandle.Alloc(componentArray, GCHandleType.Pinned);
-            var componentsPointer = componentsHandle.AddrOfPinnedObject();
-            Object.SetValue_p_uint32(_handle, Classes.GameObject.Components, componentsPointer, (uint)_componentHandles.Count, Helper.GetTypeMemorySize(typeof(uint), 1));
-            componentsHandle.Free();
+            Helper.SubmitArray(_handle, Classes.GameObject.Components, componentArray, Helper.GetTypeMemorySize(typeof(uint), 1));
+            componentArray = null;
 
             // Set flag as initialized
             _initialized = true;
@@ -217,14 +207,12 @@ namespace SceneTrack.Unity
                 Object.SetValue_uint32(_skinnedMeshRendererHandle, Classes.SkinnedMeshRenderer.Mesh, _meshHandle);
 
                 // Assign Materials (shared references as found)
-                var meshMaterialsHandle = GCHandle.Alloc(_materialHandles, GCHandleType.Pinned);
-                var meshMaterialsPointer = meshMaterialsHandle.AddrOfPinnedObject();
-                SceneTrack.Object.SetValue_p_uint32(_skinnedMeshRendererHandle, Classes.SkinnedMeshRenderer.Materials,
-                    meshMaterialsPointer, (uint) _materialHandles.Length, Helper.GetTypeMemorySize(typeof(uint), 1));
-                meshMaterialsHandle.Free();
+                Helper.SubmitArray(_skinnedMeshRendererHandle, Classes.SkinnedMeshRenderer.Materials, _materialHandles, Helper.GetTypeMemorySize(typeof(uint), 1));
 
                 // Assign Bone Transform (Root Object)
                 // Check if we have a SceneTrackObject on the bone root, if we don't add one
+                // TODO: Robin/Matthew
+                //  Check to see if this is true. I've seen RootBones that aren't a direct child of the SkinnedMeshRenderer.
                 _boneRootObject = _skinnedMeshRenderer.rootBone.GetComponent<SceneTrackObject>() ??
                                   _skinnedMeshRenderer.rootBone.gameObject.AddComponent<SceneTrackObject>();
                 Object.SetValue_uint32(_skinnedMeshRendererHandle, Classes.SkinnedMeshRenderer.BoneTransform, _boneRootObject.TransformHandle);
@@ -286,15 +274,15 @@ namespace SceneTrack.Unity
 
                     if (m.mainTexture != null)
                     {
-                        Object.SetValue_string(materialHandle, Classes.Material.MainTexture, new StringBuilder(m.mainTexture.name), (uint) m.mainTexture.name.Length);
-                        Object.SetValue_string(materialHandle, Classes.Material.Name, new StringBuilder(m.name), (uint) m.name.Length);
-                        Object.SetValue_string(materialHandle, Classes.Material.Shader, new StringBuilder(m.shader.name), (uint) m.shader.name.Length);
+                        Helper.SubmitString(materialHandle, Classes.Material.MainTexture, m.mainTexture.name);
+                        Helper.SubmitString(materialHandle, Classes.Material.Name, m.name);
+                        Helper.SubmitString(materialHandle, Classes.Material.Shader, m.shader.name);
                     }
                     else
                     {
-                        Object.SetValue_string(materialHandle, Classes.Material.MainTexture, new StringBuilder("Default"), 7);
-                        Object.SetValue_string(materialHandle, Classes.Material.Name, new StringBuilder("Default"), 7);
-                        Object.SetValue_string(materialHandle, Classes.Material.Shader, new StringBuilder("Default"), 7);
+                        Helper.SubmitString(materialHandle, Classes.Material.MainTexture, "Default");
+                        Helper.SubmitString(materialHandle, Classes.Material.Name, "Default");
+                        Helper.SubmitString(materialHandle, Classes.Material.Shader, "Default");
                     }
 
 
