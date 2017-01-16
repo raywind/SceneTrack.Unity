@@ -138,11 +138,6 @@ namespace SceneTrack.Unity
                 SubMesh = Object.AddObjectTypeComponentEx2(Type, Kind.Geometry, SceneTrack.Type.Uint32, 1, 8, Units.Unspecified, Reference.Unspecified);
                 BindPoses = Object.AddObjectTypeComponentEx2(Type, Kind.Pose, SceneTrack.Type.Float32, 16, 1 << 16, Units.Unspecified, Reference.Unspecified);
             }
-
-            public static Vector4 ToVector4(Color color)
-            {
-                return new Vector4(color.r,color.g, color.b, color.a);
-            }
         }
 
         public static class SubMesh

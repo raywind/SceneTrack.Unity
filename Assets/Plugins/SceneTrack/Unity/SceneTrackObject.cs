@@ -324,7 +324,7 @@ namespace SceneTrack.Unity
                     var colorsArray = new Vector4[cachedMesh.colors.Length];
                     for (var i = 0; i < cachedLength; i++)
                     {
-                        colorsArray[i] = Classes.Mesh.ToVector4(cachedMesh.colors[i]);
+                        colorsArray[i] = cachedMesh.colors[i].ToVector4();
                     }
                     var colorsHandle = GCHandle.Alloc(colorsArray, GCHandleType.Pinned);
                     var colorsPointer = colorsHandle.AddrOfPinnedObject();
