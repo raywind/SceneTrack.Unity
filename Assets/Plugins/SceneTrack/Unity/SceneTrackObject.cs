@@ -213,7 +213,7 @@ namespace SceneTrack.Unity
                     meshMaterialsPointer, (uint) _materialHandles.Length, Helper.GetTypeMemorySize(typeof(uint), 1));
                 meshMaterialsHandle.Free();
 
-                // Assign Bone Trasform (Root Object)
+                // Assign Bone Transform (Root Object)
 
 
                 // Assign Bones
