@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net.Mime;
+using System.Text;
 
 namespace SceneTrack.Unity.Editor
 {
@@ -11,7 +13,9 @@ namespace SceneTrack.Unity.Editor
         public static void Export(string sourcePath)
         {
             // Get destination folder
-            var outputFolder = UnityEditor.EditorUtility.OpenFilePanel("Destination File","", FBXOutput.GetExportExtension() );
+            var outputFolder = UnityEditor.EditorUtility.SaveFilePanel("Destination File", UnityEngine.Application.dataPath, "Output" + FBXOutput.GetExportExtension(), FBXOutput.GetExportExtension());
+
+            SceneTrackFbx.Conversion.ConvertSceneTrackFile(new StringBuilder(sourcePath), new StringBuilder(outputFolder));
 
             Console.WriteLine(outputFolder);
         }
