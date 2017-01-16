@@ -50,7 +50,7 @@ namespace SceneTrack.Unity
         private bool _initialized;
         private MeshFilter _meshFilter;
         private MeshRenderer _meshRenderer;
-        private SkinnedMeshRenderer _skinedMeshRenderer;
+        private SkinnedMeshRenderer _skinnedMeshRenderer;
         private uint _meshRendererHandle;
         private uint _skinnedMeshRendererHandle;
         private SceneTrackObject _parentSceneTrackObject;
@@ -62,6 +62,7 @@ namespace SceneTrack.Unity
         private uint[] _materialHandles;
         private List<uint> _componentHandles;
         private uint _meshHandle;
+        Bone[]  _bones;
 
         #region Unity Specific Events
 
@@ -196,16 +197,16 @@ namespace SceneTrack.Unity
             // Cache references
             _meshFilter = GetComponent<MeshFilter>();
             _meshRenderer = GetComponent<MeshRenderer>();
-            _skinedMeshRenderer = GetComponent<SkinnedMeshRenderer>();
+            _skinnedMeshRenderer = GetComponent<SkinnedMeshRenderer>();
 
             // Determine if we need to use the SkinnedMeshRenderer Logic
-            IsSkinned = _skinedMeshRenderer != null;
+            IsSkinned = _skinnedMeshRenderer != null;
 
             // Create Materials
-            InitMaterials(IsSkinned ? _skinedMeshRenderer.sharedMaterials : _meshRenderer.sharedMaterials);
+            InitMaterials(IsSkinned ? _skinnedMeshRenderer.sharedMaterials : _meshRenderer.sharedMaterials);
 
             // Create Mesh
-            InitMesh(IsSkinned ? _skinedMeshRenderer.sharedMesh : _meshFilter.sharedMesh );
+            InitMesh(IsSkinned ? _skinnedMeshRenderer.sharedMesh : _meshFilter.sharedMesh );
 
             // Create Renderer
             if (IsSkinned)
@@ -224,13 +225,28 @@ namespace SceneTrack.Unity
 
                 // Assign Bone Transform (Root Object)
                 // Check if we have a SceneTrackObject on the bone root, if we don't add one
-                _boneRootObject = _skinedMeshRenderer.rootBone.GetComponent<SceneTrackObject>() ??
-                                  _skinedMeshRenderer.rootBone.gameObject.AddComponent<SceneTrackObject>();
+                _boneRootObject = _skinnedMeshRenderer.rootBone.GetComponent<SceneTrackObject>() ??
+                                  _skinnedMeshRenderer.rootBone.gameObject.AddComponent<SceneTrackObject>();
                 Object.SetValue_uint32(_skinnedMeshRendererHandle, Classes.SkinnedMeshRenderer.BoneTransform, _boneRootObject.TransformHandle);
 
                 // Assign Bones
+                Transform[] cachedBones = _skinnedMeshRenderer.bones;
+                int cachedBonesCount = cachedBones.Length;
+        
+                _bones = new Bone[cachedBonesCount];
+                
+                // First Pass
+                for(int i=0;i < cachedBonesCount;i++)
+                {
+                  _bones[i] = new Bone(i, cachedBones[i]);
+                }
 
-
+                // Second Pass
+                for(int i=0;i < cachedBonesCount;i++)
+                {
+                  _bones[i].Initialise(cachedBones, _bones);
+                }
+                
             }
             else
             {
@@ -362,11 +378,11 @@ namespace SceneTrack.Unity
                     //  Add a second SubmitArray into SceneTrack, where I can read this directly in.
                     //  Which uses Strides and Pointer offsets, so there isn't a second copy.
 
-                    var cachedBoneLength = cachedMesh.boneWeights.Length;
-                    var boneIndexes = new byte[cachedBoneLength * 4];
-                    var boneWeights = new Vector4[cachedBoneLength];
+                    var cachedBoneWeightLength = cachedMesh.boneWeights.Length;
+                    var boneIndexes = new byte[cachedBoneWeightLength * 4];
+                    var boneWeights = new Vector4[cachedBoneWeightLength];
 
-                    for (var i = 0; i < cachedBoneLength; i++)
+                    for (var i = 0; i < cachedBoneWeightLength; i++)
                     {
                         var indexLocation = i * 4;
                         boneIndexes[indexLocation + 0] = (byte) cachedMesh.boneWeights[i].boneIndex0;
@@ -391,6 +407,7 @@ namespace SceneTrack.Unity
 
                     // Handle Bind Pose (Matrix44)
                     Helper.SubmitArray(_meshHandle, Classes.Mesh.BindPoses, cachedMesh.bindposes);
+
                 }
 
                 // Handle Bounds (Vector3[2])
@@ -497,12 +514,68 @@ namespace SceneTrack.Unity
             localCache = _transform.localScale;
             Object.SetValue_3_float32(TransformHandle, Classes.Transform.LocalScale, localCache.x,
                 localCache.y, localCache.z);
-
-
-            // Change changed flag on the Transform
+      
+            // Reset the flag
             // NOTE: This may effect other scripts
+            _transform.hasChanged = false;
+
         }
         #endregion
+
+        #region Bones
+
+        public class Bone
+        {
+          public Transform _transform;
+          public uint      _handle;
+          public SceneTrackMultiBoneProxy _proxy;
+
+          public Bone(int id, Transform boneTransform)
+          {
+            _transform = boneTransform;
+            _handle = SceneTrack.Object.CreateObject(Classes.Bone.Type);
+            Object.SetValue_uint8(_handle, Classes.Bone.Id, (byte) id);
+            
+            _proxy = boneTransform.GetComponent<SceneTrackMultiBoneProxy>();
+
+            if (_proxy == null)
+            {
+              _proxy = boneTransform.gameObject.AddComponent<SceneTrackMultiBoneProxy>();
+            }
+
+            _proxy.Bones.Add(this);
+          }
+
+          public void Initialise(Transform[] transform, Bone[] bones)
+          {
+            Transform parent = _transform.parent;
+            if (parent != null)
+            {
+              int parentIndex = global::System.Array.IndexOf(transform, parent);
+              if (parentIndex != -1)
+              {
+                Bone boneParent = bones[parentIndex];
+                Object.SetValue_uint32(_handle, Classes.Bone.Parent, boneParent._handle);
+              }
+            }
+          }
+
+          public void Update(Vector3 position, Vector3 rotation, Vector3 scale)
+          {
+            Object.SetValue_3_float32(_handle, Classes.Bone.LocalPosition, position.x,
+                position.y, position.z);
+        
+            Object.SetValue_3_float32(_handle, Classes.Bone.LocalRotation, rotation.x,
+                rotation.y, rotation.z);
+        
+            Object.SetValue_3_float32(_handle, Classes.Bone.LocalScale, scale.x,
+                scale.y, scale.z);
+          }
+
+        }
+
+        #endregion
+
 #endif
-    }
+  }
 }

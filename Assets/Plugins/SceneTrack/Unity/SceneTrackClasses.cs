@@ -90,6 +90,7 @@ namespace SceneTrack.Unity
             public static uint Bones = 0;
             public static uint Parent = 0;
             public static uint BoneTransform = 0;
+          
 
             public static void Register()
             {
@@ -109,6 +110,7 @@ namespace SceneTrack.Unity
             public static uint LocalRotation = 0;
             public static uint LocalScale = 0;
             public static uint Parent = 0;
+            public static uint Id = 0;
 
             public static void Register()
             {
@@ -117,6 +119,7 @@ namespace SceneTrack.Unity
                 LocalPosition = Object.AddObjectTypeComponentEx2(Type, Kind.Position, SceneTrack.Type.Float32, 3, 1, Units.Unspecified, Reference.Local);
                 LocalRotation = Object.AddObjectTypeComponentEx2(Type, Kind.Rotation, SceneTrack.Type.Float32, 3, 1, Units.Degree, Reference.Local);
                 LocalScale = Object.AddObjectTypeComponentEx2(Type, Kind.Scale, SceneTrack.Type.Float32, 3, 1, Units.Unspecified, Reference.Local);
+                Id = Object.AddObjectTypeComponentEx2(Type, Kind.Named, SceneTrack.Type.Uint8, 1, 1, Units.Unspecified, Reference.Unspecified);
             }
         }
 
