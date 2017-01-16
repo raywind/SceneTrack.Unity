@@ -16,6 +16,8 @@ namespace SceneTrack.Unity
         /// </summary>
         public bool IsSkinned { get; private set; }
 
+        public bool IsBone { get; private set; }
+
         /// <summary>
         /// Is this object at the root of the heiarchy?
         /// </summary>
@@ -52,6 +54,7 @@ namespace SceneTrack.Unity
         private uint _meshRendererHandle;
         private uint _skinnedMeshRendererHandle;
         private SceneTrackObject _parentSceneTrackObject;
+        private SceneTrackObject _boneRootObject;
         private Transform _transform;
         private Transform _transformParent;
         private uint _transformParentHandle;
@@ -151,6 +154,12 @@ namespace SceneTrack.Unity
             // Return if we've already initialized
             if (_initialized) return;
 
+            // Determine if this object is a bone or not, we do this to create a very specific object in SceneTrack
+            // TODO : Simplified way of determining bone?
+
+
+
+
             // Register GameObject
             _handle = Object.CreateObject(Classes.GameObject.Type);
 
@@ -214,7 +223,10 @@ namespace SceneTrack.Unity
                 meshMaterialsHandle.Free();
 
                 // Assign Bone Transform (Root Object)
-
+                // Check if we have a SceneTrackObject on the bone root, if we don't add one
+                _boneRootObject = _skinedMeshRenderer.rootBone.GetComponent<SceneTrackObject>() ??
+                                  _skinedMeshRenderer.rootBone.gameObject.AddComponent<SceneTrackObject>();
+                Object.SetValue_uint32(_skinnedMeshRendererHandle, Classes.SkinnedMeshRenderer.BoneTransform, _boneRootObject.TransformHandle);
 
                 // Assign Bones
 
