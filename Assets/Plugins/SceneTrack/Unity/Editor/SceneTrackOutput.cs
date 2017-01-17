@@ -89,7 +89,16 @@ namespace SceneTrack.Unity.Editor
             FBX_201600 = 13
         }
 
-
+        public enum FbxAxis
+        {
+          NX,
+          NY,
+          NZ,
+          PX,
+          PY,
+          PZ
+        }
+    
         public static int Version
         {
             get
@@ -102,21 +111,159 @@ namespace SceneTrack.Unity.Editor
             }
         }
 
-        public static void SetupExport()
+        public static int AxisTSX
         {
-            SceneTrackFbx.Conversion.SetFileVersion(Version);
+            get
+            {
+                return UnityEditor.EditorPrefs.GetInt("SceneTrack_AxisTSX", (int) FbxAxis.PX);
+            }
+            set
+            {
+                UnityEditor.EditorPrefs.SetInt("SceneTrack_AxisTSX", value);
+            }
+        }
+        
+        public static int AxisTSY
+        {
+            get
+            {
+                return UnityEditor.EditorPrefs.GetInt("SceneTrack_AxisTSY", (int) FbxAxis.PY);
+            }
+            set
+            {
+                UnityEditor.EditorPrefs.SetInt("SceneTrack_AxisTSY", value);
+            }
+        }
+    
+        public static int AxisTSZ
+        {
+            get
+            {
+                return UnityEditor.EditorPrefs.GetInt("SceneTrack_AxisTSZ", (int) FbxAxis.PZ);
+            }
+            set
+            {
+                UnityEditor.EditorPrefs.SetInt("SceneTrack_AxisTSZ", value);
+            }
+        }
+    
+        public static int AxisRX
+        {
+            get
+            {
+                return UnityEditor.EditorPrefs.GetInt("SceneTrack_AxisRX", (int) FbxAxis.PX);
+            }
+            set
+            {
+                UnityEditor.EditorPrefs.SetInt("SceneTrack_AxisRX", value);
+            }
+        }
+        
+        public static int AxisRY
+        {
+            get
+            {
+                return UnityEditor.EditorPrefs.GetInt("SceneTrack_AxisRY", (int) FbxAxis.PY);
+            }
+            set
+            {
+                UnityEditor.EditorPrefs.SetInt("SceneTrack_AxisRY", value);
+            }
+        }
+    
+        public static int AxisRZ
+        {
+            get
+            {
+                return UnityEditor.EditorPrefs.GetInt("SceneTrack_AxisRZ", (int) FbxAxis.PZ);
+            }
+            set
+            {
+                UnityEditor.EditorPrefs.SetInt("SceneTrack_AxisRZ", value);
+            }
         }
 
-        public static void EditorPreferences()
+        private static void SetupSwizzle(int node, int trsMask, int srcAxis, FbxAxis axis)
         {
-            var temp = (FileVersion)EditorGUILayout.EnumPopup("File Version", (FileVersion) Version);
-
-            Version = (int)temp;
+          int dstAxis = 0, sign = 0;
+          switch(axis)
+          {
+            case FbxAxis.NX:
+              dstAxis = SceneTrackFbx.Axis.X;
+              sign = -1;
+              break;
+            case FbxAxis.NY:
+              dstAxis = SceneTrackFbx.Axis.Y;
+              sign = -1;
+              break;
+            case FbxAxis.NZ:
+              dstAxis = SceneTrackFbx.Axis.Z;
+              sign = -1;
+              break;
+            case FbxAxis.PX:
+              dstAxis = SceneTrackFbx.Axis.X;
+              sign = 1;
+              break;
+            case FbxAxis.PY:
+              dstAxis = SceneTrackFbx.Axis.Y;
+              sign = 1;
+              break;
+            case FbxAxis.PZ:
+              dstAxis = SceneTrackFbx.Axis.Z;
+              sign = 1;
+              break;
+          }
+          SceneTrackFbx.Conversion.SetAxisSwizzle(node, trsMask, srcAxis, dstAxis, sign);
         }
 
-        public static string GetExportExtension()
-        {
-            return "fbx";
-        }
+      private static void SetupSwizzles(int node, int trsMask, int x, int y, int z)
+      {
+        SetupSwizzle(node, trsMask, SceneTrackFbx.Axis.X, (FbxAxis) x);
+        SetupSwizzle(node, trsMask, SceneTrackFbx.Axis.Y, (FbxAxis) y);
+        SetupSwizzle(node, trsMask, SceneTrackFbx.Axis.Z, (FbxAxis) z);
+      }
+
+      public static void SetupExport()
+      {
+        SetupSwizzles(SceneTrackFbx.Node.Transform, SceneTrackFbx.TRS.Translation, AxisTSX, AxisTSY, AxisTSZ);
+        SetupSwizzles(SceneTrackFbx.Node.Transform, SceneTrackFbx.TRS.Rotation, AxisRX, AxisRY, AxisRZ);
+        SetupSwizzles(SceneTrackFbx.Node.Transform, SceneTrackFbx.TRS.Scale,  AxisTSX, AxisTSY, AxisTSZ);
+      
+        SetupSwizzles(SceneTrackFbx.Node.Bone, SceneTrackFbx.TRS.Translation, AxisTSX, AxisTSY, AxisTSZ);
+        SetupSwizzles(SceneTrackFbx.Node.Bone, SceneTrackFbx.TRS.Rotation, AxisRX, AxisRY, AxisRZ);
+        SetupSwizzles(SceneTrackFbx.Node.Bone, SceneTrackFbx.TRS.Scale,  AxisTSX, AxisTSY, AxisTSZ);
+
+        SceneTrackFbx.Conversion.SetFileVersion(Version);
+      }
+
+      public static void EditorPreferences()
+      {
+        var versionTemp = (FileVersion) EditorGUILayout.EnumPopup("File Version", (FileVersion) Version);
+        Version = (int) versionTemp;
+      
+        var tsX = (FbxAxis) EditorGUILayout.EnumPopup("Translational/Scale Axis X", (FbxAxis) AxisTSX);
+        AxisTSX = (int) tsX;
+      
+        var tsY = (FbxAxis) EditorGUILayout.EnumPopup("Translational/Scale Axis Y", (FbxAxis) AxisTSY);
+        AxisTSY = (int) tsY;
+      
+        var tsZ = (FbxAxis) EditorGUILayout.EnumPopup("Translational/Scale Axis Z", (FbxAxis) AxisTSZ);
+        AxisTSZ = (int) tsZ;
+      
+        var rX = (FbxAxis) EditorGUILayout.EnumPopup("Rotational Axis X", (FbxAxis) AxisRX);
+        AxisRX = (int) rX;
+      
+        var rY = (FbxAxis) EditorGUILayout.EnumPopup("Rotational Axis Y", (FbxAxis) AxisRY);
+        AxisRY = (int) rY;
+      
+        var rZ = (FbxAxis) EditorGUILayout.EnumPopup("Rotational Axis Z", (FbxAxis) AxisRZ);
+        AxisRZ = (int) rZ;
+
+      }
+
+      public static string GetExportExtension()
+      {
+        return "fbx";
+      }
     }
 }
