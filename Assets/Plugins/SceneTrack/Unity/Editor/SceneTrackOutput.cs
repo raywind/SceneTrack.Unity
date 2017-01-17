@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Mime;
 using System.Text;
 
@@ -13,11 +14,20 @@ namespace SceneTrack.Unity.Editor
         public static void Export(string sourcePath)
         {
             // Get destination folder
-            var outputFolder = UnityEditor.EditorUtility.SaveFilePanel("Destination File", UnityEngine.Application.dataPath, "Output" + FBXOutput.GetExportExtension(), FBXOutput.GetExportExtension());
+            var outputFile = UnityEditor.EditorUtility.SaveFilePanel(
+                "Destination File",
+                UnityEngine.Application.dataPath,
+                Path.GetFileNameWithoutExtension(sourcePath) + "." + FBXOutput.GetExportExtension(),
+                FBXOutput.GetExportExtension());
 
-            SceneTrackFbx.Conversion.ConvertSceneTrackFile(new StringBuilder(sourcePath), new StringBuilder(outputFolder));
+            if (!string.IsNullOrEmpty(outputFile))
+            {
+                //TODO: EntryPointNotFoundException: fbxConvertSceneTrackFile
+                SceneTrackFbx.Conversion.ConvertSceneTrackFile(new StringBuilder(sourcePath),
+                    new StringBuilder(outputFile));
+            }
 
-            Console.WriteLine(outputFolder);
+            Console.WriteLine(outputFile);
         }
     }
 
