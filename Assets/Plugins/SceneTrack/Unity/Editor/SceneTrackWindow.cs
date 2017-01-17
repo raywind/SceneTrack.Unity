@@ -43,63 +43,104 @@ namespace SceneTrack.Unity.Editor
             GUILayout.Space(5);
 
 
-            EditorGUILayout.LabelField("Tracked Scene Objects (" + System.CachedKnownObjects.Count + ")" , EditorStyles.boldLabel);
 
+            EditorGUILayout.LabelField("Tracked Scene Objects (" + System.CachedKnownObjects.Count + ")" , EditorStyles.boldLabel);
             EditorGUILayout.BeginHorizontal();
 
-            if (GUILayout.Button("Refresh"))
+            if (GUILayout.Button("Refresh", EditorStyles.miniButtonLeft))
             {
                 System.CacheKnownObjects();
             }
 
+
+            if (GUILayout.Button("Enable", EditorStyles.miniButtonMid))
+            {
+                // Update Cache List
+                SceneTrack.Unity.System.CacheKnownObjects();
+
+                foreach(var t in SceneTrack.Unity.System.CachedKnownObjects)
+                {
+                    t.TrackObject = true;
+                }
+            }
+
+            if (GUILayout.Button("Disable", EditorStyles.miniButtonRight))
+            {
+                // Update Cache List
+                SceneTrack.Unity.System.CacheKnownObjects();
+
+                foreach(var t in SceneTrack.Unity.System.CachedKnownObjects)
+                {
+                    t.TrackObject = false;
+                }
+            }
             EditorGUILayout.EndHorizontal();
 
 
-
             GUILayout.Space(10);
-
-
 
             EditorGUILayout.LabelField("Takes (" + Cache.CachedFiles.Length + ")" , EditorStyles.boldLabel);
 
             EditorGUILayout.BeginHorizontal();
 
-
+            // Update Take Information
             if (GUILayout.Button("Refresh", EditorStyles.miniButtonLeft))
             {
                 Cache.GetCacheFiles();
                 _outputIndex = Cache.CachedFiles.Length-1;
             }
 
+            // Delete All requires confirmation
             if (GUILayout.Button("Clear", EditorStyles.miniButtonRight))
             {
-                Cache.ClearFiles();
-                _outputIndex = 0;
+                if (EditorUtility.DisplayDialog("Clear SceneTrack Data", "Are you sure you wish to delete all SceneTrack data?", "Yes", "No"))
+                {
+                    Cache.ClearFiles();
+                    _outputIndex = 0;
+                }
             }
-
             EditorGUILayout.EndHorizontal();
 
-
+            EditorGUI.BeginDisabledGroup(Cache.CachedFiles.Length == 0);
 
             GUILayout.Space(10);
 
-
-            EditorGUILayout.LabelField("Output" , EditorStyles.boldLabel);
-
-            EditorGUI.BeginDisabledGroup(Cache.CachedFiles.Length == 0);
+            EditorGUILayout.LabelField("Selected Take" , EditorStyles.boldLabel);
 
             string[] options = Cache.CachedFiles;
             for (int i = 0; i < options.Length; i++)
             {
-                options[i] = options[i].Replace(Cache.Folder, string.Empty).TrimEnd(Cache.FileExtension.ToCharArray());
+                options[i] = options[i].Replace(Cache.Folder, string.Empty).TrimEnd(Cache.FileExtension.ToCharArray()).TrimEnd('.');
             }
 
-            _outputIndex = EditorGUILayout.Popup("Take", _outputIndex, options);
 
-            if (GUILayout.Button("Export"))
+            _outputIndex = EditorGUILayout.Popup(_outputIndex, options);
+
+            GUILayout.Space(5);
+            EditorGUILayout.BeginHorizontal();
+
+
+            if (GUILayout.Button("Export", EditorStyles.miniButtonLeft))
             {
                 Output.Export(Cache.CachedFiles[_outputIndex]);
             }
+            if (GUILayout.Button("Clear", EditorStyles.miniButtonRight))
+            {
+                if (EditorUtility.DisplayDialog("Clear SceneTrack Data",
+                    "Are you sure you wish to clear " + Cache.CachedFiles[_outputIndex] + "?", "Yes", "No"))
+                {
+                    Cache.ClearFile(Cache.CachedFiles[_outputIndex]);
+                    _outputIndex--;
+                    if (_outputIndex < 0) _outputIndex = 0;
+                }
+            }
+
+            EditorGUILayout.EndHorizontal();
+
+            GUILayout.Space(10);
+
+
+
             EditorGUI.EndDisabledGroup();
         }
     }

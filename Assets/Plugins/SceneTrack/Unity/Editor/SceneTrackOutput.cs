@@ -26,8 +26,6 @@ namespace SceneTrack.Unity.Editor
                 SceneTrackFbx.Conversion.ConvertSceneTrackFile(new StringBuilder(sourcePath),
                     new StringBuilder(outputFile));
             }
-
-            Console.WriteLine(outputFile);
         }
     }
 

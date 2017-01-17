@@ -71,6 +71,8 @@ namespace SceneTrack.Unity
 
         private void Awake()
         {
+            if (!TrackObject) return;
+
             // Initialize SceneTrack
             System.EnterPlayMode();
 
@@ -85,16 +87,19 @@ namespace SceneTrack.Unity
         /// <remarks>Submits our data to SceneTrack to be saved, it only happens once across all components.</remarks>
         private void LateUpdate()
         {
+            if (!TrackObject) return;
             System.SubmitRecording(_frameCount, Time.deltaTime);
         }
 
         public void OnEnable()
         {
+            if (!TrackObject) return;
             Object.SetValue_uint8(_handle, Classes.GameObject.Visibility, 1);
         }
 
         public void OnDisable()
         {
+            if (!TrackObject) return;
             Object.SetValue_uint8(_handle, Classes.GameObject.Visibility, 0);
         }
 
@@ -132,6 +137,8 @@ namespace SceneTrack.Unity
         /// <remarks>Record any changes to the tracked objects</remarks>
         private void Update()
         {
+            if (!TrackObject) return;
+
             // Get last used frame number, we use this to determine if this is the first late update being called!
             _frameCount = System.FrameCount;
 
@@ -151,7 +158,7 @@ namespace SceneTrack.Unity
         private void Init()
         {
             // Return if we've already initialized
-            if (_initialized) return;
+            if (_initialized || !TrackObject) return;
             
             // Register GameObject
             _handle = Object.CreateObject(Classes.GameObject.Type);

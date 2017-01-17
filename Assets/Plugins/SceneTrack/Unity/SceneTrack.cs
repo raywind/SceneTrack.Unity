@@ -49,7 +49,7 @@ namespace SceneTrack.Unity
             InstanceHandle = Recording.CreateRecording();
 
             // Setup the new take for recording, writing every 2 frames
-            Recording.AppendSaveRecording(new StringBuilder(Cache.Folder + fileName + Cache.FileExtension), Format.Binary, 2);
+            Recording.AppendSaveRecording(new StringBuilder(Cache.Folder + fileName + "." + Cache.FileExtension), Format.Binary, 2);
 
             // Create Schema
             Classes.CreateSchema();

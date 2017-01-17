@@ -12,7 +12,7 @@ namespace SceneTrack.Unity
         {
             get
             {
-                return Application.dataPath + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + "Temp" + Path.DirectorySeparatorChar + "SceneTrackData" + Path.DirectorySeparatorChar ;
+                return Application.dataPath + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + "SceneTrack" + Path.DirectorySeparatorChar ;
             }
 
         }
@@ -24,7 +24,7 @@ namespace SceneTrack.Unity
         {
             get
             {
-                return ".st";
+                return "st";
             }
         }
 
@@ -44,7 +44,8 @@ namespace SceneTrack.Unity
                 Directory.CreateDirectory(Folder);
             }
 
-            CachedFiles = Directory.GetFiles(Folder, "*" + FileExtension);
+            CachedFiles = Directory.GetFiles(Folder, "*." + FileExtension) ?? new string[0];
+
             return CachedFiles;
         }
 
@@ -55,6 +56,12 @@ namespace SceneTrack.Unity
                 File.Delete(s);
             }
             _cachedFiles = new string[0];
+        }
+
+        public static void ClearFile(string path)
+        {
+            File.Delete(Folder +  path + "." + FileExtension);
+            GetCacheFiles();
         }
 
         public static int CurrentTakeNumber = 0;
