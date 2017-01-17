@@ -218,6 +218,42 @@ namespace SceneTrack.Unity.Editor
                 UnityEditor.EditorPrefs.SetInt("SceneTrack_AxisSZ", value);
             }
         }
+    
+        public static float RotationAddX
+        {
+            get
+            {
+                return UnityEditor.EditorPrefs.GetFloat("SceneTrack_RotationAddX", 0.0f);
+            }
+            set
+            {
+                UnityEditor.EditorPrefs.SetFloat("SceneTrack_RotationAddX", value);
+            }
+        }
+        
+        public static float RotationAddY
+        {
+            get
+            {
+                return UnityEditor.EditorPrefs.GetFloat("SceneTrack_RotationAddY", 0.0f);
+            }
+            set
+            {
+                UnityEditor.EditorPrefs.SetFloat("SceneTrack_RotationAddY", value);
+            }
+        }
+    
+        public static float RotationAddZ
+        {
+            get
+            {
+                return UnityEditor.EditorPrefs.GetFloat("SceneTrack_RotationAddZ", 0.0f);
+            }
+            set
+            {
+                UnityEditor.EditorPrefs.SetFloat("SceneTrack_RotationAddZ", value);
+            }
+        }
 
         private static void SetupSwizzle(int node, int trsMask, int srcAxis, FbxAxis axis)
         {
@@ -268,6 +304,10 @@ namespace SceneTrack.Unity.Editor
         SetupSwizzles(SceneTrackFbx.Node.Bone, SceneTrackFbx.TRS.Translation, AxisTX, AxisTY, AxisTZ);
         SetupSwizzles(SceneTrackFbx.Node.Bone, SceneTrackFbx.TRS.Rotation, AxisRX, AxisRY, AxisRZ);
         SetupSwizzles(SceneTrackFbx.Node.Bone, SceneTrackFbx.TRS.Scale,  AxisSX, AxisSY, AxisSZ);
+
+        SceneTrackFbx.Conversion.SetAxisOperation(SceneTrackFbx.Node.Transform, SceneTrackFbx.TRS.Rotation, SceneTrackFbx.Axis.X, SceneTrackFbx.Operator.Add, RotationAddX);
+        SceneTrackFbx.Conversion.SetAxisOperation(SceneTrackFbx.Node.Transform, SceneTrackFbx.TRS.Rotation, SceneTrackFbx.Axis.Y, SceneTrackFbx.Operator.Add, RotationAddY);
+        SceneTrackFbx.Conversion.SetAxisOperation(SceneTrackFbx.Node.Transform, SceneTrackFbx.TRS.Rotation, SceneTrackFbx.Axis.Z, SceneTrackFbx.Operator.Add, RotationAddZ);
 
         SceneTrackFbx.Conversion.SetFileVersion(Version);
       }
@@ -333,6 +373,11 @@ namespace SceneTrack.Unity.Editor
       
         var sZ = (FbxAxis) EditorGUILayout.EnumPopup("Scale Axis Z", (FbxAxis) AxisSZ);
         AxisSZ = (int) sZ;
+      
+        RotationAddX = EditorGUILayout.FloatField("Rotation Add X", RotationAddX);
+        RotationAddY = EditorGUILayout.FloatField("Rotation Add Y", RotationAddY);
+        RotationAddZ = EditorGUILayout.FloatField("Rotation Add Z", RotationAddZ);
+
       }
 
       public static string GetExportExtension()
