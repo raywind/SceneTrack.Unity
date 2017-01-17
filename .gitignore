@@ -11,3 +11,4 @@ Assets/Plugins/JetBrains.meta
 Assets/Plugins/JetBrains/Editor.meta
 Assets/Plugins/JetBrains
 SceneTrack.Unity.userprefs
+*.st

@@ -16,7 +16,7 @@ namespace SceneTrack.Unity.Editor
             // Get destination folder
             var outputFile = UnityEditor.EditorUtility.SaveFilePanel(
                 "Destination File",
-                UnityEngine.Application.dataPath,
+                Environment.SpecialFolder.DesktopDirectory.ToString(),
                 Path.GetFileNameWithoutExtension(sourcePath) + "." + FBXOutput.GetExportExtension(),
                 FBXOutput.GetExportExtension());
 
