@@ -496,6 +496,11 @@ namespace SceneTrack.Unity
                                               _transform.parent.gameObject.AddComponent<SceneTrackObject>();
 
                     // TODO: Possibly add forced init of parent if the order is wrong
+                    // ADDED BY ROBIN: Looks like this does happen. Children get initialised before parents.
+                    if (_parentSceneTrackObject._initialized == false)
+                    {
+                      _parentSceneTrackObject.Init();
+                    }
 
                     // Setup some cached references
                     _transformParentHandle = _parentSceneTrackObject.TransformHandle;
