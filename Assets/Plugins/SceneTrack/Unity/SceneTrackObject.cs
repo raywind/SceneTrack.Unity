@@ -215,6 +215,9 @@ namespace SceneTrack.Unity
 
                 // Assign Mesh (shared reference if found) to MeshRenderer
                 Object.SetValue_uint32(_skinnedMeshRendererHandle, Classes.SkinnedMeshRenderer.Mesh, _meshHandle);
+                
+                // Assign Parent (transform) , Duplication Understood.
+                Object.SetValue_uint32(_meshRendererHandle, Classes.StandardMeshRenderer.Parent, TransformHandle);
 
                 // Assign Materials (shared references as found)
                 Helper.SubmitArray(_skinnedMeshRendererHandle, Classes.SkinnedMeshRenderer.Materials, _materialHandles, Helper.GetTypeMemorySize(typeof(uint), 1));
