@@ -122,7 +122,8 @@ namespace SceneTrack.Unity.Editor
 
             if (GUILayout.Button("Export", EditorStyles.miniButtonLeft))
             {
-                Output.Export(Cache.CachedFiles[_outputIndex]);
+                string path = Path.GetFullPath(Path.Combine(Cache.Folder, Cache.CachedFiles[_outputIndex] + ".st"));
+                Output.Export(path);
             }
             if (GUILayout.Button("Clear", EditorStyles.miniButtonRight))
             {

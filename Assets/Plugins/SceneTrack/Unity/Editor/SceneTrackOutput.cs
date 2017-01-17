@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Mime;
 using System.Text;
@@ -23,8 +24,16 @@ namespace SceneTrack.Unity.Editor
             if (!string.IsNullOrEmpty(outputFile))
             {
                 //TODO: EntryPointNotFoundException: fbxConvertSceneTrackFile
-                SceneTrackFbx.Conversion.ConvertSceneTrackFile(new StringBuilder(sourcePath),
+                int response = SceneTrackFbx.Conversion.ConvertSceneTrackFile(new StringBuilder(sourcePath),
                     new StringBuilder(outputFile));
+                if (response == 0)
+                {
+                  UnityEngine.Debug.Log("FBX Conversion Successfull");
+                }
+                else
+                {
+                  UnityEngine.Debug.Log("FBX Conversion Failed.");
+                }
             }
         }
     }
