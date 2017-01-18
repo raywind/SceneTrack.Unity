@@ -115,7 +115,7 @@ namespace SceneTrack.Unity
                 Type = Object.CreateObjectTypeEx(Frequency.Dynamic, 104);
                 Parent = Object.AddObjectTypeComponentEx2(Type, Kind.Parent, SceneTrack.Type.Uint32, 1, 1, Units.Unspecified, Reference.Unspecified);
                 LocalPosition = Object.AddObjectTypeComponentEx2(Type, Kind.Position, SceneTrack.Type.Float32, 3, 1, Units.Unspecified, Reference.Local);
-                LocalRotation = Object.AddObjectTypeComponentEx2(Type, Kind.Rotation, SceneTrack.Type.Float32, 3, 1, Units.Degree, Reference.Local);
+                LocalRotation = Object.AddObjectTypeComponentEx2(Type, Kind.Rotation, SceneTrack.Type.Float32, 4, 1, Units.Unspecified, Reference.Local);
                 LocalScale = Object.AddObjectTypeComponentEx2(Type, Kind.Scale, SceneTrack.Type.Float32, 3, 1, Units.Unspecified, Reference.Local);
                 Id = Object.AddObjectTypeComponentEx2(Type, Kind.Named, SceneTrack.Type.Uint8, 1, 1, Units.Unspecified, Reference.Unspecified);
             }

@@ -512,14 +512,14 @@ namespace SceneTrack.Unity
             }
 
             // Update Transform Position, Rotation and Scale.
-            var localPrs = _transform.localPosition;
-            Object.SetValue_3_float32(TransformHandle, Classes.Transform.LocalPosition, localPrs.x, localPrs.y, localPrs.z);
+            var localPs = _transform.localPosition;
+            Object.SetValue_3_float32(TransformHandle, Classes.Transform.LocalPosition, localPs.x, localPs.y, localPs.z);
 
-            localPrs = _transform.localEulerAngles;
-            Object.SetValue_3_float32(TransformHandle, Classes.Transform.LocalRotation, localPrs.x, localPrs.y, localPrs.z);
+            var localR = _transform.localRotation;
+            Object.SetValue_4_float32(TransformHandle, Classes.Transform.LocalRotation, localR.x, localR.y, localR.z, localR.w);
 
-            localPrs = _transform.localScale;
-            Object.SetValue_3_float32(TransformHandle, Classes.Transform.LocalScale, localPrs.x, localPrs.y, localPrs.z);
+            localPs = _transform.localScale;
+            Object.SetValue_3_float32(TransformHandle, Classes.Transform.LocalScale, localPs.x, localPs.y, localPs.z);
 
         }
         #endregion
