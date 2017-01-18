@@ -511,22 +511,15 @@ namespace SceneTrack.Unity
                 Object.SetValue_uint32(TransformHandle, Classes.Transform.Parent, _transformParentHandle);
             }
 
-            // Update SceneTrack
-            var localCache = _transform.localPosition;
-            Object.SetValue_3_float32(TransformHandle, Classes.Transform.LocalPosition, localCache.x,
-                localCache.y, localCache.z);
+            // Update Transform Position, Rotation and Scale.
+            var localPrs = _transform.localPosition;
+            Object.SetValue_3_float32(TransformHandle, Classes.Transform.LocalPosition, localPrs.x, localPrs.y, localPrs.z);
 
-            localCache = _transform.eulerAngles;
-            Object.SetValue_3_float32(TransformHandle, Classes.Transform.LocalRotation, localCache.x,
-                localCache.y, localCache.z);
+            localPrs = _transform.localEulerAngles;
+            Object.SetValue_3_float32(TransformHandle, Classes.Transform.LocalRotation, localPrs.x, localPrs.y, localPrs.z);
 
-            localCache = _transform.localScale;
-            Object.SetValue_3_float32(TransformHandle, Classes.Transform.LocalScale, localCache.x,
-                localCache.y, localCache.z);
-      
-            // Reset the flag
-            // NOTE: This may effect other scripts
-            _transform.hasChanged = false;
+            localPrs = _transform.localScale;
+            Object.SetValue_3_float32(TransformHandle, Classes.Transform.LocalScale, localPrs.x, localPrs.y, localPrs.z);
 
         }
         #endregion
