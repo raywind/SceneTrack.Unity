@@ -46,6 +46,11 @@ namespace SceneTrack.Unity
         private uint _handle;
 
         private bool _initialized;
+        private bool _initializing;
+
+        public bool IsInitialized { get { return _initialized; } }
+        public bool IsInitializedOrInitializing { get { return _initialized || _initializing; } }
+
         private MeshFilter _meshFilter;
         private MeshRenderer _meshRenderer;
         private SkinnedMeshRenderer _skinnedMeshRenderer;
@@ -154,11 +159,12 @@ namespace SceneTrack.Unity
         /// One-Time Initialization Of Object Description
         /// </summary>
         /// <remarks>Defines the object, and its properties inside of SceneTrack for recording purposes.</remarks>
-        private void Init()
+        public void Init()
         {
             // Return if we've already initialized
-            if (_initialized || !TrackObject) return;
-            
+            if (_initialized || _initializing || !TrackObject) return;
+            _initializing = true;
+
             // Register GameObject
             _handle = Object.CreateObject(Classes.GameObject.Type);
       
@@ -167,6 +173,12 @@ namespace SceneTrack.Unity
             {
                 InitTransform();
             }
+
+            if (_transform.parent != null)
+            { 
+                  Helper.RecursiveBackwardsAddObjectAndInitialise(_transform.parent);
+            }
+
             if ( TrackMeshRenderer )
             {
                 InitMeshRenderer();
@@ -174,6 +186,7 @@ namespace SceneTrack.Unity
 
             // Set flag as initialized
             _initialized = true;
+            _initializing = false;
         }
 
         /// <summary>
@@ -243,6 +256,22 @@ namespace SceneTrack.Unity
                 }
 
                 Helper.SubmitArray(_skinnedMeshRendererHandle, Classes.SkinnedMeshRenderer.Bones, boneHandles, Helper.GetTypeMemorySize(typeof(uint), 1));
+
+                // BoneTransform.  Assumed to be the parent of the Root Bone.
+                Transform rootBone = _skinnedMeshRenderer.rootBone;
+
+                if (rootBone != null)
+                {
+                  Transform rootBoneParent = rootBone.parent;
+                  if (rootBoneParent != null)
+                  {
+                    Helper.RecursiveBackwardsAddObjectAndInitialise(rootBoneParent);
+                    
+                    SceneTrackObject rootBoneParentObject = rootBoneParent.GetComponent<SceneTrackObject>();
+                    
+                    SceneTrack.Object.SetValue_uint32(_skinnedMeshRendererHandle, Classes.SkinnedMeshRenderer.BoneTransform, rootBoneParentObject.TransformHandle);
+                  }
+                }
             }
             else
             {

@@ -72,7 +72,30 @@ namespace SceneTrack.Unity
             Object.SetValue_p_uint8(objectHandle, componentHandle, arrayPointer, (uint) array.Length, stride);
             handle.Free();
         }
-    
+
+        public static void RecursiveBackwardsAddObjectAndInitialise(Transform transform)
+        {
+          SceneTrackObject obj = transform.GetComponent<SceneTrackObject>();
+          
+          if (obj == null)
+          {
+            obj = transform.gameObject.AddComponent<SceneTrackObject>();
+          }
+
+          if (obj.IsInitializedOrInitializing == false)
+          {
+            obj.Init();
+          }
+
+          Transform parent = transform.parent;
+
+          if (parent != null)
+          {
+            RecursiveBackwardsAddObjectAndInitialise(parent);
+          }
+
+        }
+
         public static void SubmitArray(uint objectHandle, uint componentHandle, byte[] array, uint stride, uint arrayLength)
         {
             var handle = GCHandle.Alloc(array, GCHandleType.Pinned);
