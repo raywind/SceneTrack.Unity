@@ -133,6 +133,11 @@ namespace SceneTrack.Unity
             if ( GetComponent<MeshRenderer>() != null ) {
                 TrackMeshRenderer = true;
             }
+
+            // Check if there is a skinned mesh render and enable
+            if ( GetComponent<SkinnedMeshRenderer>() != null ) {
+                TrackMeshRenderer = true;
+            }
         }
 
         /// <summary>
