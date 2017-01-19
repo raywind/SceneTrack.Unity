@@ -38,7 +38,6 @@ namespace SceneTrack.Unity
                 Name = Object.AddObjectTypeComponentEx2(Type, Kind.Named, SceneTrack.Type.CString, 1, 1, Units.Unspecified, Reference.Unspecified);
                 Layer = Object.AddObjectTypeComponentEx2(Type, Kind.Layer, SceneTrack.Type.Int32, 1, 1, Units.Unspecified, Reference.Unspecified);
                 Transform = Object.AddObjectTypeComponentEx2(Type, Kind.Spatial, SceneTrack.Type.Uint32, 1, 1, Units.Unspecified, Reference.Unspecified);
-                Components = Object.AddObjectTypeComponentEx2(Type, Kind.Child, SceneTrack.Type.Uint32, 1, int.MaxValue, Units.Unspecified, Reference.Unspecified);
                 Visibility = Object.AddObjectTypeComponentEx2(Type, Kind.Intensity, SceneTrack.Type.Uint8, 1, 1, Units.Unspecified, Reference.Unspecified);
             }
         }
