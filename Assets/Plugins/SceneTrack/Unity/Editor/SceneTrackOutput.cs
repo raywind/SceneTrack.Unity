@@ -77,9 +77,11 @@ namespace SceneTrack.Unity.Editor
           NX,
           NY,
           NZ,
+          NW,
           PX,
           PY,
-          PZ
+          PZ,
+          PW
         }
     
         public static int Version
@@ -166,6 +168,18 @@ namespace SceneTrack.Unity.Editor
             }
         }
     
+        public static int AxisRW
+        {
+            get
+            {
+                return UnityEditor.EditorPrefs.GetInt("SceneTrack_AxisRW", (int) FbxAxis.PW);
+            }
+            set
+            {
+                UnityEditor.EditorPrefs.SetInt("SceneTrack_AxisRW", value);
+            }
+        }
+    
         public static int AxisSX
         {
             get
@@ -202,39 +216,75 @@ namespace SceneTrack.Unity.Editor
             }
         }
     
-        public static float RotationAddX
+        public static int VertexX
         {
             get
             {
-                return UnityEditor.EditorPrefs.GetFloat("SceneTrack_RotationAddX", 0.0f);
+                return UnityEditor.EditorPrefs.GetInt("SceneTrack_VertexX", (int) FbxAxis.PX);
             }
             set
             {
-                UnityEditor.EditorPrefs.SetFloat("SceneTrack_RotationAddX", value);
+                UnityEditor.EditorPrefs.SetInt("SceneTrack_VertexX", value);
             }
         }
         
-        public static float RotationAddY
+        public static int VertexY
         {
             get
             {
-                return UnityEditor.EditorPrefs.GetFloat("SceneTrack_RotationAddY", 0.0f);
+                return UnityEditor.EditorPrefs.GetInt("SceneTrack_VertexY", (int) FbxAxis.PY);
             }
             set
             {
-                UnityEditor.EditorPrefs.SetFloat("SceneTrack_RotationAddY", value);
+                UnityEditor.EditorPrefs.SetInt("SceneTrack_VertexY", value);
             }
         }
     
-        public static float RotationAddZ
+        public static int VertexZ
         {
             get
             {
-                return UnityEditor.EditorPrefs.GetFloat("SceneTrack_RotationAddZ", 0.0f);
+                return UnityEditor.EditorPrefs.GetInt("SceneTrack_VertexZ", (int) FbxAxis.PZ);
             }
             set
             {
-                UnityEditor.EditorPrefs.SetFloat("SceneTrack_RotationAddZ", value);
+                UnityEditor.EditorPrefs.SetInt("SceneTrack_VertexZ", value);
+            }
+        }
+    
+        public static int NormalX
+        {
+            get
+            {
+                return UnityEditor.EditorPrefs.GetInt("SceneTrack_NormalX", (int) FbxAxis.PX);
+            }
+            set
+            {
+                UnityEditor.EditorPrefs.SetInt("SceneTrack_NormalX", value);
+            }
+        }
+        
+        public static int NormalY
+        {
+            get
+            {
+                return UnityEditor.EditorPrefs.GetInt("SceneTrack_NormalY", (int) FbxAxis.PY);
+            }
+            set
+            {
+                UnityEditor.EditorPrefs.SetInt("SceneTrack_NormalY", value);
+            }
+        }
+    
+        public static int NormalZ
+        {
+            get
+            {
+                return UnityEditor.EditorPrefs.GetInt("SceneTrack_NormalZ", (int) FbxAxis.PZ);
+            }
+            set
+            {
+                UnityEditor.EditorPrefs.SetInt("SceneTrack_NormalZ", value);
             }
         }
 
@@ -271,18 +321,6 @@ namespace SceneTrack.Unity.Editor
             set
             {
                 UnityEditor.EditorPrefs.SetFloat("SceneTrack_ScaleMultiplyZ", value);
-            }
-        }
-    
-        public static int RotationOrder
-        {
-            get
-            {
-                return UnityEditor.EditorPrefs.GetInt("SceneTrack_RotationOrder", 0);
-            }
-            set
-            {
-                UnityEditor.EditorPrefs.SetInt("SceneTrack_RotationOrder", value);
             }
         }
 
@@ -327,6 +365,10 @@ namespace SceneTrack.Unity.Editor
               dstAxis = SceneTrackFbx.Axis.Z;
               sign = -1;
               break;
+            case FbxAxis.NW:
+              dstAxis = SceneTrackFbx.Axis.W;
+              sign = -1;
+              break;
             case FbxAxis.PX:
               dstAxis = SceneTrackFbx.Axis.X;
               sign = 1;
@@ -339,6 +381,10 @@ namespace SceneTrack.Unity.Editor
               dstAxis = SceneTrackFbx.Axis.Z;
               sign = 1;
               break;
+            case FbxAxis.PW:
+              dstAxis = SceneTrackFbx.Axis.W;
+              sign = 1;
+              break;
           }
           SceneTrackFbx.Settings.SetAxisSwizzle(node, trsMask, srcAxis, dstAxis, sign);
         }
@@ -349,34 +395,39 @@ namespace SceneTrack.Unity.Editor
         SetupSwizzle(node, trsMask, SceneTrackFbx.Axis.Y, (FbxAxis) y);
         SetupSwizzle(node, trsMask, SceneTrackFbx.Axis.Z, (FbxAxis) z);
       }
-
+    
+      private static void SetupSwizzles(int node, int trsMask, int x, int y, int z, int w)
+      {
+        SetupSwizzle(node, trsMask, SceneTrackFbx.Axis.X, (FbxAxis) x);
+        SetupSwizzle(node, trsMask, SceneTrackFbx.Axis.Y, (FbxAxis) y);
+        SetupSwizzle(node, trsMask, SceneTrackFbx.Axis.Z, (FbxAxis) z);
+        SetupSwizzle(node, trsMask, SceneTrackFbx.Axis.W, (FbxAxis) w);
+      }
       public static void SetupExport()
       {
-        SetupSwizzles(SceneTrackFbx.Node.Transform, SceneTrackFbx.TRS.Translation, AxisTX, AxisTY, AxisTZ);
-        SetupSwizzles(SceneTrackFbx.Node.Transform, SceneTrackFbx.TRS.Rotation, AxisRX, AxisRY, AxisRZ);
-        SetupSwizzles(SceneTrackFbx.Node.Transform, SceneTrackFbx.TRS.Scale,  AxisSX, AxisSY, AxisSZ);
+        SetupSwizzles(SceneTrackFbx.Node.Transform, SceneTrackFbx.NodeProperty.Translation, AxisTX, AxisTY, AxisTZ);
+        SetupSwizzles(SceneTrackFbx.Node.Transform, SceneTrackFbx.NodeProperty.Rotation, AxisRX, AxisRY, AxisRZ, AxisRW);
+        SetupSwizzles(SceneTrackFbx.Node.Transform, SceneTrackFbx.NodeProperty.Scale,  AxisSX, AxisSY, AxisSZ);
       
-        SetupSwizzles(SceneTrackFbx.Node.Bone, SceneTrackFbx.TRS.Translation, AxisTX, AxisTY, AxisTZ);
-        SetupSwizzles(SceneTrackFbx.Node.Bone, SceneTrackFbx.TRS.Rotation, AxisRX, AxisRY, AxisRZ);
-        SetupSwizzles(SceneTrackFbx.Node.Bone, SceneTrackFbx.TRS.Scale,  AxisSX, AxisSY, AxisSZ);
+        SetupSwizzles(SceneTrackFbx.Node.Bone, SceneTrackFbx.NodeProperty.Translation, AxisTX, AxisTY, AxisTZ);
+        SetupSwizzles(SceneTrackFbx.Node.Bone, SceneTrackFbx.NodeProperty.Rotation, AxisRX, AxisRY, AxisRZ, AxisRW);
+        SetupSwizzles(SceneTrackFbx.Node.Bone, SceneTrackFbx.NodeProperty.Scale,  AxisSX, AxisSY, AxisSZ);
+      
+        SetupSwizzles(SceneTrackFbx.Node.Mesh, SceneTrackFbx.NodeProperty.Vertex, VertexX, VertexY, VertexZ);
+        SetupSwizzles(SceneTrackFbx.Node.Mesh, SceneTrackFbx.NodeProperty.Normal, NormalX, NormalY, NormalZ);
 
-        SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Transform, SceneTrackFbx.TRS.Rotation, SceneTrackFbx.Axis.X, SceneTrackFbx.Operator.Add, RotationAddX);
-        SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Transform, SceneTrackFbx.TRS.Rotation, SceneTrackFbx.Axis.Y, SceneTrackFbx.Operator.Add, RotationAddY);
-        SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Transform, SceneTrackFbx.TRS.Rotation, SceneTrackFbx.Axis.Z, SceneTrackFbx.Operator.Add, RotationAddZ);
+        SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Transform, SceneTrackFbx.NodeProperty.Scale, SceneTrackFbx.Axis.X, SceneTrackFbx.Operator.Multiply, ScaleMultiplyX);
+        SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Transform, SceneTrackFbx.NodeProperty.Scale, SceneTrackFbx.Axis.Y, SceneTrackFbx.Operator.Multiply, ScaleMultiplyY);
+        SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Transform, SceneTrackFbx.NodeProperty.Scale, SceneTrackFbx.Axis.Z, SceneTrackFbx.Operator.Multiply, ScaleMultiplyZ);
       
-        SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Transform, SceneTrackFbx.TRS.Scale, SceneTrackFbx.Axis.X, SceneTrackFbx.Operator.Multiply, ScaleMultiplyX);
-        SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Transform, SceneTrackFbx.TRS.Scale, SceneTrackFbx.Axis.Y, SceneTrackFbx.Operator.Multiply, ScaleMultiplyY);
-        SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Transform, SceneTrackFbx.TRS.Scale, SceneTrackFbx.Axis.Z, SceneTrackFbx.Operator.Multiply, ScaleMultiplyZ);
-      
-        SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Bone, SceneTrackFbx.TRS.Rotation, SceneTrackFbx.Axis.X, SceneTrackFbx.Operator.Add, RotationAddX);
-        SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Bone, SceneTrackFbx.TRS.Rotation, SceneTrackFbx.Axis.Y, SceneTrackFbx.Operator.Add, RotationAddY);
-        SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Bone, SceneTrackFbx.TRS.Rotation, SceneTrackFbx.Axis.Z, SceneTrackFbx.Operator.Add, RotationAddZ);
-      
-        SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Bone, SceneTrackFbx.TRS.Scale, SceneTrackFbx.Axis.X, SceneTrackFbx.Operator.Multiply, ScaleMultiplyX);
-        SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Bone, SceneTrackFbx.TRS.Scale, SceneTrackFbx.Axis.Y, SceneTrackFbx.Operator.Multiply, ScaleMultiplyY);
-        SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Bone, SceneTrackFbx.TRS.Scale, SceneTrackFbx.Axis.Z, SceneTrackFbx.Operator.Multiply, ScaleMultiplyZ);
+        SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Bone, SceneTrackFbx.NodeProperty.Scale, SceneTrackFbx.Axis.X, SceneTrackFbx.Operator.Multiply, ScaleMultiplyX);
+        SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Bone, SceneTrackFbx.NodeProperty.Scale, SceneTrackFbx.Axis.Y, SceneTrackFbx.Operator.Multiply, ScaleMultiplyY);
+        SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Bone, SceneTrackFbx.NodeProperty.Scale, SceneTrackFbx.Axis.Z, SceneTrackFbx.Operator.Multiply, ScaleMultiplyZ);
         
-        SceneTrackFbx.Settings.SetAxisRotationOrder(RotationOrder);
+        SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Mesh, SceneTrackFbx.NodeProperty.Vertex, SceneTrackFbx.Axis.X, SceneTrackFbx.Operator.Multiply, ScaleMultiplyX);
+        SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Mesh, SceneTrackFbx.NodeProperty.Vertex, SceneTrackFbx.Axis.Y, SceneTrackFbx.Operator.Multiply, ScaleMultiplyY);
+        SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Mesh, SceneTrackFbx.NodeProperty.Vertex, SceneTrackFbx.Axis.Z, SceneTrackFbx.Operator.Multiply, ScaleMultiplyZ);
+        
         SceneTrackFbx.Settings.SetReferenceFrame(ReferenceFrame);
         SceneTrackFbx.Settings.SetReverseTriangleWinding(ReverseTriangles ? 1 : 0);
 
@@ -425,7 +476,7 @@ namespace SceneTrack.Unity.Editor
 
       static String[] AxisStr = new string[]
       {
-        "-X", "-Y", "-Z", "+X", "+Y", "+Z"
+        "-X", "-Y", "-Z", "-W", "+X", "+Y", "+Z", "+W"
       };
 
       static int[] ReferenceFrameInt = new int[]
@@ -449,27 +500,7 @@ namespace SceneTrack.Unity.Editor
       {
         "Keep (1, 2, 3)", "Reverse (1, 3, 2)"
       };
-
-      static int[] RotationOrderInt = new int[]
-      {
-        SceneTrackFbx.AxisOrder.XYZ,
-        SceneTrackFbx.AxisOrder.XZY,
-        SceneTrackFbx.AxisOrder.YXZ,
-        SceneTrackFbx.AxisOrder.YZX,
-        SceneTrackFbx.AxisOrder.ZXY,
-        SceneTrackFbx.AxisOrder.ZYX
-      };
-
-      static string[] RotationOrderStr = new string[]
-      {
-        "XYZ",
-        "XZY",
-        "YXZ",
-        "YZX",
-        "ZXY",
-        "ZYX"
-      };
-
+    
       public static void EditorPreferences()
       {
         Version = EditorGUILayout.IntPopup("FBX Version", Version, FbxVersionStr, FbxVersionInt);
@@ -485,30 +516,25 @@ namespace SceneTrack.Unity.Editor
           switch(preset)
           {
             case 1: // Default
-              AxisTX = (int) FbxAxis.PX; AxisRX = (int) FbxAxis.PX;  AxisSX = (int) FbxAxis.PX;
-              AxisTY = (int) FbxAxis.PY; AxisRY = (int) FbxAxis.PY;  AxisSY = (int) FbxAxis.PY;
-              AxisTZ = (int) FbxAxis.PZ; AxisRZ = (int) FbxAxis.PZ;  AxisSZ = (int) FbxAxis.PZ;
-              RotationAddX = 0.0f;
-              RotationAddY = 0.0f;
-              RotationAddZ = 0.0f;
+              AxisTX = (int) FbxAxis.PX; AxisRX = (int) FbxAxis.PX;  AxisSX = (int) FbxAxis.PX; VertexX = (int) FbxAxis.PX; NormalX = (int) FbxAxis.PX;
+              AxisTY = (int) FbxAxis.PY; AxisRY = (int) FbxAxis.PY;  AxisSY = (int) FbxAxis.PY; VertexY = (int) FbxAxis.PY; NormalY = (int) FbxAxis.PY;
+              AxisTZ = (int) FbxAxis.PZ; AxisRZ = (int) FbxAxis.PZ;  AxisSZ = (int) FbxAxis.PZ; VertexZ = (int) FbxAxis.PZ; NormalZ = (int) FbxAxis.PZ;
+                                         AxisRW = (int) FbxAxis.PW;
+
               ScaleMultiplyX = 1.0f;
               ScaleMultiplyY = 1.0f;
               ScaleMultiplyZ = 1.0f;
-              RotationOrder = SceneTrackFbx.AxisOrder.XYZ;
               ReferenceFrame = SceneTrackFbx.ReferenceFrame.Local;
               ReverseTriangles = false;
             break;
             case 2: // Unity To Fbx
-              AxisTX = (int) FbxAxis.NX; AxisRX = (int) FbxAxis.PX;  AxisSX = (int) FbxAxis.PX;
-              AxisTY = (int) FbxAxis.PY; AxisRY = (int) FbxAxis.NY;  AxisSY = (int) FbxAxis.PY;
-              AxisTZ = (int) FbxAxis.PZ; AxisRZ = (int) FbxAxis.NZ;  AxisSZ = (int) FbxAxis.PZ;
-              RotationAddX = 0.0f;
-              RotationAddY = 0.0f;
-              RotationAddZ = 0.0f;
+              AxisTX = (int) FbxAxis.NX; AxisRX = (int) FbxAxis.PX;  AxisSX = (int) FbxAxis.PX;  VertexX = (int) FbxAxis.NX; NormalX = (int) FbxAxis.NX;
+              AxisTY = (int) FbxAxis.PY; AxisRY = (int) FbxAxis.NY;  AxisSY = (int) FbxAxis.PY;  VertexY = (int) FbxAxis.PY; NormalY = (int) FbxAxis.PY;
+              AxisTZ = (int) FbxAxis.PZ; AxisRZ = (int) FbxAxis.NZ;  AxisSZ = (int) FbxAxis.PZ;  VertexZ = (int) FbxAxis.PZ; NormalZ = (int) FbxAxis.PZ;
+
               ScaleMultiplyX = 1.0f;
               ScaleMultiplyY = 1.0f;
               ScaleMultiplyZ = 1.0f;
-              RotationOrder = SceneTrackFbx.AxisOrder.ZXY;
               ReferenceFrame = SceneTrackFbx.ReferenceFrame.Local;
               ReverseTriangles = true;
             break;
@@ -519,68 +545,48 @@ namespace SceneTrack.Unity.Editor
 
         EditorGUILayout.BeginHorizontal();
           EditorGUILayout.PrefixLabel("Translation");
-      
-          var tsX = (FbxAxis) EditorGUILayout.IntPopup((int) AxisTX, AxisStr, AxisInts);
-          AxisTX = (int) tsX;
-      
-          var tsY = (FbxAxis) EditorGUILayout.IntPopup((int) AxisTY, AxisStr, AxisInts);
-          AxisTY = (int) tsY;
-      
-          var tsZ = (FbxAxis) EditorGUILayout.IntPopup((int) AxisTZ, AxisStr, AxisInts);
-          AxisTZ = (int) tsZ;
-
+          AxisTX = (int) EditorGUILayout.IntPopup((int) AxisTX, AxisStr, AxisInts);
+          AxisTY = (int) EditorGUILayout.IntPopup((int) AxisTY, AxisStr, AxisInts);
+          AxisTZ = (int) EditorGUILayout.IntPopup((int) AxisTZ, AxisStr, AxisInts);
         EditorGUILayout.EndHorizontal();
       
         EditorGUILayout.BeginHorizontal();
-          EditorGUILayout.PrefixLabel("Rotation");
-      
-          var rX = (FbxAxis) EditorGUILayout.IntPopup((int) AxisRX, AxisStr, AxisInts);
-          AxisRX = (int) rX;
-      
-          var rY = (FbxAxis) EditorGUILayout.IntPopup((int) AxisRY, AxisStr, AxisInts);
-          AxisRY = (int) rY;
-      
-          var rZ = (FbxAxis) EditorGUILayout.IntPopup((int) AxisRZ, AxisStr, AxisInts);
-          AxisRZ = (int) rZ;
-
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.BeginHorizontal();
-          EditorGUILayout.PrefixLabel("   ");
-        
-          RotationAddX = EditorGUILayout.FloatField(RotationAddX);
-          RotationAddY = EditorGUILayout.FloatField(RotationAddY);
-          RotationAddZ = EditorGUILayout.FloatField(RotationAddZ);
-
+          EditorGUILayout.PrefixLabel("Rotation (Quaternion)");
+          AxisRX = (int) EditorGUILayout.IntPopup((int) AxisRX, AxisStr, AxisInts);
+          AxisRY = (int) EditorGUILayout.IntPopup((int) AxisRY, AxisStr, AxisInts);
+          AxisRZ = (int) EditorGUILayout.IntPopup((int) AxisRZ, AxisStr, AxisInts);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
           EditorGUILayout.PrefixLabel("Scale");
-      
-          var sX = (FbxAxis) EditorGUILayout.IntPopup((int) AxisSX, AxisStr, AxisInts);
-          AxisSX = (int) sX;
-      
-          var sY = (FbxAxis) EditorGUILayout.IntPopup((int) AxisSY, AxisStr, AxisInts);
-          AxisSY = (int) sY;
-      
-          var sZ = (FbxAxis) EditorGUILayout.IntPopup((int) AxisSZ, AxisStr, AxisInts);
-          AxisSZ = (int) sZ;
-
+          AxisSX = (int) EditorGUILayout.IntPopup((int) AxisSX, AxisStr, AxisInts);
+          AxisSY = (int) EditorGUILayout.IntPopup((int) AxisSY, AxisStr, AxisInts);
+          AxisSZ = (int) EditorGUILayout.IntPopup((int) AxisSZ, AxisStr, AxisInts);
         EditorGUILayout.EndHorizontal();
       
         EditorGUILayout.BeginHorizontal();
           EditorGUILayout.PrefixLabel("   ");
-        
           ScaleMultiplyX = EditorGUILayout.FloatField(ScaleMultiplyX);
           ScaleMultiplyY = EditorGUILayout.FloatField(ScaleMultiplyY);
           ScaleMultiplyZ = EditorGUILayout.FloatField(ScaleMultiplyZ);
-
         EditorGUILayout.EndHorizontal();
       
+        EditorGUILayout.BeginHorizontal();
+          EditorGUILayout.PrefixLabel("Vertex");
+          VertexX = (int) EditorGUILayout.IntPopup((int) VertexX, AxisStr, AxisInts);
+          VertexY = (int) EditorGUILayout.IntPopup((int) VertexY, AxisStr, AxisInts);
+          VertexZ = (int) EditorGUILayout.IntPopup((int) VertexZ, AxisStr, AxisInts);
+        EditorGUILayout.EndHorizontal();
+      
+        EditorGUILayout.BeginHorizontal();
+          EditorGUILayout.PrefixLabel("Normal");
+          NormalX = (int) EditorGUILayout.IntPopup((int) NormalX, AxisStr, AxisInts);
+          NormalY = (int) EditorGUILayout.IntPopup((int) NormalY, AxisStr, AxisInts);
+          NormalZ = (int) EditorGUILayout.IntPopup((int) NormalZ, AxisStr, AxisInts);
+        EditorGUILayout.EndHorizontal();
+
         EditorGUILayout.PrefixLabel(String.Empty);
-
-        RotationOrder = EditorGUILayout.IntPopup("Rotation Order", RotationOrder, RotationOrderStr, RotationOrderInt);
-
+      
         ReferenceFrame = EditorGUILayout.IntPopup("Scene Graph", ReferenceFrame, ReferenceFrameStr, ReferenceFrameInt);
 
         int reverseTriangle = ReverseTriangles ? 1 : 0;
