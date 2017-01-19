@@ -73,6 +73,14 @@ namespace SceneTrack.Unity
             handle.Free();
         }
     
+        public static void SubmitArray(uint objectHandle, uint componentHandle, byte[] array, uint stride, uint arrayLength)
+        {
+            var handle = GCHandle.Alloc(array, GCHandleType.Pinned);
+            var arrayPointer = handle.AddrOfPinnedObject();
+            Object.SetValue_p_uint8(objectHandle, componentHandle, arrayPointer, arrayLength, stride);
+            handle.Free();
+        }
+
         public static void SubmitArray(uint objectHandle, uint componentHandle, int[] array, uint stride)
         {
             var handle = GCHandle.Alloc(array, GCHandleType.Pinned);

@@ -25,9 +25,9 @@ namespace SceneTrack.Unity
         {
             if (_transform.hasChanged)
             {
-              Vector3 position = _transform.localPosition;
-              Vector3 rotation = _transform.localEulerAngles;
-              Vector3 scale    = _transform.localScale;
+              Vector3    position = _transform.localPosition;
+              Quaternion rotation = _transform.localRotation;
+              Vector3    scale    = _transform.localScale;
 
               foreach(var bone in Bones)
               {

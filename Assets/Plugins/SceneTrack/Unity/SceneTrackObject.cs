@@ -58,7 +58,6 @@ namespace SceneTrack.Unity
         private uint _transformParentHandle;
 
         private uint[] _materialHandles;
-        private List<uint> _componentHandles;
         private uint _meshHandle;
         Bone[]  _bones;
 
@@ -162,11 +161,7 @@ namespace SceneTrack.Unity
             
             // Register GameObject
             _handle = Object.CreateObject(Classes.GameObject.Type);
-
-
-            // Clear Component Cache
-            _componentHandles = new List<uint>();
-
+      
             // Register Components
             if ( TrackTransform )
             {
@@ -175,14 +170,6 @@ namespace SceneTrack.Unity
             if ( TrackMeshRenderer )
             {
                 InitMeshRenderer();
-            }
-
-            // Add components to game object, transform not needed
-            if (_componentHandles.Count != 0)
-            { 
-              var componentArray = _componentHandles.ToArray();
-              Helper.SubmitArray(_handle, Classes.GameObject.Components, componentArray, Helper.GetTypeMemorySize(typeof(uint), 1));
-              componentArray = null;
             }
 
             // Set flag as initialized
@@ -217,7 +204,7 @@ namespace SceneTrack.Unity
                 Object.SetValue_uint32(_skinnedMeshRendererHandle, Classes.SkinnedMeshRenderer.Mesh, _meshHandle);
                 
                 // Assign Parent (transform) , Duplication Understood.
-                Object.SetValue_uint32(_meshRendererHandle, Classes.SkinnedMeshRenderer.Parent, TransformHandle);
+                Object.SetValue_uint32(_skinnedMeshRendererHandle, Classes.SkinnedMeshRenderer.Parent, TransformHandle);
 
                 // Assign Materials (shared references as found)
                 Helper.SubmitArray(_skinnedMeshRendererHandle, Classes.SkinnedMeshRenderer.Materials, _materialHandles, Helper.GetTypeMemorySize(typeof(uint), 1));
@@ -247,7 +234,15 @@ namespace SceneTrack.Unity
                 {
                   _bones[i].Initialise(cachedBones, _bones);
                 }
-                
+
+                uint[] boneHandles = new uint[cachedBones.Length];
+
+                for (int i=0;i < cachedBonesCount;i++)
+                {
+                  boneHandles[i] = _bones[i]._boneHandle;
+                }
+
+                Helper.SubmitArray(_skinnedMeshRendererHandle, Classes.SkinnedMeshRenderer.Bones, boneHandles, Helper.GetTypeMemorySize(typeof(uint), 1));
             }
             else
             {
@@ -266,10 +261,7 @@ namespace SceneTrack.Unity
                     meshMaterialsPointer, (uint) _materialHandles.Length, Helper.GetTypeMemorySize(typeof(uint), 1));
                 meshMaterialsHandle.Free();
             }
-
-
-            // Add to be included in component link
-            _componentHandles.Add(_meshRendererHandle);
+            
         }
 
         /// <summary>
@@ -402,7 +394,7 @@ namespace SceneTrack.Unity
                     
                     // The indices are stored as a ByteVector4 array inside of ST, we have to alter the data description here accordingly.
                     // Handle BoneWeight Indexes (ByteVector4 like)
-                    Helper.SubmitArray(_meshHandle, Classes.Mesh.BoneWeightIndex, boneIndexes, 4);
+                    Helper.SubmitArray(_meshHandle, Classes.Mesh.BoneWeightIndex, boneIndexes, 4, (uint) (boneIndexes.Length / 4));
                     // Handle BoneWeight Vector  (Vector4 like)
                     Helper.SubmitArray(_meshHandle, Classes.Mesh.BoneWeightWeight, boneWeights);
 
@@ -415,11 +407,14 @@ namespace SceneTrack.Unity
                 }
 
                 // Handle Bounds (Vector3[2])
+
+                /*
                 var bounds = new Vector3[2];
                 bounds[0] = _meshRenderer.bounds.min;
                 bounds[1] = _meshRenderer.bounds.max;
                 Helper.SubmitArray(_meshHandle, Classes.Mesh.Bounds, bounds);
                 bounds = null;
+                */
 
                 // Create Sub Meshes (If we have any!)
                 if (cachedMesh.subMeshCount > 0)
@@ -529,14 +524,14 @@ namespace SceneTrack.Unity
         public class Bone
         {
           public Transform _transform;
-          public uint      _handle;
+          public uint      _boneHandle;
           public SceneTrackMultiBoneProxy _proxy;
 
           public Bone(int id, Transform boneTransform)
           {
             _transform = boneTransform;
-            _handle = SceneTrack.Object.CreateObject(Classes.Bone.Type);
-            Object.SetValue_uint8(_handle, Classes.Bone.Id, (byte) id);
+            _boneHandle = SceneTrack.Object.CreateObject(Classes.Bone.Type);
+            Object.SetValue_uint8(_boneHandle, Classes.Bone.Id, (byte) id);
             
             _proxy = boneTransform.GetComponent<SceneTrackMultiBoneProxy>();
 
@@ -557,21 +552,16 @@ namespace SceneTrack.Unity
               if (parentIndex != -1)
               {
                 Bone boneParent = bones[parentIndex];
-                Object.SetValue_uint32(_handle, Classes.Bone.Parent, boneParent._handle);
+                Object.SetValue_uint32(_boneHandle, Classes.Bone.Parent, boneParent._boneHandle);
               }
             }
           }
 
-          public void Update(Vector3 position, Vector3 rotation, Vector3 scale)
+          public void Update(Vector3 position, Quaternion rotation, Vector3 scale)
           {
-            Object.SetValue_3_float32(_handle, Classes.Bone.LocalPosition, position.x,
-                position.y, position.z);
-        
-            Object.SetValue_3_float32(_handle, Classes.Bone.LocalRotation, rotation.x,
-                rotation.y, rotation.z);
-        
-            Object.SetValue_3_float32(_handle, Classes.Bone.LocalScale, scale.x,
-                scale.y, scale.z);
+            Object.SetValue_3_float32(_boneHandle, Classes.Bone.LocalPosition, position.x, position.y, position.z);
+            Object.SetValue_4_float32(_boneHandle, Classes.Bone.LocalRotation, rotation.x, rotation.y, rotation.z, rotation.w);
+            Object.SetValue_3_float32(_boneHandle, Classes.Bone.LocalScale, scale.x, scale.y, scale.z);
           }
 
         }
