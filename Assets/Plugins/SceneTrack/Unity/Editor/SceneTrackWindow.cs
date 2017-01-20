@@ -38,6 +38,11 @@ namespace SceneTrack.Unity.Editor
             System.CacheKnownObjects();
         }
 
+        void OnInspectorUpdate()
+        {
+          Repaint();
+        }
+
         public void OnGUI()
         {
             GUILayout.Space(5);
@@ -119,12 +124,44 @@ namespace SceneTrack.Unity.Editor
             GUILayout.Space(5);
             EditorGUILayout.BeginHorizontal();
 
+            bool disableExport = Output.IsExporting;
+
+            if (Output.IsExporting && Output.IsExportSucessfull == -1)
+            {
+              // Exporting right now.
+              EditorUtility.DisplayProgressBar("Exporting SceneTrack", "Saving Take to FBX File...", Output.ExportProgress);
+            }
+
+            if (!Output.IsExporting && Output.IsExportSucessfull != -1)
+            {
+              bool didExport = (Output.IsExportSucessfull == 1);
+              string dstPath = Output.ReceiveExport();
+              EditorUtility.ClearProgressBar();
+
+              // Exported or failed export
+              if (didExport == true)
+              {
+                if (EditorUtility.DisplayDialog("Exported SceneTrack", "The SceneTrack file was exported.",  "Open File...", "Okay"))
+                {
+                   Application.OpenURL(dstPath);
+                }
+              }
+              else if (didExport == false)
+              {
+                EditorUtility.DisplayDialog("Exporting SceneTrack Failed!", "The SceneTrack file could not be exported.", "Okay");
+              }
+            }
+            
+            if (disableExport)
+              GUI.enabled = false;
 
             if (GUILayout.Button("Export", EditorStyles.miniButtonLeft))
             {
                 string path = Path.GetFullPath(Path.Combine(Cache.Folder, Cache.CachedFiles[_outputIndex] + ".st"));
                 Output.Export(path);
             }
+
+
             if (GUILayout.Button("Clear", EditorStyles.miniButtonRight))
             {
                 if (EditorUtility.DisplayDialog("Clear SceneTrack Data",
@@ -135,6 +172,8 @@ namespace SceneTrack.Unity.Editor
                     if (_outputIndex < 0) _outputIndex = 0;
                 }
             }
+
+            GUI.enabled = true;
 
             EditorGUILayout.EndHorizontal();
 

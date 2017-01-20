@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.Mime;
 using System.Text;
+using System.Threading;
 using SceneTrackFbx;
 using UnityEditor;
 
@@ -10,6 +11,108 @@ namespace SceneTrack.Unity.Editor
 {
     public static class Output
     {
+        static bool _exporting = false;
+        
+        private static float   _exportProgress    = 0.0f;
+        private static int     _exportSuccessfull = -1;
+        private static Thread  _exportThread;
+        private static string  _dstPath;
+
+        public static bool  IsExporting { get { return _exporting; } }
+        public static int   IsExportSucessfull { get {return _exportSuccessfull; } }
+        public static float ExportProgress { get { return _exportProgress; } }
+
+        public static bool StartExport(string srcPath_, string dstPath_)
+        {
+          if (IsExporting)
+            return false;
+
+          var exportInfo = new ExportInfo()
+          {
+            srcPath = srcPath_,
+            dstPath = dstPath_
+          };
+
+          _dstPath = dstPath_;
+          FBXOutput.SetupExport();
+
+          _exportThread = new Thread(new ParameterizedThreadStart(ExportThreadFn));
+          _exportThread.Start(exportInfo);
+
+          return true;
+        }
+    
+        public static String ReceiveExport()
+        {
+          _exportSuccessfull = -1;
+          _exportThread = null;
+          return _dstPath;
+        }
+
+        class ExportInfo
+        {
+          public String srcPath, dstPath;
+        }
+
+        static void ExportThreadFn(object exportInfoObj)
+        {
+          if (_exporting)
+            return;
+
+          _exportSuccessfull = -1;
+          _exportProgress = 0.0f;
+
+          ExportInfo exportInfo = (ExportInfo) exportInfoObj;
+          
+          int    mode = 0, response = 0;
+          _exporting = true;
+          
+          while(true)
+          { 
+              if (mode == 0)       // Configure
+              {
+                _exportProgress = 0.0f;
+                mode = 1;
+              }
+              else if (mode == 1)  // Begin
+              {
+                response = SceneTrackFbx.Conversion.StepConvertSceneTrackFileBegin(new StringBuilder(exportInfo.srcPath), new StringBuilder(exportInfo.dstPath));
+                if (response == 0)
+                {
+                  mode = 2;
+                }
+                else
+                {
+                  _exportSuccessfull = 0;
+                  break;
+                }
+              }
+              else if (mode == 2)  // Update
+              {
+                response = SceneTrackFbx.Conversion.StepConvertSceneTrackFileUpdate();
+
+                if (response == 1)
+                {
+                  _exportSuccessfull = 1;
+                  break;
+                }
+                else if (response == -1)
+                {
+                  _exportSuccessfull = 0;
+                  break;
+                }
+                else
+                {
+                  _exportProgress = SceneTrackFbx.Conversion.StepConvertProgress();
+                  Thread.Sleep(1);
+                }
+              }
+          }
+
+          _exporting = false;
+        }
+
+
         /// <summary>
         /// Export file to selected export format
         /// </summary>
@@ -29,21 +132,24 @@ namespace SceneTrack.Unity.Editor
 
             if (!string.IsNullOrEmpty(outputFile))
             {
-                FBXOutput.SetupExport();
+        //FBXOutput.SetupExport();
 
-                //TODO: EntryPointNotFoundException: fbxConvertSceneTrackFile
-                int response = SceneTrackFbx.Conversion.ConvertSceneTrackFile(new StringBuilder(sourcePath),
-                    new StringBuilder(outputFile));
-                if (response == 0)
-                {
-                  UnityEngine.Debug.Log("FBX Conversion Successfull");
-                }
-                else
-                {
-                  UnityEngine.Debug.Log("FBX Conversion Failed.");
-                }
+                  StartExport(sourcePath, outputFile);
+
+//                //TODO: EntryPointNotFoundException: fbxConvertSceneTrackFile
+//                int response = SceneTrackFbx.Conversion.ConvertSceneTrackFile(new StringBuilder(sourcePath),
+//                    new StringBuilder(outputFile));
+//                if (response == 0)
+//                {
+//                  UnityEngine.Debug.Log("FBX Conversion Successfull");
+//                }
+//                else
+//                {
+//                  UnityEngine.Debug.Log("FBX Conversion Failed.");
+//                }
             }
         }
+
     }
 
     public enum OutputType
@@ -531,6 +637,7 @@ namespace SceneTrack.Unity.Editor
               AxisTX = (int) FbxAxis.NX; AxisRX = (int) FbxAxis.PX;  AxisSX = (int) FbxAxis.PX;  VertexX = (int) FbxAxis.NX; NormalX = (int) FbxAxis.NX;
               AxisTY = (int) FbxAxis.PY; AxisRY = (int) FbxAxis.NY;  AxisSY = (int) FbxAxis.PY;  VertexY = (int) FbxAxis.PY; NormalY = (int) FbxAxis.PY;
               AxisTZ = (int) FbxAxis.PZ; AxisRZ = (int) FbxAxis.NZ;  AxisSZ = (int) FbxAxis.PZ;  VertexZ = (int) FbxAxis.PZ; NormalZ = (int) FbxAxis.PZ;
+                                         AxisRW = (int) FbxAxis.PW;
 
               ScaleMultiplyX = 1.0f;
               ScaleMultiplyY = 1.0f;
