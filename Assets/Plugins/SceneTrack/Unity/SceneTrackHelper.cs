@@ -95,6 +95,24 @@ namespace SceneTrack.Unity
           }
 
         }
+    
+        public static void RecursiveBackwardsAddObject(Transform transform)
+        {
+          SceneTrackObject obj = transform.GetComponent<SceneTrackObject>();
+          
+          if (obj == null)
+          {
+            obj = transform.gameObject.AddComponent<SceneTrackObject>();
+          }
+
+          Transform parent = transform.parent;
+
+          if (parent != null)
+          {
+            RecursiveBackwardsAddObject(parent);
+          }
+
+        }
 
         public static void SubmitArray(uint objectHandle, uint componentHandle, byte[] array, uint stride, uint arrayLength)
         {

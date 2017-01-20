@@ -30,6 +30,29 @@ namespace SceneTrack.Unity.Editor
 
             window.Show();
         }
+    
+
+        [MenuItem("Edit/Scene Track/Auto SceneTrack to Mesh Renderer MonoBehaviours")]
+        private static void AutoAddToMeshRenderers()
+        {
+          foreach(var skMr in UnityEngine.Object.FindObjectsOfType<SkinnedMeshRenderer>())
+          {
+            if (skMr.GetComponent<SceneTrackObject>() == null)
+            {
+              Helper.RecursiveBackwardsAddObject(skMr.transform);
+              Debug.Log(skMr.name);
+            }
+          }
+
+          foreach(var mr in UnityEngine.Object.FindObjectsOfType<MeshRenderer>())
+          {
+            if (mr.GetComponent<SceneTrackObject>() == null)
+            {
+              Helper.RecursiveBackwardsAddObject(mr.transform);
+              Debug.Log(mr.name);
+            }
+          }
+        }
 
         public void OnFocus()
         {
