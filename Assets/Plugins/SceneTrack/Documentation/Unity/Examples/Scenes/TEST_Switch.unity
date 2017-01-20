@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4465934, g: 0.49642956, b: 0.5748249, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -178,6 +178,42 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &770325052 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100004, guid: d43c49424a82243c69f25f7965adae36, type: 3}
+  m_PrefabInternal: {fileID: 1196427298}
+--- !u!114 &770325054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 770325052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f29d737fbfdae447a9668e347ee3f851, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TrackObject: 1
+  TrackTransform: 1
+  TrackMeshRenderer: 1
+--- !u!1 &1137491317 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100000, guid: d43c49424a82243c69f25f7965adae36, type: 3}
+  m_PrefabInternal: {fileID: 1196427298}
+--- !u!114 &1137491319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1137491317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f29d737fbfdae447a9668e347ee3f851, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TrackObject: 1
+  TrackTransform: 1
+  TrackMeshRenderer: 1
 --- !u!1 &1146221284 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 100006, guid: d43c49424a82243c69f25f7965adae36, type: 3}
@@ -239,6 +275,18 @@ Prefab:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 0c67af44055d347289dcae240b5d5eaf, type: 2}
+    - target: {fileID: 400006, guid: d43c49424a82243c69f25f7965adae36, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400006, guid: d43c49424a82243c69f25f7965adae36, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400006, guid: d43c49424a82243c69f25f7965adae36, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: d43c49424a82243c69f25f7965adae36, type: 3}
   m_IsPrefabParent: 0
@@ -305,3 +353,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &1743028618 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100002, guid: d43c49424a82243c69f25f7965adae36, type: 3}
+  m_PrefabInternal: {fileID: 1196427298}
+--- !u!114 &1743028620
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1743028618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f29d737fbfdae447a9668e347ee3f851, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TrackObject: 1
+  TrackTransform: 1
+  TrackMeshRenderer: 1
