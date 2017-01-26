@@ -45,8 +45,14 @@ namespace SceneTrack.Unity.Editor
 
         public void OnGUI()
         {
-            GUILayout.Space(5);
+            GUILayout.Space(10);
 
+            if (GUILayout.Button("Auto Add To Scene"))
+            {
+
+                SceneTrack.Unity.Editor.Helper.AutoMeshRenderer();
+            }
+            GUILayout.Space(10);
 
 
             EditorGUILayout.LabelField("Tracked Scene Objects (" + System.CachedKnownObjects.Count + ")" , EditorStyles.boldLabel);

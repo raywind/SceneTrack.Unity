@@ -25,12 +25,5 @@ namespace SceneTrack.Unity.Editor
         {
             return !(Cache.GetCacheFiles().Length > 0);
         }
-
-
-        [MenuItem("Edit/Scene Track/Auto SceneTrack to Mesh Renderer MonoBehaviours")]
-        private static void AutoAddToMeshRenderers()
-        {
-            Unity.Editor.Helper.AutoMeshRenderer();
-        }
     }
 }

@@ -217,7 +217,13 @@ namespace SceneTrack.Unity
             InitMaterials(IsSkinned ? _skinnedMeshRenderer.sharedMaterials : _meshRenderer.sharedMaterials);
 
             // Create Mesh
-            InitMesh(IsSkinned ? _skinnedMeshRenderer.sharedMesh : _meshFilter.sharedMesh );
+            var foundMesh = InitMesh(IsSkinned ? _skinnedMeshRenderer.sharedMesh : _meshFilter.sharedMesh );
+            if (!foundMesh)
+            {
+                TrackMeshRenderer = false;
+                SceneTrack.Unity.Log.Warning("No mesh found on " + gameObject.name + ", turning off tracking of the MeshRenderer");
+                return;
+            }
 
             // Create Renderer
             if (IsSkinned)
@@ -348,8 +354,11 @@ namespace SceneTrack.Unity
         /// Initialize reference to the mesh used on the renderer
         /// </summary>
         /// <param name="mesh">The mesh</param>
-        private void InitMesh(Mesh mesh)
+        /// <returns>Was a mesh found?</returns>
+        private bool InitMesh(Mesh mesh)
         {
+            if (mesh == null) return false;
+
             // Create Mesh
             _meshHandle = 0;
             var cachedMesh = mesh;
@@ -482,6 +491,7 @@ namespace SceneTrack.Unity
 
                 System.SharedMeshes.Add(cachedMesh, _meshHandle);
             }
+            return true;
         }
 
         /// <summary>
