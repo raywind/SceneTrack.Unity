@@ -226,7 +226,10 @@ namespace SceneTrack.Unity
 
         public static void SubmitString(uint objectHandle, uint componentHandle, string value)
         {
-          Object.SetValue_string(objectHandle, componentHandle, new StringBuilder(value), (uint) value.Length);
+          if (value.Length > 0)
+          {
+              Object.SetValue_string(objectHandle, componentHandle, new StringBuilder(value), (uint) value.Length);
+          }
         }
     
     }

@@ -173,8 +173,14 @@ namespace SceneTrack.Unity
             // Register GameObject
             _handle = Object.CreateObject(Classes.GameObject.Type);
       
+            // Register name
+            if (name.Length > 0)
+            {
+                Helper.SubmitString(_handle, Classes.GameObject.Name, name);
+            }
+
             // Register Components
-            if ( TrackTransform )
+            if ( TrackTransform  )
             {
                 InitTransform();
             }
