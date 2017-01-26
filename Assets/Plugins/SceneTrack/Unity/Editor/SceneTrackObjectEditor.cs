@@ -17,9 +17,6 @@ namespace SceneTrack.Unity.Editor
                 return;
             }
 
-
-
-
             
             // Get Current Reference
             _targetObject = (SceneTrackObject)target;

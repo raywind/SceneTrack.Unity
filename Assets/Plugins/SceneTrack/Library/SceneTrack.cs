@@ -110,6 +110,7 @@ namespace SceneTrack
 		public const int Static = (0);
 		public const int Dynamic = (1);
 		public const int Stream = (2);
+		public const int Event = (3);
 	}
 
 	public static class Memory
@@ -161,6 +162,17 @@ namespace SceneTrack
 		public const int Binary = (0);
 	}
 
+	public static class Library
+	{
+
+		#if UNITY_EDITOR
+		[DllImport("SceneTrack", CallingConvention = CallingConvention.Cdecl, EntryPoint = "stGetVersion"), SuppressUnmanagedCodeSecurity]
+		public static extern StringBuilder GetVersion();
+		#else
+		public static StringBuilder GetVersion() { return default(StringBuilder); }
+		#endif
+
+	}
 	public static class Object
 	{
 
@@ -845,6 +857,13 @@ namespace SceneTrack
 		public static extern uint IteratorGetObjectType(uint iterator);
 		#else
 		public static uint IteratorGetObjectType(uint iterator) { return default(uint); }
+		#endif
+
+		#if UNITY_EDITOR
+		[DllImport("SceneTrack", CallingConvention = CallingConvention.Cdecl, EntryPoint = "stIteratorGetIsEvent"), SuppressUnmanagedCodeSecurity]
+		public static extern uint IteratorGetIsEvent(uint iterator);
+		#else
+		public static uint IteratorGetIsEvent(uint iterator) { return default(uint); }
 		#endif
 
 		#if UNITY_EDITOR
