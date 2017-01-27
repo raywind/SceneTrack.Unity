@@ -12,30 +12,6 @@ namespace SceneTrack.Unity
     [DisallowMultipleComponent]
     public class SceneTrackMultiBoneProxy : MonoBehaviour
     {
-        public List<SceneTrackObject.Bone> Bones = new List<SceneTrackObject.Bone>(1); 
-    
-        Transform _transform;
-
-        private void Awake()
-        {
-          _transform = transform;
-        }
-
-        private void Update()
-        {
-            if (_transform.hasChanged)
-            {
-              Vector3    position = _transform.localPosition;
-              Quaternion rotation = _transform.localRotation;
-              Vector3    scale    = _transform.localScale;
-
-              foreach(var bone in Bones)
-              {
-                bone.Update(position, rotation, scale);
-              }
-              _transform.hasChanged = false;
-            }
-        }
-  }
+    }
 #endif
 }

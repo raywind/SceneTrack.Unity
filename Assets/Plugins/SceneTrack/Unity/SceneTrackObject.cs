@@ -64,7 +64,6 @@ namespace SceneTrack.Unity
 
         private uint[] _materialHandles;
         private uint _meshHandle;
-        Bone[]  _bones;
 
         #region Unity Specific Events
 
@@ -245,27 +244,15 @@ namespace SceneTrack.Unity
                 Transform[] cachedBones = _skinnedMeshRenderer.bones;
                 int cachedBonesCount = cachedBones.Length;
         
-                _bones = new Bone[cachedBonesCount];
-                
-                // First Pass
-                for(int i=0;i < cachedBonesCount;i++)
-                {
-                  _bones[i] = new Bone(i, cachedBones[i]);
-                }
-
-                // Second Pass
-                for(int i=0;i < cachedBonesCount;i++)
-                {
-                  _bones[i].Initialise(cachedBones, _bones);
-                }
-
                 uint[] boneHandles = new uint[cachedBones.Length];
 
                 for (int i=0;i < cachedBonesCount;i++)
                 {
-                  boneHandles[i] = _bones[i]._boneHandle;
+                  Helper.RecursiveBackwardsAddObjectAndInitialise(cachedBones[i]);
+                  SceneTrackObject boneObject = cachedBones[i].GetComponent<SceneTrackObject>();
+                  boneHandles[i] = boneObject.TransformHandle;
                 }
-
+                
                 Helper.SubmitArray(_skinnedMeshRendererHandle, Classes.SkinnedMeshRenderer.Bones, boneHandles, Helper.GetTypeMemorySize(typeof(uint), 1));
 
                 // BoneTransform.  Assumed to be the parent of the Root Bone.
@@ -558,56 +545,7 @@ namespace SceneTrack.Unity
 
         }
         #endregion
-
-        #region Bones
-
-        public class Bone
-        {
-          public Transform _transform;
-          public uint      _boneHandle;
-          public SceneTrackMultiBoneProxy _proxy;
-
-          public Bone(int id, Transform boneTransform)
-          {
-            _transform = boneTransform;
-            _boneHandle = SceneTrack.Object.CreateObject(Classes.Bone.Type);
-            Object.SetValue_uint8(_boneHandle, Classes.Bone.Id, (byte) id);
-            
-            _proxy = boneTransform.GetComponent<SceneTrackMultiBoneProxy>();
-
-            if (_proxy == null)
-            {
-              _proxy = boneTransform.gameObject.AddComponent<SceneTrackMultiBoneProxy>();
-            }
-
-            _proxy.Bones.Add(this);
-          }
-
-          public void Initialise(Transform[] transform, Bone[] bones)
-          {
-            Transform parent = _transform.parent;
-            if (parent != null)
-            {
-              int parentIndex = global::System.Array.IndexOf(transform, parent);
-              if (parentIndex != -1)
-              {
-                Bone boneParent = bones[parentIndex];
-                Object.SetValue_uint32(_boneHandle, Classes.Bone.Parent, boneParent._boneHandle);
-              }
-            }
-          }
-
-          public void Update(Vector3 position, Quaternion rotation, Vector3 scale)
-          {
-            Object.SetValue_3_float32(_boneHandle, Classes.Bone.LocalPosition, position.x, position.y, position.z);
-            Object.SetValue_4_float32(_boneHandle, Classes.Bone.LocalRotation, rotation.x, rotation.y, rotation.z, rotation.w);
-            Object.SetValue_3_float32(_boneHandle, Classes.Bone.LocalScale, scale.x, scale.y, scale.z);
-          }
-
-        }
-
-        #endregion
-
+    
 #endif
   }
 }

@@ -15,7 +15,6 @@ namespace SceneTrack.Unity
             Transform.Register();
             StandardMeshRenderer.Register();
             SkinnedMeshRenderer.Register();
-            Bone.Register();
             Mesh.Register();
             SubMesh.Register();
             Material.Register();
@@ -99,27 +98,7 @@ namespace SceneTrack.Unity
                 BoneTransform = Object.AddObjectTypeComponentEx2(Type, Kind.BoneBegin, SceneTrack.Type.Uint32, 1, 1, Units.Unspecified, Reference.Unspecified);
             }
         }
-
-        public static class Bone
-        {
-            public static uint Type = 0;
-            public static uint LocalPosition = 0;
-            public static uint LocalRotation = 0;
-            public static uint LocalScale = 0;
-            public static uint Parent = 0;
-            public static uint Id = 0;
-
-            public static void Register()
-            {
-                Type = Object.CreateObjectTypeEx(Frequency.Dynamic, 104);
-                Parent = Object.AddObjectTypeComponentEx2(Type, Kind.Parent, SceneTrack.Type.Uint32, 1, 1, Units.Unspecified, Reference.Unspecified);
-                LocalPosition = Object.AddObjectTypeComponentEx2(Type, Kind.Position, SceneTrack.Type.Float32, 3, 1, Units.Unspecified, Reference.Local);
-                LocalRotation = Object.AddObjectTypeComponentEx2(Type, Kind.Rotation, SceneTrack.Type.Float32, 4, 1, Units.Unspecified, Reference.Local);
-                LocalScale = Object.AddObjectTypeComponentEx2(Type, Kind.Scale, SceneTrack.Type.Float32, 3, 1, Units.Unspecified, Reference.Local);
-                Id = Object.AddObjectTypeComponentEx2(Type, Kind.Named, SceneTrack.Type.Uint8, 1, 1, Units.Unspecified, Reference.Unspecified);
-            }
-        }
-
+    
         public static class Mesh
         {
             public static uint Type = 0;

@@ -109,6 +109,17 @@ namespace SceneTrackFbx
 		#endif
 
 	}
+	public static class Library
+	{
+
+		#if UNITY_EDITOR
+		[DllImport("SceneTrackFbx", CallingConvention = CallingConvention.Cdecl, EntryPoint = "fbxGetVersion"), SuppressUnmanagedCodeSecurity]
+		public static extern StringBuilder GetVersion();
+		#else
+		public static StringBuilder GetVersion() { return default(StringBuilder); }
+		#endif
+
+	}
 	public static class Settings
 	{
 
@@ -152,6 +163,20 @@ namespace SceneTrackFbx
 		public static extern int SetFileVersion(int sdkFileVersion);
 		#else
 		public static int SetFileVersion(int sdkFileVersion) { return default(int); }
+		#endif
+
+		#if UNITY_EDITOR
+		[DllImport("SceneTrackFbx", CallingConvention = CallingConvention.Cdecl, EntryPoint = "fbxClearAssetSearchPaths"), SuppressUnmanagedCodeSecurity]
+		public static extern void ClearAssetSearchPaths();
+		#else
+		public static void ClearAssetSearchPaths() {}
+		#endif
+
+		#if UNITY_EDITOR
+		[DllImport("SceneTrackFbx", CallingConvention = CallingConvention.Cdecl, EntryPoint = "fbxAddAssetSearchPath"), SuppressUnmanagedCodeSecurity]
+		public static extern void AddAssetSearchPath(StringBuilder path);
+		#else
+		public static void AddAssetSearchPath(StringBuilder path) {}
 		#endif
 
 	}
