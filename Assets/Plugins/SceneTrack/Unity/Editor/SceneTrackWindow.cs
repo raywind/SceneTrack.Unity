@@ -30,29 +30,6 @@ namespace SceneTrack.Unity.Editor
 
             window.Show();
         }
-    
-
-        [MenuItem("Edit/Scene Track/Auto SceneTrack to Mesh Renderer MonoBehaviours")]
-        private static void AutoAddToMeshRenderers()
-        {
-          foreach(var skMr in UnityEngine.Object.FindObjectsOfType<SkinnedMeshRenderer>())
-          {
-            if (skMr.GetComponent<SceneTrackObject>() == null)
-            {
-              Helper.RecursiveBackwardsAddObject(skMr.transform);
-              Debug.Log(skMr.name);
-            }
-          }
-
-          foreach(var mr in UnityEngine.Object.FindObjectsOfType<MeshRenderer>())
-          {
-            if (mr.GetComponent<SceneTrackObject>() == null)
-            {
-              Helper.RecursiveBackwardsAddObject(mr.transform);
-              Debug.Log(mr.name);
-            }
-          }
-        }
 
         public void OnFocus()
         {
@@ -68,8 +45,14 @@ namespace SceneTrack.Unity.Editor
 
         public void OnGUI()
         {
-            GUILayout.Space(5);
+            GUILayout.Space(10);
 
+            if (GUILayout.Button("Auto Add To Scene"))
+            {
+
+                SceneTrack.Unity.Editor.Helper.AutoMeshRenderer();
+            }
+            GUILayout.Space(10);
 
 
             EditorGUILayout.LabelField("Tracked Scene Objects (" + System.CachedKnownObjects.Count + ")" , EditorStyles.boldLabel);
@@ -164,10 +147,7 @@ namespace SceneTrack.Unity.Editor
               // Exported or failed export
               if (didExport == true)
               {
-                if (EditorUtility.DisplayDialog("Exported SceneTrack", "The SceneTrack file was exported.",  "Open File...", "Okay"))
-                {
-                   Application.OpenURL(dstPath);
-                }
+                  SceneTrack.Unity.Log.Message("Export Successful to " + dstPath);
               }
               else if (didExport == false)
               {
