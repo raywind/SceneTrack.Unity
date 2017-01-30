@@ -46,6 +46,7 @@ namespace SceneTrack
 		public const int Intensity = (103);
 		public const int Named = (104);
 		public const int Type = (105);
+		public const int Repeat = (106);
 		public const int Relationship = (201);
 		public const int Spatial = (202);
 		public const int Geometry = (203);
@@ -77,6 +78,7 @@ namespace SceneTrack
 		public const int LinearAcceleration = (415);
 		public const int AngularVelocity = (416);
 		public const int AngularAcceleration = (417);
+		public const int Offset = (418);
 		public const int Vertex = (500);
 		public const int Index = (501);
 		public const int Normal = (502);
@@ -103,6 +105,13 @@ namespace SceneTrack
 		public const int G = (702);
 		public const int B = (703);
 		public const int A = (704);
+		public const int Ambient = (800);
+		public const int Specular = (801);
+		public const int Emissive = (802);
+		public const int Refraction = (803);
+		public const int Roughness = (804);
+		public const int Reflection = (806);
+		public const int Transparency = (807);
 	}
 
 	public static class Frequency

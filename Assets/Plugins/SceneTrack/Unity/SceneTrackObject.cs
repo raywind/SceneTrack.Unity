@@ -288,11 +288,10 @@ namespace SceneTrack.Unity
                 Object.SetValue_uint32(_meshRendererHandle, Classes.StandardMeshRenderer.Parent, TransformHandle);
 
                 // Assign Materials (shared references as found)
-                var meshMaterialsHandle = GCHandle.Alloc(_materialHandles, GCHandleType.Pinned);
-                var meshMaterialsPointer = meshMaterialsHandle.AddrOfPinnedObject();
-                SceneTrack.Object.SetValue_p_uint32(_meshRendererHandle, Classes.StandardMeshRenderer.Materials,
-                    meshMaterialsPointer, (uint) _materialHandles.Length, Helper.GetTypeMemorySize(typeof(uint), 1));
-                meshMaterialsHandle.Free();
+                if (_materialHandles.Length > 0)
+                {
+                  Helper.SubmitArray(_meshRendererHandle, Classes.StandardMeshRenderer.Materials, _materialHandles, Helper.GetTypeMemorySize(typeof(uint), 1));
+                }
             }
             
         }
@@ -303,7 +302,7 @@ namespace SceneTrack.Unity
         /// <param name="materials">Array of materials used in the mesh.</param>
         private void InitMaterials(Material[] materials)
         {
-            var materialHandles = new List<uint>();
+            var materialHandles = new List<uint>(materials.Length);
             foreach (var m in materials)
             {
                 uint materialHandle = 0;
@@ -319,18 +318,13 @@ namespace SceneTrack.Unity
                         Helper.SubmitString(materialHandle, Classes.Material.Name, m.name);
                         Helper.SubmitString(materialHandle, Classes.Material.Shader, m.shader.name);
                     }
-                    else
-                    {
-                        Helper.SubmitString(materialHandle, Classes.Material.MainTexture, "Default");
-                        Helper.SubmitString(materialHandle, Classes.Material.Name, "Default");
-                        Helper.SubmitString(materialHandle, Classes.Material.Shader, "Default");
-                    }
-
 
                     System.SharedMaterials.Add(m, materialHandle);
+          
+                    Color mainColor = m.color;
+                    SceneTrack.Object.SetValue_3_float32(materialHandle, Classes.Material.Color, mainColor.r, mainColor.g, mainColor.b);
                 }
-
-
+                
                 // Store material in temp array
                 materialHandles.Add(materialHandle);
             }

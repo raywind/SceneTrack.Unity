@@ -147,6 +147,10 @@ namespace SceneTrack.Unity.Editor
               // Exported or failed export
               if (didExport == true)
               {
+                  if (EditorPrefs.GetBool("SceneTrack_OpenAfterExporting", false))
+                  {
+                    Application.OpenURL("file://" + dstPath);
+                  }
                   SceneTrack.Unity.Log.Message("Export Successful to " + dstPath);
               }
               else if (didExport == false)

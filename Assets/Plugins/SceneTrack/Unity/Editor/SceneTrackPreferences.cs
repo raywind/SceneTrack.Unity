@@ -11,6 +11,12 @@ namespace SceneTrack.Unity.Editor
         private static int _currentTab = 0;
 
 
+        public static bool OpenAfterExporting
+        {
+          get { return EditorPrefs.GetBool("SceneTrack_OpenAfterExporting", false); }
+          set { EditorPrefs.SetBool("SceneTrack_OpenAfterExporting", value); }
+        }
+
         public static OutputType OutputFormat
         {
             get
@@ -110,7 +116,7 @@ namespace SceneTrack.Unity.Editor
                 default:
                     OutputFramerate = (float) EditorGUILayout.FloatField("Output Framerate", OutputFramerate);
                     OutputFormat = (OutputType)EditorGUILayout.EnumPopup("Output Format", OutputFormat);
-
+                    OpenAfterExporting = EditorGUILayout.Toggle("Open Output after Exporting", OpenAfterExporting);
                     break;
             }
 

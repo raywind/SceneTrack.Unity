@@ -424,6 +424,10 @@ namespace SceneTrack.Unity.Editor
             SceneTrackFbx.Settings.SetReverseTriangleWinding(ReverseTriangles ? 1 : 0);
 
             SceneTrackFbx.Settings.SetFileVersion(Version);
+
+            SceneTrackFbx.Settings.ClearAssetSearchPaths();
+            SceneTrackFbx.Settings.AddAssetSearchPath(new StringBuilder(UnityEngine.Application.dataPath + "/"));
+
         }
 
         static int[] FbxVersionInt = new int[]
