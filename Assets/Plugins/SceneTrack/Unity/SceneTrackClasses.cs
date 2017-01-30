@@ -156,13 +156,23 @@ namespace SceneTrack.Unity
             public static uint Name = 0;
             public static uint Shader = 0;
             public static uint MainTexture = 0;
+            public static uint Color = 0;
+            public static uint Specular = 0;
+            public static uint Emissive = 0;
+            public static uint Transparency = 0;
+            public static uint Reflection = 0;
 
             public static void Register()
             {
                 Type = Object.CreateObjectTypeEx(Frequency.Static, 203);
                 Name = Object.AddObjectTypeComponentEx2(Type, Kind.Named, SceneTrack.Type.CString, 1, 1, Units.Unspecified, Reference.Unspecified);
-                Shader = Object.AddObjectTypeComponentEx2(Type, Kind.Surface, SceneTrack.Type.CString, 1, 1, Units.Unspecified, Reference.Unspecified);
+                Shader = Object.AddObjectTypeComponentEx2(Type, Kind.Surface, SceneTrack.Type.CString, 1, 1, Units.Unspecified, Reference.ExternalAsset);
                 MainTexture = Object.AddObjectTypeComponentEx2(Type, Kind.Image, SceneTrack.Type.CString, 1, 1, Units.Unspecified, Reference.ExternalAsset);
+                Color = Object.AddObjectTypeComponentEx2(Type, Kind.Color, SceneTrack.Type.Float32, 3, 1, Units.Unspecified, Reference.Unspecified);
+                Specular = Object.AddObjectTypeComponentEx2(Type, Kind.Specular, SceneTrack.Type.Float32, 3, 1, Units.Unspecified, Reference.Unspecified);
+                Emissive = Object.AddObjectTypeComponentEx2(Type, Kind.Emissive, SceneTrack.Type.Float32, 3, 1, Units.Unspecified, Reference.Unspecified);
+                Transparency = Object.AddObjectTypeComponentEx2(Type, Kind.Transparency, SceneTrack.Type.Float32, 1, 1, Units.Unspecified, Reference.Unspecified);
+                Reflection = Object.AddObjectTypeComponentEx2(Type, Kind.Reflection, SceneTrack.Type.Float32, 1, 1, Units.Unspecified, Reference.Unspecified);
             }
         }
     }
