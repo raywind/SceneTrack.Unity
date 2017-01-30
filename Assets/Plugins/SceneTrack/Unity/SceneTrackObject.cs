@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#define WIP
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using UnityEngine;
@@ -288,10 +289,13 @@ namespace SceneTrack.Unity
                 Object.SetValue_uint32(_meshRendererHandle, Classes.StandardMeshRenderer.Parent, TransformHandle);
 
                 // Assign Materials (shared references as found)
+// TODO: This causes issues with materials, it is diabled till we resolve
+#if WIP
                 if (_materialHandles.Length > 0)
                 {
                   Helper.SubmitArray(_meshRendererHandle, Classes.StandardMeshRenderer.Materials, _materialHandles, Helper.GetTypeMemorySize(typeof(uint), 1));
                 }
+#endif
             }
             
         }
@@ -302,33 +306,37 @@ namespace SceneTrack.Unity
         /// <param name="materials">Array of materials used in the mesh.</param>
         private void InitMaterials(Material[] materials)
         {
+// TODO: This causes issues with materials, it is diabled till we resolve
+#if WIP
             var materialHandles = new List<uint>(materials.Length);
             foreach (var m in materials)
             {
-                uint materialHandle = 0;
+             uint materialHandle = 0;
 
 
-                if (!Unity.System.SharedMaterials.TryGetValue(m, out materialHandle))
-                {
-                    materialHandle = Object.CreateObject(Classes.Material.Type);
+             if (!Unity.System.SharedMaterials.TryGetValue(m, out materialHandle))
+             {
+                 materialHandle = Object.CreateObject(Classes.Material.Type);
 
-                    if (m.mainTexture != null)
-                    {
-                        Helper.SubmitString(materialHandle, Classes.Material.MainTexture, m.mainTexture.name);
-                        Helper.SubmitString(materialHandle, Classes.Material.Name, m.name);
-                        Helper.SubmitString(materialHandle, Classes.Material.Shader, m.shader.name);
-                    }
+                 if (m.mainTexture != null)
+                 {
+                     Helper.SubmitString(materialHandle, Classes.Material.MainTexture, m.mainTexture.name);
+                     Helper.SubmitString(materialHandle, Classes.Material.Name, m.name);
+                     Helper.SubmitString(materialHandle, Classes.Material.Shader, m.shader.name);
+                 }
 
-                    System.SharedMaterials.Add(m, materialHandle);
-          
-                    Color mainColor = m.color;
-                    SceneTrack.Object.SetValue_3_float32(materialHandle, Classes.Material.Color, mainColor.r, mainColor.g, mainColor.b);
-                }
-                
-                // Store material in temp array
-                materialHandles.Add(materialHandle);
+                 System.SharedMaterials.Add(m, materialHandle);
+
+                 Color mainColor = m.color;
+                 SceneTrack.Object.SetValue_3_float32(materialHandle, Classes.Material.Color, mainColor.r, mainColor.g, mainColor.b);
+             }
+
+             // Store material in temp array
+             materialHandles.Add(materialHandle);
             }
             _materialHandles = materialHandles.ToArray();
+
+#endif
         }
 
         /// <summary>
