@@ -41,6 +41,8 @@ namespace SceneTrack.Unity
         public bool TrackMeshRenderer;
         public bool TrackPhysics = false;
 
+        public string UserDefinedData = string.Empty;
+
         private uint _frameCount;
         /// <summary>
         /// Game Object Handle

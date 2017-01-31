@@ -47,6 +47,14 @@ namespace SceneTrack.Unity.Editor
 
             EditorGUI.indentLevel--;
 
+            if (_targetObject.TrackPhysics)
+            {
+                GUILayout.Space(10);
+                EditorGUILayout.LabelField("User Defined Data", EditorStyles.boldLabel);
+                _targetObject.UserDefinedData = EditorGUILayout.TextField(_targetObject.UserDefinedData);
+            }
+
+
             EditorGUI.EndDisabledGroup();
 
             GUILayout.Space(10);
