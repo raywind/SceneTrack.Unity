@@ -39,6 +39,7 @@ namespace SceneTrack.Unity
         public bool TrackObject = true;
         public bool TrackTransform = true;
         public bool TrackMeshRenderer;
+        public bool TrackPhysics = false;
 
         private uint _frameCount;
         /// <summary>
@@ -137,6 +138,16 @@ namespace SceneTrack.Unity
             // Check if there is a skinned mesh render and enable
             if ( GetComponent<SkinnedMeshRenderer>() != null ) {
                 TrackMeshRenderer = true;
+            }
+
+            if (GetComponent<Collider>() != null)
+            {
+                TrackPhysics = true;
+                if (!TrackMeshRenderer)
+                {
+                    // If there is no mesh there is no reason to actually track the transform
+                    TrackTransform = false;
+                }
             }
         }
 

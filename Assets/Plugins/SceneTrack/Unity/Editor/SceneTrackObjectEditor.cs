@@ -12,14 +12,22 @@ namespace SceneTrack.Unity.Editor
 
         public override void OnInspectorGUI()
         {
-            if ( Application.isPlaying ) {
+            if (Application.isPlaying)
+            {
                 EditorGUILayout.HelpBox("Changes Are Not Permitted During PlayMode", MessageType.Info);
                 return;
             }
 
-            
+
             // Get Current Reference
-            _targetObject = (SceneTrackObject)target;
+            _targetObject = (SceneTrackObject) target;
+
+            bool hasMeshRenderer = _targetObject.GetComponent<MeshRenderer>() != null ||
+                _targetObject.GetComponent<SkinnedMeshRenderer>() != null;
+
+
+            bool hasCollider = _targetObject.GetComponent<Collider>() != null;
+
 
 
 
@@ -34,7 +42,9 @@ namespace SceneTrack.Unity.Editor
             EditorGUILayout.LabelField("Track Components", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
             _targetObject.TrackTransform = EditorGUILayout.Toggle("Transform", _targetObject.TrackTransform);
-            _targetObject.TrackMeshRenderer = EditorGUILayout.Toggle("Mesh", _targetObject.TrackMeshRenderer);
+            _targetObject.TrackMeshRenderer = hasMeshRenderer && EditorGUILayout.Toggle("Mesh", _targetObject.TrackMeshRenderer);
+            _targetObject.TrackPhysics = hasCollider && EditorGUILayout.Toggle("Physics Events", _targetObject.TrackPhysics);
+
             EditorGUI.indentLevel--;
 
             EditorGUI.EndDisabledGroup();
