@@ -764,45 +764,10 @@ namespace SceneTrack
 		#endif
 
 		#if UNITY_EDITOR
-		[DllImport("SceneTrack", CallingConvention = CallingConvention.Cdecl, EntryPoint = "stCreateObjectIterator"), SuppressUnmanagedCodeSecurity]
-		public static extern uint CreateObjectIterator(uint objectId);
+		[DllImport("SceneTrack", CallingConvention = CallingConvention.Cdecl, EntryPoint = "stCreateForwardIterator"), SuppressUnmanagedCodeSecurity]
+		public static extern uint CreateForwardIterator();
 		#else
-		public static uint CreateObjectIterator(uint objectId) { return default(uint); }
-		#endif
-
-		#if UNITY_EDITOR
-		[DllImport("SceneTrack", CallingConvention = CallingConvention.Cdecl, EntryPoint = "stCreateObjectIteratorEx"), SuppressUnmanagedCodeSecurity]
-		public static extern uint CreateObjectIteratorEx(uint objectId, uint frame);
-		#else
-		public static uint CreateObjectIteratorEx(uint objectId, uint frame) { return default(uint); }
-		#endif
-
-		#if UNITY_EDITOR
-		[DllImport("SceneTrack", CallingConvention = CallingConvention.Cdecl, EntryPoint = "stCreateFrameIterator"), SuppressUnmanagedCodeSecurity]
-		public static extern uint CreateFrameIterator();
-		#else
-		public static uint CreateFrameIterator() { return default(uint); }
-		#endif
-
-		#if UNITY_EDITOR
-		[DllImport("SceneTrack", CallingConvention = CallingConvention.Cdecl, EntryPoint = "stCreateFrameIteratorEx"), SuppressUnmanagedCodeSecurity]
-		public static extern uint CreateFrameIteratorEx(uint frame);
-		#else
-		public static uint CreateFrameIteratorEx(uint frame) { return default(uint); }
-		#endif
-
-		#if UNITY_EDITOR
-		[DllImport("SceneTrack", CallingConvention = CallingConvention.Cdecl, EntryPoint = "stCreateKindIterator"), SuppressUnmanagedCodeSecurity]
-		public static extern uint CreateKindIterator(uint classId, uint kind);
-		#else
-		public static uint CreateKindIterator(uint classId, uint kind) { return default(uint); }
-		#endif
-
-		#if UNITY_EDITOR
-		[DllImport("SceneTrack", CallingConvention = CallingConvention.Cdecl, EntryPoint = "stCreateKindIteratorEx"), SuppressUnmanagedCodeSecurity]
-		public static extern uint CreateKindIteratorEx(uint classId, uint kind, uint frame);
-		#else
-		public static uint CreateKindIteratorEx(uint classId, uint kind, uint frame) { return default(uint); }
+		public static uint CreateForwardIterator() { return default(uint); }
 		#endif
 
 		#if UNITY_EDITOR
