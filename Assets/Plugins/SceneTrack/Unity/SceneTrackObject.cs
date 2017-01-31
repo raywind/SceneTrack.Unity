@@ -100,35 +100,40 @@ namespace SceneTrack.Unity
 
         private void OnCollisionEnter(Collision collision)
         {
+            if (!TrackPhysics) return;
             RecordPhysicsEvent(Classes.PhysicsEvent.EventType.Start, collision.contacts[0].point,
                 collision.relativeVelocity.magnitude, collision.collider.gameObject.GetComponent<SceneTrackObject>());
         }
 
         private void OnCollisionExit(Collision collision)
         {
+            if (!TrackPhysics) return;
             RecordPhysicsEvent(Classes.PhysicsEvent.EventType.Stop, _transform.position,
                 collision.relativeVelocity.magnitude, collision.collider.gameObject.GetComponent<SceneTrackObject>());
         }
 
         private void OnCollisionStay(Collision collision)
         {
+            if (!TrackPhysics) return;
             RecordPhysicsEvent(Classes.PhysicsEvent.EventType.Continue, collision.contacts[0].point,
                 collision.relativeVelocity.magnitude, collision.collider.gameObject.GetComponent<SceneTrackObject>());
         }
 
         private void OnTriggerEnter(Collider otherCollider)
         {
-
+            if (!TrackPhysics) return;
             RecordPhysicsEvent(Classes.PhysicsEvent.EventType.Start, _transform.position, 1f, otherCollider.gameObject.GetComponent<SceneTrackObject>());
         }
 
         private void OnTriggerExit(Collider otherCollider)
         {
+            if (!TrackPhysics) return;
             RecordPhysicsEvent(Classes.PhysicsEvent.EventType.Stop, _transform.position, 1f, otherCollider.gameObject.GetComponent<SceneTrackObject>());
         }
 
         private void OnTriggerStay(Collider otherCollider)
         {
+            if (!TrackPhysics) return;
             RecordPhysicsEvent(Classes.PhysicsEvent.EventType.Continue, _transform.position, 1f, otherCollider.gameObject.GetComponent<SceneTrackObject>());
         }
 
