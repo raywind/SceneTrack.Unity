@@ -399,18 +399,18 @@ namespace SceneTrack.Unity.Editor
             SetupSwizzles(SceneTrackFbx.Node.Mesh, SceneTrackFbx.NodeProperty.Vertex, VertexX, VertexY, VertexZ);
             SetupSwizzles(SceneTrackFbx.Node.Mesh, SceneTrackFbx.NodeProperty.Normal, NormalX, NormalY, NormalZ);
 
-            SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Transform, SceneTrackFbx.NodeProperty.Scale,
+            SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Transform, SceneTrackFbx.NodeProperty.Translation,
                 SceneTrackFbx.Axis.X, SceneTrackFbx.Operator.Multiply, ScaleMultiplyX);
-            SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Transform, SceneTrackFbx.NodeProperty.Scale,
+            SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Transform, SceneTrackFbx.NodeProperty.Translation,
                 SceneTrackFbx.Axis.Y, SceneTrackFbx.Operator.Multiply, ScaleMultiplyY);
-            SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Transform, SceneTrackFbx.NodeProperty.Scale,
+            SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Transform, SceneTrackFbx.NodeProperty.Translation,
                 SceneTrackFbx.Axis.Z, SceneTrackFbx.Operator.Multiply, ScaleMultiplyZ);
 
-            SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Bone, SceneTrackFbx.NodeProperty.Scale,
+            SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Bone, SceneTrackFbx.NodeProperty.Translation,
                 SceneTrackFbx.Axis.X, SceneTrackFbx.Operator.Multiply, ScaleMultiplyX);
-            SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Bone, SceneTrackFbx.NodeProperty.Scale,
+            SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Bone, SceneTrackFbx.NodeProperty.Translation,
                 SceneTrackFbx.Axis.Y, SceneTrackFbx.Operator.Multiply, ScaleMultiplyY);
-            SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Bone, SceneTrackFbx.NodeProperty.Scale,
+            SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Bone, SceneTrackFbx.NodeProperty.Translation,
                 SceneTrackFbx.Axis.Z, SceneTrackFbx.Operator.Multiply, ScaleMultiplyZ);
 
             SceneTrackFbx.Settings.SetAxisOperation(SceneTrackFbx.Node.Mesh, SceneTrackFbx.NodeProperty.Vertex,
@@ -541,13 +541,6 @@ namespace SceneTrack.Unity.Editor
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel("   ");
-            ScaleMultiplyX = EditorGUILayout.FloatField(ScaleMultiplyX);
-            ScaleMultiplyY = EditorGUILayout.FloatField(ScaleMultiplyY);
-            ScaleMultiplyZ = EditorGUILayout.FloatField(ScaleMultiplyZ);
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Vertex");
             VertexX = (int) EditorGUILayout.IntPopup((int) VertexX, AxisStr, AxisInts);
             VertexY = (int) EditorGUILayout.IntPopup((int) VertexY, AxisStr, AxisInts);
@@ -572,6 +565,12 @@ namespace SceneTrack.Unity.Editor
                 TriangleOrderInt);
 
             ReverseTriangles = reverseTriangle == 1 ? true : false;
+      
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("Scene Scale");
+            ScaleMultiplyX = ScaleMultiplyY = ScaleMultiplyZ = EditorGUILayout.FloatField(ScaleMultiplyX);
+            EditorGUILayout.EndHorizontal();
+
         }
 
         public static string GetExportExtension()
