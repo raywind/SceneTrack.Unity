@@ -65,6 +65,7 @@ namespace SceneTrack.Unity
         private Transform _transform;
         private Transform _transformParent;
         private uint _transformParentHandle;
+        private uint _physicsEventHandle;
 
         private uint[] _materialHandles;
         private uint _meshHandle;
@@ -75,7 +76,6 @@ namespace SceneTrack.Unity
         /// Unity's Awake Event
         /// </summary>
         /// <remarks>This starts up SceneTrack's initialization, only once, and then initializes the component.</remarks>
-
         private void Awake()
         {
             if (!TrackObject) return;
@@ -98,18 +98,51 @@ namespace SceneTrack.Unity
             System.SubmitRecording(_frameCount, Time.deltaTime);
         }
 
-        public void OnEnable()
+        private void OnCollisionEnter(Collision collision)
+        {
+            RecordPhysicsEvent(Classes.PhysicsEvent.EventType.Start, collision.contacts[0].point,
+                collision.relativeVelocity.magnitude, collision.collider.gameObject.GetComponent<SceneTrackObject>());
+        }
+
+        private void OnCollisionExit(Collision collision)
+        {
+            RecordPhysicsEvent(Classes.PhysicsEvent.EventType.Stop, _transform.position,
+                collision.relativeVelocity.magnitude, collision.collider.gameObject.GetComponent<SceneTrackObject>());
+        }
+
+        private void OnCollisionStay(Collision collision)
+        {
+            RecordPhysicsEvent(Classes.PhysicsEvent.EventType.Continue, collision.contacts[0].point,
+                collision.relativeVelocity.magnitude, collision.collider.gameObject.GetComponent<SceneTrackObject>());
+        }
+
+        private void OnTriggerEnter(Collider otherCollider)
+        {
+
+            RecordPhysicsEvent(Classes.PhysicsEvent.EventType.Start, _transform.position, 1f, otherCollider.gameObject.GetComponent<SceneTrackObject>());
+        }
+
+        private void OnTriggerExit(Collider otherCollider)
+        {
+            RecordPhysicsEvent(Classes.PhysicsEvent.EventType.Stop, _transform.position, 1f, otherCollider.gameObject.GetComponent<SceneTrackObject>());
+        }
+
+        private void OnTriggerStay(Collider otherCollider)
+        {
+            RecordPhysicsEvent(Classes.PhysicsEvent.EventType.Continue, _transform.position, 1f, otherCollider.gameObject.GetComponent<SceneTrackObject>());
+        }
+
+        private void OnEnable()
         {
             if (!TrackObject) return;
             Object.SetValue_uint8(_handle, Classes.GameObject.Visibility, 1);
         }
 
-        public void OnDisable()
+        private void OnDisable()
         {
             if (!TrackObject) return;
             Object.SetValue_uint8(_handle, Classes.GameObject.Visibility, 0);
         }
-
 
         /// <summary>
         /// Unity's OnDestroy Event
@@ -183,13 +216,22 @@ namespace SceneTrack.Unity
             if (_initialized || _initializing || !TrackObject) return;
             _initializing = true;
 
+            // Cache transform reference
+            _transform = transform;
+
             // Register GameObject
             _handle = Object.CreateObject(Classes.GameObject.Type);
-      
+
+
             // Register name
             if (name.Length > 0)
             {
                 Helper.SubmitString(_handle, Classes.GameObject.Name, name);
+            }
+
+            if (TrackPhysics)
+            {
+                InitPhysicsEvent();
             }
 
             // Register Components
@@ -496,14 +538,17 @@ namespace SceneTrack.Unity
             return true;
         }
 
+
+        private void InitPhysicsEvent()
+        {
+
+        }
+
         /// <summary>
         /// Initialize SceneTrack Transform Component
         /// </summary>
         private void InitTransform()
         {
-            // Cache transform reference
-            _transform = transform;
-
             // Create transform object in SceneTrack
             TransformHandle = Object.CreateObject(Classes.Transform.Type);
 
@@ -517,6 +562,23 @@ namespace SceneTrack.Unity
         private void RecordMeshRenderer()
         {
 
+        }
+
+        private void RecordPhysicsEvent(Classes.PhysicsEvent.EventType eventType, Vector3 worldLocation, float intensity = 0, SceneTrackObject other = null)
+        {
+            // Were we making the events one offs? i think so? (Hence not using the init physics event)
+            // TODO: Check in on this
+            _physicsEventHandle = Object.CreateObject(Classes.PhysicsEvent.Type);
+
+            Object.SetValue_uint8(_physicsEventHandle, Classes.PhysicsEvent.Event, (byte)eventType);
+            Object.SetValue_3_float32(_physicsEventHandle, Classes.PhysicsEvent.ContactPoint, worldLocation.x, worldLocation.y, worldLocation.z);
+            Object.SetValue_float32(_physicsEventHandle, Classes.PhysicsEvent.Strength, intensity);
+
+            // TODO: Should I be dumping 0 if its not there?
+            Object.SetValue_2_uint32(_physicsEventHandle, Classes.PhysicsEvent.RelationReference, TransformHandle,
+                other != null ? other.TransformHandle : 0);
+
+            Helper.SubmitString(_physicsEventHandle, Classes.PhysicsEvent.UserData, UserDefinedData);
         }
 
         /// <summary>

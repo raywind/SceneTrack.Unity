@@ -179,6 +179,12 @@ namespace SceneTrack.Unity
 
         public static class PhysicsEvent
         {
+            public enum EventType : uint
+            {
+                Start = 0,
+                Continue = 1,
+                Stop = 2,
+            }
             public static uint Type = 0;
             public static uint Event = 0;
             public static uint ContactPoint = 0;
