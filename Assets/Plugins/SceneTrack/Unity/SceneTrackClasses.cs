@@ -18,6 +18,7 @@ namespace SceneTrack.Unity
             Mesh.Register();
             SubMesh.Register();
             Material.Register();
+            PhysicsEvent.Register();
         }
 
 
@@ -173,6 +174,26 @@ namespace SceneTrack.Unity
                 Emissive = Object.AddObjectTypeComponentEx2(Type, Kind.Emissive, SceneTrack.Type.Float32, 3, 1, Units.Unspecified, Reference.Unspecified);
                 Transparency = Object.AddObjectTypeComponentEx2(Type, Kind.Transparency, SceneTrack.Type.Float32, 1, 1, Units.Unspecified, Reference.Unspecified);
                 Reflection = Object.AddObjectTypeComponentEx2(Type, Kind.Reflection, SceneTrack.Type.Float32, 1, 1, Units.Unspecified, Reference.Unspecified);
+            }
+        }
+
+        public static class PhysicsEvent
+        {
+            public static uint Type = 0;
+            public static uint Event = 0;
+            public static uint ContactPoint = 0;
+            public static uint Strength = 0;
+            public static uint RelationReference = 0;
+            public static uint UserData = 0;
+
+            public static void Register()
+            {
+                Type = Object.CreateObjectTypeEx(Frequency.Event, 301);
+                Event = Object.AddObjectTypeComponentEx2(Type, Kind.Event, SceneTrack.Type.Uint8, 1, 1, Units.Unspecified, Reference.Unspecified);
+                ContactPoint = Object.AddObjectTypeComponentEx2(Type, Kind.Position, SceneTrack.Type.Float32, 3, 1, Units.Unspecified, Reference.World);
+                Strength = Object.AddObjectTypeComponentEx2(Type, Kind.Intensity, SceneTrack.Type.Float32, 1, 1, Units.Unspecified, Reference.Unspecified);
+                RelationReference = Object.AddObjectTypeComponentEx2(Type, Kind.Relationship, SceneTrack.Type.Uint32, 2, 1, Units.Unspecified, Reference.Unspecified);
+                UserData = Object.AddObjectTypeComponentEx2(Type, Kind.Type, SceneTrack.Type.CString, 1, 1, Units.Unspecified, Reference.Unspecified);
             }
         }
     }
