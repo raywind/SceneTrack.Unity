@@ -49,8 +49,8 @@ namespace SceneTrack.Unity.Editor
 
             if (GUILayout.Button("Auto Add To Scene"))
             {
-
-                SceneTrack.Unity.Editor.Helper.AutoMeshRenderer();
+                SceneTrack.Unity.Editor.Helper.AddToMeshRenderer();
+                SceneTrack.Unity.Editor.Helper.AddToColliders();
             }
             GUILayout.Space(10);
 

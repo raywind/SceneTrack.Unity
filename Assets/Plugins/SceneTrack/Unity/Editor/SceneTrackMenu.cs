@@ -12,7 +12,7 @@ namespace SceneTrack.Unity.Editor
             // Take Selection
             var inputFile = UnityEditor.EditorUtility.OpenFilePanelWithFilters(
                 "Select Take File",
-                SceneTrack.Unity.Cache.Folder, new string[] {"SceneTrack", Cache.FileExtension });
+                SceneTrack.Unity.Cache.Folder, new string[] {"SceneTrack", Cache.FileExtension});
 
             if (!string.IsNullOrEmpty(inputFile))
             {
@@ -24,6 +24,18 @@ namespace SceneTrack.Unity.Editor
         private static bool ExportTakeValidation()
         {
             return !(Cache.GetCacheFiles().Length > 0);
+        }
+
+        [MenuItem("GameObject/Scene Track/Add To MeshRenderers")]
+        private static void AddToMeshRenderers()
+        {
+            SceneTrack.Unity.Editor.Helper.AddToMeshRenderer();
+        }
+
+        [MenuItem("GameObject/Scene Track/Add To Colliders")]
+        private static void AddToColliders()
+        {
+            SceneTrack.Unity.Editor.Helper.AddToColliders();
         }
     }
 }

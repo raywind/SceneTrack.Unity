@@ -5,7 +5,7 @@ namespace SceneTrack.Unity.Editor
 {
     public static class Helper
     {
-        public static void AutoMeshRenderer()
+        public static void AddToMeshRenderer()
         {
             foreach (var skMr in UnityEngine.Object.FindObjectsOfType<SkinnedMeshRenderer>())
             {
@@ -20,6 +20,17 @@ namespace SceneTrack.Unity.Editor
                 if (mr.GetComponent<SceneTrackObject>() == null)
                 {
                     Unity.Helper.RecursiveBackwardsAddObject(mr.transform);
+                }
+            }
+        }
+
+        public static void AddToColliders()
+        {
+            foreach (var collider in UnityEngine.Object.FindObjectsOfType<Collider>())
+            {
+                if (collider.GetComponent<SceneTrackObject>() == null)
+                {
+                    collider.gameObject.AddComponent<SceneTrackObject>();
                 }
             }
         }
