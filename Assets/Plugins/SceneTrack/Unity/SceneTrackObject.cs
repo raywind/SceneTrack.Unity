@@ -49,6 +49,10 @@ namespace SceneTrack.Unity
         /// </summary>
         private uint _handle;
 
+        public uint GameObjectHandle {
+            get { return _handle; }
+        }
+
         private bool _initialized;
         private bool _initializing;
 
@@ -571,17 +575,14 @@ namespace SceneTrack.Unity
 
         private void RecordPhysicsEvent(Classes.PhysicsEvent.EventType eventType, Vector3 worldLocation, float intensity = 0, SceneTrackObject other = null)
         {
-            // Were we making the events one offs? i think so? (Hence not using the init physics event)
-            // TODO: Check in on this
             _physicsEventHandle = Object.CreateObject(Classes.PhysicsEvent.Type);
 
             Object.SetValue_uint8(_physicsEventHandle, Classes.PhysicsEvent.Event, (byte)eventType);
             Object.SetValue_3_float32(_physicsEventHandle, Classes.PhysicsEvent.ContactPoint, worldLocation.x, worldLocation.y, worldLocation.z);
             Object.SetValue_float32(_physicsEventHandle, Classes.PhysicsEvent.Strength, intensity);
 
-            // TODO: Should I be dumping 0 if its not there?
-            Object.SetValue_2_uint32(_physicsEventHandle, Classes.PhysicsEvent.RelationReference, TransformHandle,
-                other != null ? other.TransformHandle : 0);
+            Object.SetValue_2_uint32(_physicsEventHandle, Classes.PhysicsEvent.RelationReference, _handle,
+                other != null ? other.GameObjectHandle : 0);
 
             Helper.SubmitString(_physicsEventHandle, Classes.PhysicsEvent.UserData, UserDefinedData);
         }

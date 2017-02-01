@@ -9,9 +9,14 @@ PluginImporter:
   isPreloaded: 0
   isOverridable: 0
   platformData:
+    Android:
+      enabled: 0
+      settings:
+        CPU: ARMv7
     Any:
       enabled: 1
       settings:
+        Exclude Android: 1
         Exclude Editor: 0
         Exclude Linux: 1
         Exclude Linux64: 1
@@ -19,8 +24,13 @@ PluginImporter:
         Exclude OSXIntel: 1
         Exclude OSXIntel64: 1
         Exclude OSXUniversal: 1
+        Exclude SamsungTV: 1
+        Exclude Tizen: 1
+        Exclude WebGL: 1
         Exclude Win: 1
         Exclude Win64: 1
+        Exclude iOS: 1
+        Exclude tvOS: 1
     Editor:
       enabled: 1
       settings:
@@ -51,6 +61,10 @@ PluginImporter:
       enabled: 0
       settings:
         CPU: None
+    SamsungTV:
+      enabled: 0
+      settings:
+        STV_MODEL: STANDARD_15
     Win:
       enabled: 0
       settings:
@@ -59,6 +73,16 @@ PluginImporter:
       enabled: 0
       settings:
         CPU: AnyCPU
+    iOS:
+      enabled: 0
+      settings:
+        CompileFlags: 
+        FrameworkDependencies: 
+    tvOS:
+      enabled: 0
+      settings:
+        CompileFlags: 
+        FrameworkDependencies: 
   userData: 
   assetBundleName: 
   assetBundleVariant: 
