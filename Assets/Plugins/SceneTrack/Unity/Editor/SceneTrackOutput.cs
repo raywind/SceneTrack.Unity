@@ -1074,7 +1074,7 @@ namespace SceneTrack.Unity.Editor
         public static string GetExportExtension()
         {
           if (IsMidiOutput)
-            return "midi";
+            return "mid";
           else if (IsXmlOutput)
             return "xml";
           return "txt";
