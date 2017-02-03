@@ -16,7 +16,7 @@ namespace SceneTrack.Unity.Editor
 
             if (!string.IsNullOrEmpty(inputFile))
             {
-                SceneTrack.Unity.Editor.Output.Export(inputFile);
+                SceneTrack.Unity.Editor.FbxOutputRunner.Export(inputFile);
             }
         }
 

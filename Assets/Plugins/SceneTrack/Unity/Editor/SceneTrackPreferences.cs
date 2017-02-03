@@ -90,16 +90,32 @@ namespace SceneTrack.Unity.Editor
 
             if (_currentTab == 1)
             {
-                if(GUILayout.Button("FBX", miniRightDown))
+                if(GUILayout.Button("FBX", miniMidDown))
                 {
                     _currentTab = 1;
                 }
             }
             else
             {
-                if(GUILayout.Button("FBX", EditorStyles.miniButtonRight))
+                if(GUILayout.Button("FBX", EditorStyles.miniButtonMid))
                 {
                     _currentTab = 1;
+                }
+            }
+
+            
+            if (_currentTab == 2)
+            {
+                if(GUILayout.Button("MIDI", miniRightDown))
+                {
+                    _currentTab = 2;
+                }
+            }
+            else
+            {
+                if(GUILayout.Button("MIDI", EditorStyles.miniButtonRight))
+                {
+                    _currentTab = 2;
                 }
             }
 
@@ -112,6 +128,9 @@ namespace SceneTrack.Unity.Editor
             {
                 case 1:
                     FBXOutput.EditorPreferences();
+                    break;
+                case 2:
+                    MidiOutput.EditorPreferences();
                     break;
                 default:
                     OutputFramerate = (float) EditorGUILayout.FloatField("Output Framerate", OutputFramerate);

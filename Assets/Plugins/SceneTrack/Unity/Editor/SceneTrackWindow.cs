@@ -130,18 +130,57 @@ namespace SceneTrack.Unity.Editor
             GUILayout.Space(5);
             EditorGUILayout.BeginHorizontal();
 
-            bool disableExport = Output.IsExporting;
+            bool disableExport = FbxOutputRunner.IsExporting || MidiOutputRunner.IsExporting;
 
-            if (Output.IsExporting && Output.IsExportSucessfull == -1)
+            if (FbxOutputRunner.IsExporting && FbxOutputRunner.IsExportSucessfull == -1)
             {
               // Exporting right now.
-              EditorUtility.DisplayProgressBar("Exporting SceneTrack", "Saving Take to FBX File...", Output.ExportProgress);
+              EditorUtility.DisplayProgressBar("Exporting SceneTrack", "Saving Take to FBX File...", FbxOutputRunner.ExportProgress);
             }
 
-            if (!Output.IsExporting && Output.IsExportSucessfull != -1)
+            if (!FbxOutputRunner.IsExporting && FbxOutputRunner.IsExportSucessfull != -1)
             {
-              bool didExport = (Output.IsExportSucessfull == 1);
-              string dstPath = Output.ReceiveExport();
+              bool didExport = (FbxOutputRunner.IsExportSucessfull == 1);
+              string dstPath = FbxOutputRunner.ReceiveExport();
+              EditorUtility.ClearProgressBar();
+
+              // Exported or failed export
+              if (didExport == true)
+              {
+                  if (EditorPrefs.GetBool("SceneTrack_OpenAfterExporting", false))
+                  {
+                    Application.OpenURL("file://" + dstPath);
+                  }
+                  SceneTrack.Unity.Log.Message("Export Successful to " + dstPath);
+              }
+              else if (didExport == false)
+              {
+                EditorUtility.DisplayDialog("Exporting SceneTrack Failed!", "The SceneTrack file could not be exported.", "Okay");
+              }
+            }
+            
+
+            if (GUILayout.Button("Export Fbx", EditorStyles.miniButtonLeft))
+            {
+                string path = Path.GetFullPath(Path.Combine(Cache.Folder, Cache.CachedFiles[_outputIndex] + ".st"));
+                FbxOutputRunner.Export(path);
+            }
+
+
+
+
+
+            
+            if (MidiOutputRunner.IsExporting && MidiOutputRunner.IsExportSucessfull == -1)
+            {
+              // Exporting right now.
+              EditorUtility.DisplayProgressBar("Exporting SceneTrack", "Saving Take to MIDI File...", MidiOutputRunner.ExportProgress);
+            }
+
+            if (!MidiOutputRunner.IsExporting && MidiOutputRunner.IsExportSucessfull != -1)
+            {
+              bool didExport = (MidiOutputRunner.IsExportSucessfull == 1);
+              string dstPath = MidiOutputRunner.ReceiveExport();
               EditorUtility.ClearProgressBar();
 
               // Exported or failed export
@@ -162,11 +201,17 @@ namespace SceneTrack.Unity.Editor
             if (disableExport)
               GUI.enabled = false;
 
-            if (GUILayout.Button("Export", EditorStyles.miniButtonLeft))
+            if (GUILayout.Button("Export Midi", EditorStyles.miniButtonMid))
             {
                 string path = Path.GetFullPath(Path.Combine(Cache.Folder, Cache.CachedFiles[_outputIndex] + ".st"));
-                Output.Export(path);
+                MidiOutputRunner.Export(path);
             }
+
+
+
+
+
+
 
 
             if (GUILayout.Button("Clear", EditorStyles.miniButtonRight))

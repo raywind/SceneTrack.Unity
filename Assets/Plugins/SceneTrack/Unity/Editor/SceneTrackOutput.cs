@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define EXPORTER_IS_THREADED
+
+using System;
 using System.Collections;
 using System.Diagnostics;
 using System.IO;
@@ -10,7 +12,7 @@ using UnityEditor;
 
 namespace SceneTrack.Unity.Editor
 {
-    public static class Output
+    public static class FbxOutputRunner
     {
         static bool _exporting = false;
 
@@ -141,22 +143,23 @@ namespace SceneTrack.Unity.Editor
 
             if (!string.IsNullOrEmpty(outputFile))
             {
-                //FBXOutput.SetupExport();
 
+#if EXPORTER_IS_THREADED
                 StartExport(sourcePath, outputFile);
-
-//                //TODO: EntryPointNotFoundException: fbxConvertSceneTrackFile
-//                int response = SceneTrackFbx.Conversion.ConvertSceneTrackFile(new StringBuilder(sourcePath),
-//                    new StringBuilder(outputFile));
-//                if (response == 0)
-//                {
-//                  UnityEngine.Debug.Log("FBX Conversion Successfull");
-//                }
-//                else
-//                {
-//                  UnityEngine.Debug.Log("FBX Conversion Failed.");
-//                }
-            }
+#else
+                FBXOutput.SetupExport();
+                int response = SceneTrackFbx.Conversion.ConvertSceneTrackFile(new StringBuilder(sourcePath),
+                    new StringBuilder(outputFile));
+                if (response == 0)
+                {
+                  UnityEngine.Debug.Log("FBX Conversion Successfull");
+                }
+                else
+                {
+                  UnityEngine.Debug.Log("FBX Conversion Failed.");
+                }
+#endif
+      }
         }
     }
 
@@ -690,4 +693,445 @@ namespace SceneTrack.Unity.Editor
             return 2;
         }
     }
+
+  
+    public static class MidiOutputRunner
+    {
+        static bool _exporting = false;
+
+        private static float _exportProgress = 0.0f;
+        private static int _exportSuccessfull = -1;
+        private static Thread _exportThread;
+        private static string _dstPath;
+
+        public static bool IsExporting
+        {
+            get { return _exporting; }
+        }
+
+        public static int IsExportSucessfull
+        {
+            get { return _exportSuccessfull; }
+        }
+
+        public static float ExportProgress
+        {
+            get { return _exportProgress; }
+        }
+
+        public static bool StartExport(string srcPath_, string dstPath_)
+        {
+            if (IsExporting)
+                return false;
+
+            var exportInfo = new ExportInfo()
+            {
+                srcPath = srcPath_,
+                dstPath = dstPath_
+            };
+
+            _dstPath = dstPath_;
+            MidiOutput.SetupExport();
+
+            _exportThread = new Thread(new ParameterizedThreadStart(ExportThreadFn));
+            _exportThread.Start(exportInfo);
+
+            return true;
+        }
+
+        public static String ReceiveExport()
+        {
+            _exportSuccessfull = -1;
+            _exportThread = null;
+            return _dstPath;
+        }
+
+        class ExportInfo
+        {
+            public String srcPath, dstPath;
+        }
+
+        static void ExportThreadFn(object exportInfoObj)
+        {
+            if (_exporting)
+                return;
+
+            _exportSuccessfull = -1;
+            _exportProgress = 0.0f;
+
+            ExportInfo exportInfo = (ExportInfo) exportInfoObj;
+
+            int mode = 0, response = 0;
+            _exporting = true;
+
+            while (true)
+            {
+                if (mode == 0) // Configure
+                {
+                    _exportProgress = 0.0f;
+                    mode = 1;
+                }
+                else if (mode == 1) // Begin
+                {
+                    response = SceneTrackMidi.Conversion.StepConvertSceneTrackFileBegin(
+                        new StringBuilder(exportInfo.srcPath), new StringBuilder(exportInfo.dstPath));
+                    if (response == 0)
+                    {
+                        mode = 2;
+                    }
+                    else
+                    {
+                        _exportSuccessfull = 0;
+                        break;
+                    }
+                }
+                else if (mode == 2) // Update
+                {
+                    response = SceneTrackMidi.Conversion.StepConvertSceneTrackFileUpdate();
+
+                    if (response == 1)
+                    {
+                        _exportSuccessfull = 1;
+                        break;
+                    }
+                    else if (response == -1)
+                    {
+                        _exportSuccessfull = 0;
+                        break;
+                    }
+                    else
+                    {
+                        _exportProgress = SceneTrackMidi.Conversion.StepConvertProgress();
+                        Thread.Sleep(1);
+                    }
+                }
+            }
+
+            _exporting = false;
+        }
+
+
+        /// <summary>
+        /// Export file to selected export format
+        /// </summary>
+        /// <param name="sourcePath">Full path to the source file to use in the conversion</param>
+        public static void Export(string sourcePath)
+        {
+            // Get destination folder
+            var outputFile = UnityEditor.EditorUtility.SaveFilePanel(
+                "Destination File",
+                Environment.SpecialFolder.DesktopDirectory.ToString(),
+                Path.GetFileNameWithoutExtension(sourcePath) + "." + MidiOutput.GetExportExtension(),
+                MidiOutput.GetExportExtension());
+
+
+            UnityEngine.Debug.Log(sourcePath);
+            UnityEngine.Debug.Log(outputFile);
+
+            if (!string.IsNullOrEmpty(outputFile))
+            {
+#if EXPORTER_IS_THREADED
+                  StartExport(sourcePath, outputFile);
+#else 
+                  FBXOutput.SetupExport();
+                  int response = SceneTrackMidi.Conversion.ConvertSceneTrackFile(new StringBuilder(sourcePath), new StringBuilder(outputFile));
+                  if (response == 0)
+                  {
+                    UnityEngine.Debug.Log("MIDI Conversion Successfull");
+                  }
+                  else
+                  {
+                    UnityEngine.Debug.Log("MIDI Conversion Failed.");
+                  }
+                
+#endif
+
+            }
+        }
+    }
+  
+    public static class MidiOutput
+    {
+    
+        public static int FileType
+        {
+            get { return UnityEditor.EditorPrefs.GetInt("SceneTrack_Midi_Type", 0); }
+            set { UnityEditor.EditorPrefs.SetInt("SceneTrack_Midi_Type", value); }
+        }
+    
+        public static bool IsMidiOutput
+        {
+          get { return FileType == 0; }
+        }
+
+        public static bool IsXmlOutput
+        {
+          get { return FileType == 1; }
+        }
+
+        public static int AxisTX
+        {
+            get { return UnityEditor.EditorPrefs.GetInt("SceneTrack_Midi_AxisTSX", (int) FBXOutput.FbxAxis.PX); }
+            set { UnityEditor.EditorPrefs.SetInt("SceneTrack_Midi_AxisTSX", value); }
+        }
+
+        public static int AxisTY
+        {
+            get { return UnityEditor.EditorPrefs.GetInt("SceneTrack_Midi_AxisTSY", (int) FBXOutput.FbxAxis.PY); }
+            set { UnityEditor.EditorPrefs.SetInt("SceneTrack_Midi_AxisTSY", value); }
+        }
+
+        public static int AxisTZ
+        {
+            get { return UnityEditor.EditorPrefs.GetInt("SceneTrack_Midi_Midi_AxisTSZ", (int) FBXOutput.FbxAxis.PZ); }
+            set { UnityEditor.EditorPrefs.SetInt("SceneTrack_AxisTSZ", value); }
+        }
+    
+        public static float ScaleMultiplyX
+        {
+            get { return UnityEditor.EditorPrefs.GetFloat("SceneTrack_Midi_ScaleMultiplyX", 1.0f); }
+            set { UnityEditor.EditorPrefs.SetFloat("SceneTrack_Midi_ScaleMultiplyX", value); }
+        }
+
+        public static float ScaleMultiplyY
+        {
+            get { return UnityEditor.EditorPrefs.GetFloat("SceneTrack_Midi_ScaleMultiplyY", 1.0f); }
+            set { UnityEditor.EditorPrefs.SetFloat("SceneTrack_Midi_ScaleMultiplyY", value); }
+        }
+
+        public static float ScaleMultiplyZ
+        {
+            get { return UnityEditor.EditorPrefs.GetFloat("SceneTrack_Midi_ScaleMultiplyZ", 1.0f); }
+            set { UnityEditor.EditorPrefs.SetFloat("SceneTrack_Midi_ScaleMultiplyZ", value); }
+        }
+
+        private static void SetupSwizzle(int node, int trsMask, int srcAxis, FBXOutput.FbxAxis axis)
+        {
+            int dstAxis = 0, sign = 0;
+            switch (axis)
+            {
+                case FBXOutput.FbxAxis.NX:
+                    dstAxis = SceneTrackFbx.Axis.X;
+                    sign = -1;
+                    break;
+                case FBXOutput.FbxAxis.NY:
+                    dstAxis = SceneTrackFbx.Axis.Y;
+                    sign = -1;
+                    break;
+                case FBXOutput.FbxAxis.NZ:
+                    dstAxis = SceneTrackFbx.Axis.Z;
+                    sign = -1;
+                    break;
+                case FBXOutput.FbxAxis.NW:
+                    dstAxis = SceneTrackFbx.Axis.W;
+                    sign = -1;
+                    break;
+                case FBXOutput.FbxAxis.PX:
+                    dstAxis = SceneTrackFbx.Axis.X;
+                    sign = 1;
+                    break;
+                case FBXOutput.FbxAxis.PY:
+                    dstAxis = SceneTrackFbx.Axis.Y;
+                    sign = 1;
+                    break;
+                case FBXOutput.FbxAxis.PZ:
+                    dstAxis = SceneTrackFbx.Axis.Z;
+                    sign = 1;
+                    break;
+                case FBXOutput.FbxAxis.PW:
+                    dstAxis = SceneTrackFbx.Axis.W;
+                    sign = 1;
+                    break;
+            }
+
+           // SceneTrackMidi.Settings.SetAxisSwizzle(node, trsMask, srcAxis, dstAxis, sign);
+        }
+
+        private static void SetupSwizzles(int node, int trsMask, int x, int y, int z)
+        {
+            SetupSwizzle(node, trsMask, SceneTrackFbx.Axis.X, (FBXOutput.FbxAxis) x);
+            SetupSwizzle(node, trsMask, SceneTrackFbx.Axis.Y, (FBXOutput.FbxAxis) y);
+            SetupSwizzle(node, trsMask, SceneTrackFbx.Axis.Z, (FBXOutput.FbxAxis) z);
+        }
+
+        private static void SetupSwizzles(int node, int trsMask, int x, int y, int z, int w)
+        {
+            SetupSwizzle(node, trsMask, SceneTrackFbx.Axis.X, (FBXOutput.FbxAxis) x);
+            SetupSwizzle(node, trsMask, SceneTrackFbx.Axis.Y, (FBXOutput.FbxAxis) y);
+            SetupSwizzle(node, trsMask, SceneTrackFbx.Axis.Z, (FBXOutput.FbxAxis) z);
+            SetupSwizzle(node, trsMask, SceneTrackFbx.Axis.W, (FBXOutput.FbxAxis) w);
+        }
+
+        public static void SetupExport()
+        {
+            SetupSwizzles(SceneTrackFbx.Node.Transform, SceneTrackFbx.NodeProperty.Translation, AxisTX, AxisTY, AxisTZ);
+
+            SceneTrackMidi.Settings.SetAxisOperation(SceneTrackFbx.Node.Transform, SceneTrackMidi.NodeProperty.Translation,
+                SceneTrackFbx.Axis.X, SceneTrackFbx.Operator.Multiply, ScaleMultiplyX);
+            SceneTrackMidi.Settings.SetAxisOperation(SceneTrackFbx.Node.Transform, SceneTrackMidi.NodeProperty.Translation,
+                SceneTrackFbx.Axis.Y, SceneTrackFbx.Operator.Multiply, ScaleMultiplyY);
+            SceneTrackMidi.Settings.SetAxisOperation(SceneTrackFbx.Node.Transform, SceneTrackMidi.NodeProperty.Translation,
+                SceneTrackFbx.Axis.Z, SceneTrackFbx.Operator.Multiply, ScaleMultiplyZ);
+
+            SceneTrackMidi.Settings.SetFileType(FileType);
+        }
+    
+        static int[] MidiFileTypeInt = new int[]
+        {
+            0, 1
+        };
+
+        static string[] MidiFileTypeStr = new string[]
+        {
+            "MIDI",
+            "XML"
+        };
+
+
+        static int[] AxisPresets = new int[]
+        {
+            0, 1, 2
+        };
+
+        static String[] AxisPresetsStr = new string[]
+        {
+            "Default",
+            "Unity",
+            "Custom"
+        };
+
+        static int[] AxisInts = new int[]
+        {
+            0, 1, 2, 3, 4, 5
+        };
+
+        static String[] AxisStr = new string[]
+        {
+            "-X", "-Y", "-Z", "-W", "+X", "+Y", "+Z", "+W"
+        };
+
+        static int[] ReferenceFrameInt = new int[]
+        {
+            SceneTrackFbx.ReferenceFrame.Local,
+            SceneTrackFbx.ReferenceFrame.World,
+        };
+
+        static String[] ReferenceFrameStr = new String[]
+        {
+            "Hierarchical (Keep)",
+            "Flatten",
+        };
+
+        static int[] TriangleOrderInt = new int[]
+        {
+            0, 1
+        };
+
+        static String[] TriangleOrderStr = new String[]
+        {
+            "Keep (1, 2, 3)", "Reverse (1, 3, 2)"
+        };
+
+        public static void EditorPreferences()
+        {
+           
+            EditorGUILayout.PrefixLabel(String.Empty);
+      
+            FileType = EditorGUILayout.IntPopup("FBX Version", FileType, MidiFileTypeStr, MidiFileTypeInt);
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("   ");
+
+            SceneTrackPreferences.OutputAxisSettings = CheckSwizzle();
+
+            int preset = EditorGUILayout.IntPopup(SceneTrackPreferences.OutputAxisSettings, AxisPresetsStr,
+                AxisPresets);
+
+            if (preset != SceneTrackPreferences.OutputAxisSettings)
+            {
+                SetSwizzle(preset);
+            }
+
+
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("Translation");
+            AxisTX = (int) EditorGUILayout.IntPopup((int) AxisTX, AxisStr, AxisInts);
+            AxisTY = (int) EditorGUILayout.IntPopup((int) AxisTY, AxisStr, AxisInts);
+            AxisTZ = (int) EditorGUILayout.IntPopup((int) AxisTZ, AxisStr, AxisInts);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.PrefixLabel(String.Empty);
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("Scene Scale");
+            ScaleMultiplyX = ScaleMultiplyY = ScaleMultiplyZ = EditorGUILayout.FloatField(ScaleMultiplyX);
+            EditorGUILayout.EndHorizontal();
+
+        }
+
+        public static string GetExportExtension()
+        {
+          if (IsMidiOutput)
+            return "midi";
+          else if (IsXmlOutput)
+            return "xml";
+          return "txt";
+        }
+
+        public static void SetSwizzle(int type)
+        {
+            switch (type)
+            {
+                case 0: // DEFAULT
+                    AxisTX = (int) FBXOutput.FbxAxis.PX;
+                    AxisTY = (int) FBXOutput.FbxAxis.PY;
+                    AxisTZ = (int) FBXOutput.FbxAxis.PZ;
+                    ScaleMultiplyX = 1.0f;
+                    ScaleMultiplyY = 1.0f;
+                    ScaleMultiplyZ = 1.0f;
+                    break;
+                case 1: // UNITY
+                    AxisTX = (int) FBXOutput.FbxAxis.NX;
+                    AxisTY = (int) FBXOutput.FbxAxis.PY;
+                    AxisTZ = (int) FBXOutput.FbxAxis.PZ;
+                    ScaleMultiplyX = 1.0f;
+                    ScaleMultiplyY = 1.0f;
+                    ScaleMultiplyZ = 1.0f;
+                    break;
+            }
+
+            // Save change
+            SceneTrackPreferences.OutputAxisSettings = type;
+        }
+
+        public static int CheckSwizzle()
+        {
+            bool isDefault = true;
+            bool isUnity = true;
+
+            // Check if we're using the default settings
+            if (AxisTX != (int) FBXOutput.FbxAxis.PX) isDefault = false;
+            if (AxisTY != (int) FBXOutput.FbxAxis.PY) isDefault = false;
+            if (AxisTZ != (int) FBXOutput.FbxAxis.PZ) isDefault = false;
+            if (!UnityEngine.Mathf.Approximately(ScaleMultiplyX, 1.0f)) isDefault = false;
+            if (!UnityEngine.Mathf.Approximately(ScaleMultiplyY, 1.0f)) isDefault = false;
+            if (!UnityEngine.Mathf.Approximately(ScaleMultiplyZ, 1.0f)) isDefault = false;
+
+            // Check if we're using the unity settings
+            if (AxisTX != (int) FBXOutput.FbxAxis.NX) isUnity = false;
+            if (AxisTY != (int) FBXOutput.FbxAxis.PY) isUnity = false;
+            if (AxisTZ != (int) FBXOutput.FbxAxis.PZ) isUnity = false;
+            if (!UnityEngine.Mathf.Approximately(ScaleMultiplyX, 1.0f)) isUnity = false;
+            if (!UnityEngine.Mathf.Approximately(ScaleMultiplyY, 1.0f)) isUnity = false;
+            if (!UnityEngine.Mathf.Approximately(ScaleMultiplyZ, 1.0f)) isUnity = false;
+
+            if (isUnity) return 1;
+            if (isDefault) return 0;
+            return 2;
+        }
+    }
+
+
 }
