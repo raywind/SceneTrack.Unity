@@ -118,9 +118,9 @@ namespace SceneTrack.Unity
 
         private void OnCollisionStay(Collision collision)
         {
-            if (!TrackPhysics) return;
-            RecordPhysicsEvent(Classes.PhysicsEvent.EventType.Continue, collision.contacts[0].point,
-                collision.relativeVelocity.magnitude, collision.collider.gameObject.GetComponent<SceneTrackObject>());
+//            if (!TrackPhysics) return;
+//            RecordPhysicsEvent(Classes.PhysicsEvent.EventType.Continue, collision.contacts[0].point,
+//                collision.relativeVelocity.magnitude, collision.collider.gameObject.GetComponent<SceneTrackObject>());
         }
 
         private void OnTriggerEnter(Collider otherCollider)
@@ -137,8 +137,8 @@ namespace SceneTrack.Unity
 
         private void OnTriggerStay(Collider otherCollider)
         {
-            if (!TrackPhysics) return;
-            RecordPhysicsEvent(Classes.PhysicsEvent.EventType.Continue, _transform.position, 1f, otherCollider.gameObject.GetComponent<SceneTrackObject>());
+//            if (!TrackPhysics) return;
+//            RecordPhysicsEvent(Classes.PhysicsEvent.EventType.Continue, _transform.position, 1f, otherCollider.gameObject.GetComponent<SceneTrackObject>());
         }
 
         private void OnEnable()
@@ -584,7 +584,7 @@ namespace SceneTrack.Unity
             Object.SetValue_2_uint32(_physicsEventHandle, Classes.PhysicsEvent.RelationReference, _handle,
                 other != null ? other.GameObjectHandle : 0);
 
-            Helper.SubmitString(_physicsEventHandle, Classes.PhysicsEvent.UserData, UserDefinedData);
+            // Helper.SubmitString(_physicsEventHandle, Classes.PhysicsEvent.UserData, UserDefinedData);
         }
 
         /// <summary>
