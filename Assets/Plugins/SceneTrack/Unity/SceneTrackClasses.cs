@@ -200,14 +200,6 @@ namespace SceneTrack.Unity
                 Strength = Object.AddObjectTypeComponentEx2(Type, Kind.Intensity, SceneTrack.Type.Float32, 1, 1, Units.Unspecified, Reference.Unspecified);
                 RelationReference = Object.AddObjectTypeComponentEx2(Type, Kind.Relationship, SceneTrack.Type.Uint32, 2, 1, Units.Unspecified, Reference.Unspecified);
                 UserData = Object.AddObjectTypeComponentEx2(Type, Kind.Type, SceneTrack.Type.CString, 1, 1, Units.Unspecified, Reference.Unspecified);
-        
-                Debug.LogFormat("Type = {0}", Type);
-                Debug.LogFormat("Event = {0}", Event);
-                Debug.LogFormat("ContactPoint = {0}", ContactPoint);
-                Debug.LogFormat("Strength = {0}", Strength);
-                Debug.LogFormat("RelationReference = {0}", RelationReference);
-                Debug.LogFormat("UserData = {0}", UserData);
-
             }
         }
     }
