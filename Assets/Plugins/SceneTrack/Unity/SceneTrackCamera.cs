@@ -27,6 +27,9 @@ public class SceneTrackCamera : MonoBehaviour
                 _cameraReference.enabled = false;
             }
         }
+
+        // Create new proxy texture
+        _proxyTexture = new Texture2D(textureWidth, textureHeight, TextureFormat.RGB565, false);
     }
 
     public void LateUpdate()
@@ -44,10 +47,7 @@ public class SceneTrackCamera : MonoBehaviour
     {
 
         // Create render texture
-        _renderTexture = new RenderTexture(textureWidth, textureHeight, 16, RenderTextureFormat.RGB565);
-
-        // Create new proxy texture
-        _proxyTexture = new Texture2D(textureWidth, textureHeight, TextureFormat.RGB565, false);
+        _renderTexture = RenderTexture.GetTemporary(textureWidth, textureHeight, 16, RenderTextureFormat.RGB565);
 
         // Assign camera output
         _cameraReference.targetTexture = _renderTexture;
@@ -64,6 +64,6 @@ public class SceneTrackCamera : MonoBehaviour
         // Reset things
         _cameraReference.targetTexture = null;
         RenderTexture.active = null;
-        DestroyImmediate(_renderTexture);
+        RenderTexture.ReleaseTemporary(_renderTexture);
     }
 }
