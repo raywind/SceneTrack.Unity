@@ -42,8 +42,15 @@ namespace SceneTrack.Unity.Editor
             EditorGUILayout.LabelField("Track Components", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
             _targetObject.TrackTransform = EditorGUILayout.Toggle("Transform", _targetObject.TrackTransform);
-            _targetObject.TrackMeshRenderer = hasMeshRenderer && EditorGUILayout.Toggle("Mesh", _targetObject.TrackMeshRenderer);
-            _targetObject.TrackPhysics = hasCollider && EditorGUILayout.Toggle("Physics Events", _targetObject.TrackPhysics);
+            if (hasMeshRenderer)
+            {
+                _targetObject.TrackMeshRenderer = EditorGUILayout.Toggle("Mesh", _targetObject.TrackMeshRenderer);
+            }
+
+            if (hasCollider)
+            {
+                _targetObject.TrackPhysics = EditorGUILayout.Toggle("Physics Events", _targetObject.TrackPhysics);
+            }
 
             EditorGUI.indentLevel--;
 

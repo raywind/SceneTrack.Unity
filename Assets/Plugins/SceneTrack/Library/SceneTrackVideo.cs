@@ -85,5 +85,16 @@ namespace SceneTrackVideo
 		#endif
 
 	}
+	public static class Settings
+	{
+
+		#if UNITY_EDITOR
+		[DllImport("SceneTrackVideo", CallingConvention = CallingConvention.Cdecl, EntryPoint = "videoSetFileType"), SuppressUnmanagedCodeSecurity]
+		public static extern int SetFileType(int fileType);
+		#else
+		public static int SetFileType(int fileType) { return default(int); }
+		#endif
+
+	}
 }
 

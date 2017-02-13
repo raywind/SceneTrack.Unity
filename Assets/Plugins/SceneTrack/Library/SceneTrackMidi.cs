@@ -116,6 +116,20 @@ namespace SceneTrackMidi
 		public static int SetFileType(int fileType) { return default(int); }
 		#endif
 
+		#if UNITY_EDITOR
+		[DllImport("SceneTrackMidi", CallingConvention = CallingConvention.Cdecl, EntryPoint = "midiSetTimingMode"), SuppressUnmanagedCodeSecurity]
+		public static extern int SetTimingMode(int timingMode);
+		#else
+		public static int SetTimingMode(int timingMode) { return default(int); }
+		#endif
+
+		#if UNITY_EDITOR
+		[DllImport("SceneTrackMidi", CallingConvention = CallingConvention.Cdecl, EntryPoint = "midiSetTimingValues"), SuppressUnmanagedCodeSecurity]
+		public static extern int SetTimingValues(int first, int second);
+		#else
+		public static int SetTimingValues(int first, int second) { return default(int); }
+		#endif
+
 	}
 }
 
