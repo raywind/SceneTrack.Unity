@@ -519,7 +519,7 @@ MonoBehaviour:
   TrackObject: 1
   TrackTransform: 1
   TrackMeshRenderer: 1
-  TrackPhysics: 1
+  TrackPhysics: 0
   UserDefinedData: 
 --- !u!1 &495550884
 GameObject:

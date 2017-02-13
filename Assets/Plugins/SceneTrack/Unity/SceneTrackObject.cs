@@ -47,7 +47,7 @@ namespace SceneTrack.Unity
         public bool TrackMeshRenderer;
 
         [SerializeField]
-        public bool TrackPhysics = false;
+        public bool TrackPhysics;
 
         public string UserDefinedData = string.Empty;
 

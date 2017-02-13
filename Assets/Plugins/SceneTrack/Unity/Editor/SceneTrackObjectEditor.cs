@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 
 namespace SceneTrack.Unity.Editor
 {
@@ -142,6 +143,7 @@ namespace SceneTrack.Unity.Editor
             if (GUI.changed)
             {
                 EditorUtility.SetDirty(_targetObject);
+                EditorSceneManager.MarkAllScenesDirty();
             }
         }
     }
