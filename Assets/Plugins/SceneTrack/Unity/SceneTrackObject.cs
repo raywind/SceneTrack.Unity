@@ -1,4 +1,5 @@
 ﻿#define WIP
+
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -36,9 +37,16 @@ namespace SceneTrack.Unity
         /// <remarks>All GameObjects in Unity have transforms, so we always will have one.</remarks>
         public uint TransformHandle { get; private set; }
 
+        [SerializeField]
         public bool TrackObject = true;
+
+        [SerializeField]
         public bool TrackTransform = true;
+
+        [SerializeField]
         public bool TrackMeshRenderer;
+
+        [SerializeField]
         public bool TrackPhysics = false;
 
         public string UserDefinedData = string.Empty;

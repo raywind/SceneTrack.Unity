@@ -174,6 +174,14 @@ Prefab:
       propertyPath: m_LocalScale.z
       value: 20
       objectReference: {fileID: 0}
+    - target: {fileID: 400006, guid: 65cd0a94f1cf346698aabeb3e7774143, type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 400004, guid: 65cd0a94f1cf346698aabeb3e7774143, type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 65cd0a94f1cf346698aabeb3e7774143, type: 3}
   m_IsPrefabParent: 0
@@ -399,6 +407,8 @@ MonoBehaviour:
   TrackObject: 1
   TrackTransform: 1
   TrackMeshRenderer: 0
+  TrackPhysics: 0
+  UserDefinedData: 
 --- !u!114 &101359120
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -413,6 +423,8 @@ MonoBehaviour:
   TrackObject: 1
   TrackTransform: 1
   TrackMeshRenderer: 1
+  TrackPhysics: 1
+  UserDefinedData: 
 --- !u!114 &101359121
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -427,6 +439,8 @@ MonoBehaviour:
   TrackObject: 1
   TrackTransform: 1
   TrackMeshRenderer: 1
+  TrackPhysics: 0
+  UserDefinedData: 
 --- !u!114 &101359122
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -441,6 +455,8 @@ MonoBehaviour:
   TrackObject: 1
   TrackTransform: 1
   TrackMeshRenderer: 1
+  TrackPhysics: 1
+  UserDefinedData: 
 --- !u!114 &101359123
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -455,6 +471,8 @@ MonoBehaviour:
   TrackObject: 1
   TrackTransform: 1
   TrackMeshRenderer: 1
+  TrackPhysics: 1
+  UserDefinedData: 
 --- !u!114 &101359124
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -469,6 +487,8 @@ MonoBehaviour:
   TrackObject: 1
   TrackTransform: 1
   TrackMeshRenderer: 1
+  TrackPhysics: 1
+  UserDefinedData: 
 --- !u!114 &101359125
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -483,6 +503,8 @@ MonoBehaviour:
   TrackObject: 1
   TrackTransform: 1
   TrackMeshRenderer: 1
+  TrackPhysics: 1
+  UserDefinedData: 
 --- !u!114 &101359126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -497,6 +519,8 @@ MonoBehaviour:
   TrackObject: 1
   TrackTransform: 1
   TrackMeshRenderer: 1
+  TrackPhysics: 1
+  UserDefinedData: 
 --- !u!1 &495550884
 GameObject:
   m_ObjectHideFlags: 0
