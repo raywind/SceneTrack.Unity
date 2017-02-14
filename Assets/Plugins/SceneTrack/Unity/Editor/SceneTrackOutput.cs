@@ -1035,9 +1035,7 @@ namespace SceneTrack.Unity.Editor
         public static void EditorPreferences()
         {
            
-            EditorGUILayout.PrefixLabel(String.Empty);
-      
-            FileType = EditorGUILayout.IntPopup("FBX Version", FileType, MidiFileTypeStr, MidiFileTypeInt);
+            FileType = EditorGUILayout.IntPopup("Export as", FileType, MidiFileTypeStr, MidiFileTypeInt);
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("   ");
@@ -1133,5 +1131,204 @@ namespace SceneTrack.Unity.Editor
         }
     }
 
+
+  
+    public static class VideoOutputRunner
+    {
+        static bool _exporting = false;
+
+        private static float _exportProgress = 0.0f;
+        private static int _exportSuccessfull = -1;
+        private static Thread _exportThread;
+        private static string _dstPath;
+
+        public static bool IsExporting
+        {
+            get { return _exporting; }
+        }
+
+        public static int IsExportSucessfull
+        {
+            get { return _exportSuccessfull; }
+        }
+
+        public static float ExportProgress
+        {
+            get { return _exportProgress; }
+        }
+
+        public static bool StartExport(string srcPath_, string dstPath_)
+        {
+            if (IsExporting)
+                return false;
+
+            var exportInfo = new ExportInfo()
+            {
+                srcPath = srcPath_,
+                dstPath = dstPath_
+            };
+
+            _dstPath = dstPath_;
+            VideoOutput.SetupExport();
+
+            _exportThread = new Thread(new ParameterizedThreadStart(ExportThreadFn));
+            _exportThread.Start(exportInfo);
+
+            return true;
+        }
+
+        public static String ReceiveExport()
+        {
+            _exportSuccessfull = -1;
+            _exportThread = null;
+            return _dstPath;
+        }
+
+        class ExportInfo
+        {
+            public String srcPath, dstPath;
+        }
+
+        static void ExportThreadFn(object exportInfoObj)
+        {
+            if (_exporting)
+                return;
+
+            _exportSuccessfull = -1;
+            _exportProgress = 0.0f;
+
+            ExportInfo exportInfo = (ExportInfo) exportInfoObj;
+
+            int mode = 0, response = 0;
+            _exporting = true;
+
+            while (true)
+            {
+                if (mode == 0) // Configure
+                {
+                    _exportProgress = 0.0f;
+                    mode = 1;
+                }
+                else if (mode == 1) // Begin
+                {
+                    response = SceneTrackVideo.Conversion.StepConvertSceneTrackFileBegin(
+                        new StringBuilder(exportInfo.srcPath), new StringBuilder(exportInfo.dstPath));
+                    if (response == 0)
+                    {
+                        mode = 2;
+                    }
+                    else
+                    {
+                        _exportSuccessfull = 0;
+                        break;
+                    }
+                }
+                else if (mode == 2) // Update
+                {
+                    response = SceneTrackVideo.Conversion.StepConvertSceneTrackFileUpdate();
+
+                    if (response == 1)
+                    {
+                        _exportSuccessfull = 1;
+                        break;
+                    }
+                    else if (response == -1)
+                    {
+                        _exportSuccessfull = 0;
+                        break;
+                    }
+                    else
+                    {
+                        _exportProgress = SceneTrackVideo.Conversion.StepConvertProgress();
+                        Thread.Sleep(1);
+                    }
+                }
+            }
+
+            _exporting = false;
+        }
+
+
+        /// <summary>
+        /// Export file to selected export format
+        /// </summary>
+        /// <param name="sourcePath">Full path to the source file to use in the conversion</param>
+        public static void Export(string sourcePath)
+        {
+            // Get destination folder
+            var outputFile = UnityEditor.EditorUtility.SaveFilePanel(
+                "Destination File",
+                Environment.SpecialFolder.DesktopDirectory.ToString(),
+                Path.GetFileNameWithoutExtension(sourcePath) + "." + VideoOutput.GetExportExtension(),
+                VideoOutput.GetExportExtension());
+
+
+            UnityEngine.Debug.Log(sourcePath);
+            UnityEngine.Debug.Log(outputFile);
+
+            if (!string.IsNullOrEmpty(outputFile))
+            {
+#if EXPORTER_IS_THREADED
+                  StartExport(sourcePath, outputFile);
+#else 
+                  FBXOutput.SetupExport();
+                  int response = SceneTrackVideo.Conversion.ConvertSceneTrackFile(new StringBuilder(sourcePath), new StringBuilder(outputFile));
+                  if (response == 0)
+                  {
+                    UnityEngine.Debug.Log("MIDI Conversion Successfull");
+                  }
+                  else
+                  {
+                    UnityEngine.Debug.Log("MIDI Conversion Failed.");
+                  }
+                
+#endif
+
+            }
+        }
+    }
+
+  
+    public static class VideoOutput
+    {
+    
+        public static int FileType
+        {
+            get { return UnityEditor.EditorPrefs.GetInt("SceneTrack_Video_Type", 0); }
+            set { UnityEditor.EditorPrefs.SetInt("SceneTrack_Video_Type", value); }
+        }
+    
+        public static void SetupExport()
+        {
+            SceneTrackVideo.Settings.SetFileType(FileType);
+        }
+    
+        static int[] VideoFileTypeInt = new int[]
+        {
+            0, 1
+        };
+
+        static string[] VideoFileTypeStr = new string[]
+        {
+            "JPEG Frames",
+            "PNG Frames"
+        };
+    
+        public static void EditorPreferences()
+        {
+            EditorGUILayout.PrefixLabel(String.Empty);
+            FileType = EditorGUILayout.IntPopup("File Type", FileType, VideoFileTypeStr, VideoFileTypeInt);
+        }
+
+        public static string GetExportExtension()
+        {
+          if (FileType == 0)
+            return "jpeg";
+          else if (FileType == 1)
+            return "png";
+          return "bin";
+        }
+
+    }
 
 }

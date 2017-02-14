@@ -16,18 +16,7 @@ namespace SceneTrack.Unity.Editor
           get { return EditorPrefs.GetBool("SceneTrack_OpenAfterExporting", false); }
           set { EditorPrefs.SetBool("SceneTrack_OpenAfterExporting", value); }
         }
-
-        public static OutputType OutputFormat
-        {
-            get
-            {
-                return (OutputType)EditorPrefs.GetInt("SceneTrack_OutputType",0);
-            }
-            set
-            {
-                EditorPrefs.SetInt("SceneTrack_OutputType", (int)value);
-            }
-        }
+    
         public static float OutputFramerate
         {
             get
@@ -51,78 +40,36 @@ namespace SceneTrack.Unity.Editor
                 EditorPrefs.SetInt("SceneTrack_OutputAxisSettings", value);
             }
         }
-
-
-
-
+    
         [PreferenceItem("SceneTrack")]
         private static void SceneTrackPreferencesItem()
         {
-            GUIStyle miniLeftDown = new GUIStyle(EditorStyles.miniButtonLeft);
-            miniLeftDown.normal = miniLeftDown.active;
-            miniLeftDown.focused = miniLeftDown.active;
-
-            GUIStyle miniMidDown = new GUIStyle(EditorStyles.miniButtonMid);
-            miniMidDown.normal = miniMidDown.active;
-            miniMidDown.focused = miniMidDown.active;
-
-            GUIStyle miniRightDown = new GUIStyle(EditorStyles.miniButtonRight);
-            miniRightDown.normal = miniRightDown.active;
-            miniRightDown.focused = miniRightDown.active;
-
-
             EditorGUILayout.BeginHorizontal();
-
-            if (_currentTab == 0)
+      
+            if (GUILayout.Toggle(_currentTab == 0, "General", EditorStyles.miniButtonLeft))
             {
-                if (GUILayout.Button("General", miniLeftDown))
-                {
-                    _currentTab = 0;
-                }
+              _currentTab = 0;
             }
-            else
-            {
-                if(GUILayout.Button("General", EditorStyles.miniButtonLeft))
-                {
-                    _currentTab = 0;
-                }
-            }
-
-            if (_currentTab == 1)
-            {
-                if(GUILayout.Button("FBX", miniMidDown))
-                {
-                    _currentTab = 1;
-                }
-            }
-            else
-            {
-                if(GUILayout.Button("FBX", EditorStyles.miniButtonMid))
-                {
-                    _currentTab = 1;
-                }
-            }
-
             
-            if (_currentTab == 2)
+            if (GUILayout.Toggle(_currentTab == 1, "Animation", EditorStyles.miniButtonMid))
             {
-                if(GUILayout.Button("MIDI", miniRightDown))
-                {
-                    _currentTab = 2;
-                }
+              _currentTab = 1;
             }
-            else
+            
+            if (GUILayout.Toggle(_currentTab == 2, "Events", EditorStyles.miniButtonMid))
             {
-                if(GUILayout.Button("MIDI", EditorStyles.miniButtonRight))
-                {
-                    _currentTab = 2;
-                }
+              _currentTab = 2;
+            }
+            
+            if (GUILayout.Toggle(_currentTab == 3, "Video", EditorStyles.miniButtonRight))
+            {
+              _currentTab = 3;
             }
 
             EditorGUILayout.EndHorizontal();
+
             GUILayout.Space(10);
             EditorGUILayout.BeginVertical();
-            EditorGUI.BeginChangeCheck();
 
             switch (_currentTab)
             {
@@ -132,33 +79,15 @@ namespace SceneTrack.Unity.Editor
                 case 2:
                     MidiOutput.EditorPreferences();
                     break;
+                case 3:
+                    VideoOutput.EditorPreferences();
+                    break;
                 default:
                     OutputFramerate = (float) EditorGUILayout.FloatField("Output Framerate", OutputFramerate);
-                    OutputFormat = (OutputType)EditorGUILayout.EnumPopup("Output Format", OutputFormat);
                     OpenAfterExporting = EditorGUILayout.Toggle("Open Output after Exporting", OpenAfterExporting);
                     break;
             }
-
-
-
-
-            if (EditorGUI.EndChangeCheck())
-            {
-
-//                switch (OutputType)
-//                {
-//                    case OutputOptions.Maya:
-//                        SceneTrack.Editor.Export.Maya.Preferences.ChangeCheck();
-//                        break;
-//                }
-//
-            }
-
-            GUILayout.FlexibleSpace();
-            EditorGUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            //GUILayout.Label(Version);
-            EditorGUILayout.EndHorizontal();
+      
             EditorGUILayout.EndVertical();
         }
 

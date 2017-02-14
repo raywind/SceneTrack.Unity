@@ -160,7 +160,7 @@ namespace SceneTrack.Unity.Editor
             }
             
 
-            if (GUILayout.Button("Export Fbx", EditorStyles.miniButtonLeft))
+            if (GUILayout.Button("Export Animation", EditorStyles.miniButtonLeft))
             {
                 string path = Path.GetFullPath(Path.Combine(Cache.Folder, Cache.CachedFiles[_outputIndex] + ".st"));
                 FbxOutputRunner.Export(path);
@@ -201,19 +201,50 @@ namespace SceneTrack.Unity.Editor
             if (disableExport)
               GUI.enabled = false;
 
-            if (GUILayout.Button("Export Midi", EditorStyles.miniButtonMid))
+            if (GUILayout.Button("Export Events", EditorStyles.miniButtonMid))
             {
                 string path = Path.GetFullPath(Path.Combine(Cache.Folder, Cache.CachedFiles[_outputIndex] + ".st"));
                 MidiOutputRunner.Export(path);
             }
 
+            
+            
+            if (VideoOutputRunner.IsExporting && VideoOutputRunner.IsExportSucessfull == -1)
+            {
+              // Exporting right now.
+              EditorUtility.DisplayProgressBar("Exporting SceneTrack", "Saving Take to Video Files...", VideoOutputRunner.ExportProgress);
+            }
 
+            if (!VideoOutputRunner.IsExporting && VideoOutputRunner.IsExportSucessfull != -1)
+            {
+              bool didExport = (VideoOutputRunner.IsExportSucessfull == 1);
+              string dstPath = VideoOutputRunner.ReceiveExport();
+              EditorUtility.ClearProgressBar();
 
+              // Exported or failed export
+              if (didExport == true)
+              {
+                  if (EditorPrefs.GetBool("SceneTrack_OpenAfterExporting", false))
+                  {
+                    Application.OpenURL("file://" + dstPath);
+                  }
+                  SceneTrack.Unity.Log.Message("Export Successful to " + dstPath);
+              }
+              else if (didExport == false)
+              {
+                EditorUtility.DisplayDialog("Exporting SceneTrack Failed!", "The SceneTrack file could not be exported.", "Okay");
+              }
+            }
+            
+            if (disableExport)
+              GUI.enabled = false;
 
-
-
-
-
+            if (GUILayout.Button("Export Video", EditorStyles.miniButtonMid))
+            {
+                string path = Path.GetFullPath(Path.Combine(Cache.Folder, Cache.CachedFiles[_outputIndex] + ".st"));
+                VideoOutputRunner.Export(path);
+            }
+            
             if (GUILayout.Button("Clear", EditorStyles.miniButtonRight))
             {
                 if (EditorUtility.DisplayDialog("Clear SceneTrack Data",
