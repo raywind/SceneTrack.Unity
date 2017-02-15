@@ -214,7 +214,7 @@ namespace SceneTrack.Unity
             {
                 Type = Object.CreateObjectTypeEx(Frequency.Stream, 401);
                 Size = Object.AddObjectTypeComponentEx2(Type, Kind.Size, SceneTrack.Type.Uint32, 2, 1, Units.Unspecified, Reference.Unspecified);
-                Image = Object.AddObjectTypeComponentEx2(Type, Kind.Image, SceneTrack.Type.Uint8, 3, 1 << 16, Units.Unspecified, Reference.Unspecified);
+                Image = Object.AddObjectTypeComponentEx2(Type, Kind.Image, SceneTrack.Type.Float32, 3, 1 << 16, Units.Unspecified, Reference.Unspecified);
             }
         }
     }

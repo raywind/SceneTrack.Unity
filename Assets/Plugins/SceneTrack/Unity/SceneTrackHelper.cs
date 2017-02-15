@@ -137,6 +137,14 @@ namespace SceneTrack.Unity
             Object.SetValue_p_uint32(objectHandle, componentHandle, arrayPointer, (uint) array.Length, stride);
             handle.Free();
         }
+
+        public static void SubmitArray(uint objectHandle, uint componentHandle, Color32[] array, uint stride)
+        {
+            var handle = GCHandle.Alloc(array, GCHandleType.Pinned);
+            var arrayPointer = handle.AddrOfPinnedObject();
+            Object.SetValue_p_float32(objectHandle, componentHandle, arrayPointer, (uint) array.Length, stride);
+            handle.Free();
+        }
     
         public static void SubmitArrayForceUInt32(uint objectHandle, uint componentHandle, int[] array, uint stride)
         {

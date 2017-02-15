@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEditorInternal;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 public class SceneTrackCamera : MonoBehaviour
@@ -38,10 +39,15 @@ public class SceneTrackCamera : MonoBehaviour
         // Framerate Delay
         // ?
 
+
         // Save Frame
         _frameID = SceneTrack.Object.CreateObject(SceneTrack.Unity.Classes.VideoFrame.Type);
         SceneTrack.Object.SetValue_2_uint32(_frameID, SceneTrack.Unity.Classes.VideoFrame.Size, (uint)textureWidth, (uint)textureHeight);
-        SceneTrack.Unity.Helper.SubmitArray(_frameID, SceneTrack.Unity.Classes.VideoFrame.Image, _proxyTexture.GetPixels());
+        SceneTrack.Unity.Helper.SubmitArray(_frameID,
+            SceneTrack.Unity.Classes.VideoFrame.Image,
+            _proxyTexture.GetPixels32(),
+            SceneTrack.Object.CalculateStride1(SceneTrack.Type.Uint8, 4));
+        Debug.Log("COMMIT FRAME: " + _frameID);
     }
 
 
