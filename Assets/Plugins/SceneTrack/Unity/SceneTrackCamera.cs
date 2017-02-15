@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditorInternal;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class SceneTrackCamera : MonoBehaviour
 {
@@ -31,23 +32,26 @@ public class SceneTrackCamera : MonoBehaviour
         }
 
         // Create new proxy texture
-        _proxyTexture = new Texture2D(textureWidth, textureHeight, TextureFormat.RGB565, false);
+        _proxyTexture = new Texture2D(textureWidth, textureHeight);
+
+        // Create Camera
+        _frameID = SceneTrack.Object.CreateObject(SceneTrack.Unity.Classes.VideoFrame.Type);
     }
 
     public void LateUpdate()
     {
         // Framerate Delay
         // ?
+        RenderCamera();
 
 
         // Save Frame
-        _frameID = SceneTrack.Object.CreateObject(SceneTrack.Unity.Classes.VideoFrame.Type);
+
         SceneTrack.Object.SetValue_2_uint32(_frameID, SceneTrack.Unity.Classes.VideoFrame.Size, (uint)textureWidth, (uint)textureHeight);
         SceneTrack.Unity.Helper.SubmitArray(_frameID,
             SceneTrack.Unity.Classes.VideoFrame.Image,
             _proxyTexture.GetPixels32(),
             SceneTrack.Object.CalculateStride1(SceneTrack.Type.Uint8, 4));
-        Debug.Log("COMMIT FRAME: " + _frameID);
     }
 
 
@@ -55,7 +59,7 @@ public class SceneTrackCamera : MonoBehaviour
     {
 
         // Create render texture
-        _renderTexture = RenderTexture.GetTemporary(textureWidth, textureHeight, 16, RenderTextureFormat.RGB565);
+        _renderTexture = RenderTexture.GetTemporary(textureWidth, textureHeight, 32, RenderTextureFormat.ARGB32);
 
         // Assign camera output
         _cameraReference.targetTexture = _renderTexture;
