@@ -34,9 +34,14 @@ public class SceneTrackCamera : MonoBehaviour
         // Create new proxy texture
         _proxyTexture = new Texture2D(textureWidth, textureHeight);
 
+    }
+
+    public void Start()
+    {
         // Create Camera
         _frameID = SceneTrack.Object.CreateObject(SceneTrack.Unity.Classes.VideoFrame.Type);
     }
+
 
     public void LateUpdate()
     {
