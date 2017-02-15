@@ -31,28 +31,22 @@ public class SceneTrackCamera : MonoBehaviour
             }
         }
 
+        // Create Camera
+        SceneTrack.Unity.Classes.CreateSchema();
+
         // Create new proxy texture
         _proxyTexture = new Texture2D(textureWidth, textureHeight);
 
-    }
-
-    public void Start()
-    {
-        // Create Camera
-        SceneTrack.Unity.Classes.CreateSchema();
+        // Create Camera Frame ID
         _frameID = SceneTrack.Object.CreateObject(SceneTrack.Unity.Classes.VideoFrame.Type);
     }
 
-
     public void LateUpdate()
     {
-        // Framerate Delay
-        // ?
+        // Render the camera (we really could add framerate delays here)
         RenderCamera();
 
-
         // Save Frame
-
         SceneTrack.Object.SetValue_2_uint32(_frameID, SceneTrack.Unity.Classes.VideoFrame.Size, (uint)textureWidth, (uint)textureHeight);
         SceneTrack.Unity.Helper.SubmitArray(_frameID,
             SceneTrack.Unity.Classes.VideoFrame.Image,
