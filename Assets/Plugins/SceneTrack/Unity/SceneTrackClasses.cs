@@ -19,6 +19,7 @@ namespace SceneTrack.Unity
             SubMesh.Register();
             Material.Register();
             PhysicsEvent.Register();
+            VideoFrame.Register();
         }
 
 
@@ -200,6 +201,20 @@ namespace SceneTrack.Unity
                 Strength = Object.AddObjectTypeComponentEx2(Type, Kind.Intensity, SceneTrack.Type.Float32, 1, 1, Units.Unspecified, Reference.Unspecified);
                 RelationReference = Object.AddObjectTypeComponentEx2(Type, Kind.Relationship, SceneTrack.Type.Uint32, 2, 1, Units.Unspecified, Reference.Unspecified);
                 UserData = Object.AddObjectTypeComponentEx2(Type, Kind.Type, SceneTrack.Type.CString, 1, 1, Units.Unspecified, Reference.Unspecified);
+            }
+        }
+
+        public static class VideoFrame
+        {
+            public static uint Type = 0;
+            public static uint Size = 0;
+            public static uint Image = 0;
+
+            public static void Register()
+            {
+                Type = Object.CreateObjectTypeEx(Frequency.Stream, 401);
+                Size = Object.AddObjectTypeComponentEx2(Type, Kind.Size, SceneTrack.Type.Uint32, 2, 1, Units.Unspecified, Reference.Unspecified);
+                Image = Object.AddObjectTypeComponentEx2(Type, Kind.Image, SceneTrack.Type.Uint8, 3, 1 << 16, Units.Unspecified, Reference.Unspecified);
             }
         }
     }

@@ -14,6 +14,7 @@ public class SceneTrackCamera : MonoBehaviour
     private Camera _cameraReference;
     private RenderTexture _renderTexture;
     private Texture2D _proxyTexture;
+    private uint _frameID;
 
     public void Awake()
     {
@@ -35,13 +36,14 @@ public class SceneTrackCamera : MonoBehaviour
     public void LateUpdate()
     {
         // Framerate Delay
+        // ?
 
-
-        //RenderCamera();
-
-        // Submit Data
-        //_proxyTexture.GetPixels();
+        // Save Frame
+        _frameID = SceneTrack.Object.CreateObject(SceneTrack.Unity.Classes.VideoFrame.Type);
+        SceneTrack.Object.SetValue_2_uint32(_frameID, SceneTrack.Unity.Classes.VideoFrame.Size, (uint)textureWidth, (uint)textureHeight);
+        SceneTrack.Unity.Helper.SubmitArray(_frameID, SceneTrack.Unity.Classes.VideoFrame.Image, _proxyTexture.GetPixels());
     }
+
 
     private void RenderCamera()
     {
