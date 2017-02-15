@@ -39,6 +39,7 @@ public class SceneTrackCamera : MonoBehaviour
     public void Start()
     {
         // Create Camera
+        SceneTrack.Unity.Classes.CreateSchema();
         _frameID = SceneTrack.Object.CreateObject(SceneTrack.Unity.Classes.VideoFrame.Type);
     }
 

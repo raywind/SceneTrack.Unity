@@ -142,7 +142,7 @@ namespace SceneTrack.Unity
         {
             var handle = GCHandle.Alloc(array, GCHandleType.Pinned);
             var arrayPointer = handle.AddrOfPinnedObject();
-            Object.SetValue_p_float32(objectHandle, componentHandle, arrayPointer, (uint) array.Length, stride);
+            Object.SetValue_p_uint8(objectHandle, componentHandle, arrayPointer, (uint) array.Length, stride);
             handle.Free();
         }
     
