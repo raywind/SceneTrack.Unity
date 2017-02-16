@@ -10,6 +10,16 @@ namespace SceneTrackVideo
 	{
 		public const int FILETYPE_JPEG_SEQUENCE = (0);
 		public const int FILETYPE_PNG_SEQUENCE = (1);
+		public const int FILETYPE_MJPEG_SEQUENCE = (2);
+		public const int FILETYPE_MPEG1_SEQUENCE = (3);
+	}
+
+	public static class Flip
+	{
+		public const int None = (0);
+		public const int Vertical = (1);
+		public const int Horizontal = (2);
+		public const int Both = (3);
 	}
 
 	public static class Conversion
@@ -52,6 +62,13 @@ namespace SceneTrackVideo
 		public static extern int SetFileType(int fileType);
 		#else
 		public static int SetFileType(int fileType) { return default(int); }
+		#endif
+
+		#if UNITY_EDITOR
+		[DllImport("SceneTrackVideo", CallingConvention = CallingConvention.Cdecl, EntryPoint = "videoSetImageFlip"), SuppressUnmanagedCodeSecurity]
+		public static extern int SetImageFlip(int imageFlip);
+		#else
+		public static int SetImageFlip(int imageFlip) { return default(int); }
 		#endif
 
 	}

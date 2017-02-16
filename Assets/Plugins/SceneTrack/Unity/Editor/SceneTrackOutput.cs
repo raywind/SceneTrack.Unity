@@ -1261,8 +1261,15 @@ namespace SceneTrack.Unity.Editor
                 Environment.SpecialFolder.DesktopDirectory.ToString(),
                 Path.GetFileNameWithoutExtension(sourcePath) + "." + VideoOutput.GetExportExtension(),
                 VideoOutput.GetExportExtension());
+            
 
+            string extension = Path.GetExtension(outputFile);
 
+            if (extension != null)
+            { 
+                  outputFile = outputFile.Substring(0, outputFile.Length - extension.Length);
+            }
+            
             UnityEngine.Debug.Log(sourcePath);
             UnityEngine.Debug.Log(outputFile);
 
@@ -1294,30 +1301,53 @@ namespace SceneTrack.Unity.Editor
     
         public static int FileType
         {
-            get { return UnityEditor.EditorPrefs.GetInt("SceneTrack_Video_Type", 0); }
+            get { return UnityEditor.EditorPrefs.GetInt("SceneTrack_Video_Type", 3); }
             set { UnityEditor.EditorPrefs.SetInt("SceneTrack_Video_Type", value); }
         }
     
+        public static int ImageFlip
+        {
+            get { return UnityEditor.EditorPrefs.GetInt("SceneTrack_ImageFlip", 1); }
+            set { UnityEditor.EditorPrefs.SetInt("SceneTrack_ImageFlip", value); }
+        }
+
         public static void SetupExport()
         {
             SceneTrackVideo.Settings.SetFileType(FileType);
+            SceneTrackVideo.Settings.SetImageFlip(ImageFlip);
         }
     
         static int[] VideoFileTypeInt = new int[]
         {
-            0, 1
+            0, 1, 2, 3
         };
 
         static string[] VideoFileTypeStr = new string[]
         {
-            "JPEG Frames",
-            "PNG Frames"
+            "JPEG Sequence",
+            "PNG Sequence",
+            "JPEG Joined Sequence (MJPEG)",
+            "MPEG1&2 Movie"
+        };
+    
+        static int[] ImageFlipInt = new int[]
+        {
+            0, 1, 2, 3
+        };
+
+        static string[] ImageFlipStr = new string[]
+        {
+            "None",
+            "Vertical",
+            "Horizontal",
+            "Both"
         };
     
         public static void EditorPreferences()
         {
             EditorGUILayout.PrefixLabel(String.Empty);
             FileType = EditorGUILayout.IntPopup("File Type", FileType, VideoFileTypeStr, VideoFileTypeInt);
+            ImageFlip = EditorGUILayout.IntPopup("Frame Flip", ImageFlip, ImageFlipStr, ImageFlipInt);
         }
 
         public static string GetExportExtension()
@@ -1326,6 +1356,10 @@ namespace SceneTrack.Unity.Editor
             return "jpeg";
           else if (FileType == 1)
             return "png";
+          else if (FileType == 2)
+            return "mjpeg";
+          else if (FileType == 3)
+            return "mpeg";
           return "bin";
         }
 
