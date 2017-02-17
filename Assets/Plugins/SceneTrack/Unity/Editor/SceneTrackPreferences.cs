@@ -16,18 +16,6 @@ namespace SceneTrack.Unity.Editor
           get { return EditorPrefs.GetBool("SceneTrack_OpenAfterExporting", false); }
           set { EditorPrefs.SetBool("SceneTrack_OpenAfterExporting", value); }
         }
-    
-        public static float OutputFramerate
-        {
-            get
-            {
-                return EditorPrefs.GetFloat("SceneTrack_OutputFramerate", 24.25f);
-            }
-            set
-            {
-                EditorPrefs.SetFloat("SceneTrack_OutputFramerate", value);
-            }
-        }
 
         public static int OutputAxisSettings
         {
@@ -46,7 +34,7 @@ namespace SceneTrack.Unity.Editor
         {
             EditorGUILayout.BeginHorizontal();
       
-            if (GUILayout.Toggle(_currentTab == 0, "General", EditorStyles.miniButtonLeft))
+            if (GUILayout.Toggle(_currentTab == 0, "SceneTrack", EditorStyles.miniButtonLeft))
             {
               _currentTab = 0;
             }
@@ -83,7 +71,6 @@ namespace SceneTrack.Unity.Editor
                     VideoOutput.EditorPreferences();
                     break;
                 default:
-                    OutputFramerate = (float) EditorGUILayout.FloatField("Output Framerate", OutputFramerate);
                     OpenAfterExporting = EditorGUILayout.Toggle("Open Output after Exporting", OpenAfterExporting);
                     break;
             }

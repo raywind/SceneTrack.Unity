@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using SceneTrackFbx;
 using UnityEditor;
+using UnityEngine;
 
 namespace SceneTrack.Unity.Editor
 {
@@ -204,6 +205,18 @@ namespace SceneTrack.Unity.Editor
         {
             get { return UnityEditor.EditorPrefs.GetInt("SceneTrack_FBX_Version", 12); }
             set { UnityEditor.EditorPrefs.SetInt("SceneTrack_FBX_Version", value); }
+        }
+
+        public static int FrameRate
+        {
+            get { return UnityEditor.EditorPrefs.GetInt("SceneTrack_FrameRate", 0); }
+            set { UnityEditor.EditorPrefs.SetInt("SceneTrack_FrameRate", value); }
+        }
+
+        public static float FrameRateCustom
+        {
+            get { return UnityEditor.EditorPrefs.GetFloat("SceneTrack_FrameRate_Custom", 30.0f); }
+            set { UnityEditor.EditorPrefs.SetFloat("SceneTrack_FrameRate_Custom", value); }
         }
 
         public static int AxisTX
@@ -428,6 +441,8 @@ namespace SceneTrack.Unity.Editor
 
             SceneTrackFbx.Settings.SetFileVersion(Version);
 
+            SceneTrackFbx.Settings.SetFrameRate(FrameRate, (double) FrameRateCustom);
+
             SceneTrackFbx.Settings.ClearAssetSearchPaths();
             SceneTrackFbx.Settings.AddAssetSearchPath(new StringBuilder(UnityEngine.Application.dataPath + "/"));
 
@@ -500,8 +515,49 @@ namespace SceneTrack.Unity.Editor
             "Keep (1, 2, 3)", "Reverse (1, 3, 2)"
         };
 
+        static int[] FrameRateInt = new int[]
+        {
+          0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17
+        };
+
+        static string[] FrameRateStr = new string[]
+        {
+          "Default",
+          "Custom",
+          "23.976 FPS",
+          "24 FPS",
+          "30 FPS",
+          "30 FPS (Drop)",
+          "48 FPS",
+          "50 FPS",
+          "59.94 FPS",
+          "60 FPS",
+          "72 FPS",
+          "96 FPS",
+          "100 FPS",
+          "120 FPS",
+          "1000 FPS",
+          "PAL",
+          "NTSC",
+          "NTSC (Drop)"
+        };
+    
         public static void EditorPreferences()
         {
+           
+           FrameRate = EditorGUILayout.IntPopup("Frame Rate", FrameRate, FrameRateStr, FrameRateInt);
+
+           if (FrameRate == 1)
+           {
+              FrameRateCustom = Mathf.Abs(EditorGUILayout.FloatField(" ", FrameRateCustom));
+           }
+           else
+           {
+              EditorGUILayout.PrefixLabel(String.Empty);
+           }
+
+            EditorGUILayout.Space();
+
             Version = EditorGUILayout.IntPopup("FBX Version", Version, FbxVersionStr, FbxVersionInt);
 
             EditorGUILayout.PrefixLabel(String.Empty);
