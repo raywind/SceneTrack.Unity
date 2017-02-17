@@ -48,9 +48,16 @@ namespace SceneTrack.Unity
             // Start Recording
             InstanceHandle = Recording.CreateRecording();
 
+            int recordTime = Mathf.Clamp(EditorPrefs.GetInt("SceneTrack_AppendRecordFrames", 2), 1, 30);
+            int framePool  = EditorPrefs.GetInt("SceneTrack_MemoryReserveFramePool", 0);
+            int frameDataPool = EditorPrefs.GetInt("SceneTrack_MemoryReserveFrameDataPool", 0);
+            
+            Recording.MemoryReserve(0, framePool);
+            Recording.MemoryReserve(1, frameDataPool);
+            
             // Setup the new take for recording, writing every 2 frames
-            Recording.AppendSaveRecording(new StringBuilder(Cache.Folder + fileName + "." + Cache.FileExtension), Format.Binary, 2);
-
+            Recording.AppendSaveRecording(new StringBuilder(Cache.Folder + fileName + "." + Cache.FileExtension), Format.Binary, (uint) recordTime);
+            
             // Create Schema
             Classes.CreateSchema();
 

@@ -71,6 +71,28 @@ namespace SceneTrackFbx
 		public const int FBX_201600 = (13);
 	}
 
+	public static class Fps
+	{
+		public const int DEFAULT = (0);
+		public const int CUSTOM = (1);
+		public const int FPS_23_976 = (2);
+		public const int FPS_24 = (3);
+		public const int FPS_30 = (4);
+		public const int FPS_30_DROP = (5);
+		public const int FPS_48 = (6);
+		public const int FPS_50 = (7);
+		public const int FPS_59_94 = (8);
+		public const int FPS_60 = (9);
+		public const int FPS_72 = (10);
+		public const int FPS_96 = (11);
+		public const int FPS_100 = (12);
+		public const int FPS_120 = (13);
+		public const int FPS_1000 = (14);
+		public const int FPS_PAL = (15);
+		public const int FPS_NTSC = (16);
+		public const int FPS_NTSC_DROP = (17);
+	}
+
 	public static class ReferenceFrame
 	{
 		public const int Local = (0);
@@ -163,6 +185,13 @@ namespace SceneTrackFbx
 		public static extern int SetFileVersion(int sdkFileVersion);
 		#else
 		public static int SetFileVersion(int sdkFileVersion) { return default(int); }
+		#endif
+
+		#if UNITY_EDITOR
+		[DllImport("SceneTrackFbx", CallingConvention = CallingConvention.Cdecl, EntryPoint = "fbxSetFrameRate"), SuppressUnmanagedCodeSecurity]
+		public static extern int SetFrameRate(int frameRate, double customRate);
+		#else
+		public static int SetFrameRate(int frameRate, double customRate) { return default(int); }
 		#endif
 
 		#if UNITY_EDITOR
