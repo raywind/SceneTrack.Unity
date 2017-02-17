@@ -545,6 +545,17 @@ namespace SceneTrack.Unity.Editor
         public static void EditorPreferences()
         {
            
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Default", EditorStyles.miniButton))
+            {
+              FrameRate = 0;
+              FrameRateCustom = 30.0f;
+              Version = 12;
+              SetSwizzle(1);
+            }
+            EditorGUILayout.EndHorizontal();
+
            FrameRate = EditorGUILayout.IntPopup("Frame Rate", FrameRate, FrameRateStr, FrameRateInt);
 
            if (FrameRate == 1)
@@ -629,7 +640,7 @@ namespace SceneTrack.Unity.Editor
             EditorGUILayout.PrefixLabel("Scene Scale");
             ScaleMultiplyX = ScaleMultiplyY = ScaleMultiplyZ = EditorGUILayout.FloatField(ScaleMultiplyX);
             EditorGUILayout.EndHorizontal();
-
+            
         }
 
         public static string GetExportExtension()
@@ -1091,6 +1102,15 @@ namespace SceneTrack.Unity.Editor
         public static void EditorPreferences()
         {
            
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Default", EditorStyles.miniButton))
+            {
+              FileType = 0;
+              SetSwizzle(1);
+            }
+            EditorGUILayout.EndHorizontal();
+
             FileType = EditorGUILayout.IntPopup("Export as", FileType, MidiFileTypeStr, MidiFileTypeInt);
 
             EditorGUILayout.BeginHorizontal();
@@ -1122,7 +1142,7 @@ namespace SceneTrack.Unity.Editor
             EditorGUILayout.PrefixLabel("Scene Scale");
             ScaleMultiplyX = ScaleMultiplyY = ScaleMultiplyZ = EditorGUILayout.FloatField(ScaleMultiplyX);
             EditorGUILayout.EndHorizontal();
-
+            
         }
 
         public static string GetExportExtension()
@@ -1401,9 +1421,19 @@ namespace SceneTrack.Unity.Editor
     
         public static void EditorPreferences()
         {
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Default", EditorStyles.miniButton))
+            {
+              FileType = 3;
+              ImageFlip = 1;
+            }
+            EditorGUILayout.EndHorizontal();
+
             EditorGUILayout.PrefixLabel(String.Empty);
             FileType = EditorGUILayout.IntPopup("File Type", FileType, VideoFileTypeStr, VideoFileTypeInt);
             ImageFlip = EditorGUILayout.IntPopup("Frame Flip", ImageFlip, ImageFlipStr, ImageFlipInt);
+            
         }
 
         public static string GetExportExtension()
