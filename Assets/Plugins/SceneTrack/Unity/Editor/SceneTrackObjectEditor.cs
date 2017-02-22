@@ -42,7 +42,7 @@ namespace SceneTrack.Unity.Editor
 
             EditorGUILayout.LabelField("Track Components", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
-            _targetObject.TrackTransform = EditorGUILayout.Toggle("Transform", _targetObject.TrackTransform);
+            
             if (hasMeshRenderer)
             {
                 _targetObject.TrackMeshRenderer = EditorGUILayout.Toggle("Mesh", _targetObject.TrackMeshRenderer);

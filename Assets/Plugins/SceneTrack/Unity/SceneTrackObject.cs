@@ -39,10 +39,7 @@ namespace SceneTrack.Unity
 
         [SerializeField]
         public bool TrackObject = true;
-
-        [SerializeField]
-        public bool TrackTransform = true;
-
+        
         [SerializeField]
         public bool TrackMeshRenderer;
 
@@ -177,11 +174,6 @@ namespace SceneTrack.Unity
         /// <remarks>Setup default tracking values based on what is on the Game Object</remarks>
         private void Reset()
         {
-            // This should never really fail, but we'll check it for the sake of checking
-            if ( GetComponent<Transform>() != null ) {
-                TrackTransform = true;
-            }
-
             // Check if there is a mesh render and enable
             if ( GetComponent<MeshRenderer>() != null ) {
                 TrackMeshRenderer = true;
@@ -195,11 +187,6 @@ namespace SceneTrack.Unity
             if (GetComponent<Collider>() != null)
             {
                 TrackPhysics = true;
-                if (!TrackMeshRenderer)
-                {
-                    // If there is no mesh there is no reason to actually track the transform
-                    TrackTransform = false;
-                }
             }
         }
 
@@ -215,7 +202,7 @@ namespace SceneTrack.Unity
             _frameCount = System.FrameCount;
 
             // Record whats being tracked
-            if (TrackTransform) { RecordTransform(); }
+            RecordTransform();
             if (TrackMeshRenderer) { RecordMeshRenderer(); }
         }
 
@@ -252,10 +239,8 @@ namespace SceneTrack.Unity
             }
 
             // Register Components
-            if ( TrackTransform  )
-            {
-                InitTransform();
-            }
+            InitTransform();
+            
 
             if (_transform.parent != null)
             { 
